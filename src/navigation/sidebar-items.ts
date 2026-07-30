@@ -20,20 +20,18 @@ export type NavItem = {
 
 export const sidebarNavItems: NavItem[] = [
   { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
-  { id: "clients", label: "Clients", href: "#", icon: Users, disabled: true },
+  { id: "clients", label: "Clients", href: "/clients", icon: Users },
   {
     id: "program-library",
     label: "Program Library",
-    href: "#",
+    href: "/program-library",
     icon: FolderOpen,
-    disabled: true,
   },
   {
     id: "exercise-library",
     label: "Exercise Library",
-    href: "#",
+    href: "/exercise-library",
     icon: Dumbbell,
-    disabled: true,
   },
   { id: "chat", label: "Chat", href: "#", icon: MessageSquare, disabled: true },
   { id: "grow", label: "Grow", href: "#", icon: Rocket, disabled: true },
