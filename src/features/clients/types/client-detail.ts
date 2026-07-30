@@ -42,9 +42,11 @@ export type ProgressPicture = {
 };
 
 export type WorkoutProgramSummary = {
+  id: string;
   name: string;
   routineCount: number;
-  startDateLabel: string;
+  // Null = active now. Future ISO date = not yet started ("Starts on <date>").
+  programStartDate: string | null;
 };
 
 export type ClientDetail = {
@@ -54,7 +56,7 @@ export type ClientDetail = {
   email: string;
   coach: AvatarInfo;
   coachedSinceLabel: string;
-  workoutProgram: WorkoutProgramSummary;
+  workoutProgram: WorkoutProgramSummary | null;
   activities: ActivityItem[];
   duration: StatSummary;
   volume: StatSummary;

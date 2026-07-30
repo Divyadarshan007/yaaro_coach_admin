@@ -15,13 +15,14 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { CoachProfileMenu } from "@/components/layout/coach-profile-menu";
 import { SidebarLogo } from "@/components/layout/sidebar-logo";
 import { SidebarSearch } from "@/components/layout/sidebar-search";
-import { TrialBanner } from "@/components/layout/trial-banner";
 import { sidebarNavItems } from "@/navigation/sidebar-items";
 import { cn } from "@/lib/utils";
+import type { CoachProfile } from "@/lib/api/coach";
 
-export function AppSidebar() {
+export function AppSidebar({ coachProfile }: { coachProfile: CoachProfile | null }) {
   const { state, isMobile, toggleSidebar } = useSidebar();
   const pathname = usePathname();
   const collapsed = state === "collapsed" && !isMobile;
@@ -80,16 +81,7 @@ export function AppSidebar() {
       {!collapsed && (
         <SidebarFooter className="gap-4 p-4">
           <Separator className="bg-sidebar-border" />
-          <div className="flex items-center gap-3 text-sm">
-            <a href="#" className="text-primary transition-opacity hover:opacity-80">
-              Feedback
-            </a>
-            <span className="text-sidebar-foreground/30">|</span>
-            <a href="#" className="text-primary transition-opacity hover:opacity-80">
-              Help
-            </a>
-          </div>
-          <TrialBanner />
+          <CoachProfileMenu coach={coachProfile} />
         </SidebarFooter>
       )}
     </Sidebar>

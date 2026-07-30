@@ -7,6 +7,23 @@ import type { ClientDetail } from "@/features/clients/types/client-detail";
 export function WorkoutProgramCard({ client }: { client: ClientDetail }) {
   const { workoutProgram } = client;
 
+  if (!workoutProgram) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Workout Program</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">No program assigned yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const isScheduled = workoutProgram.programStartDate
+    ? new Date(workoutProgram.programStartDate) > new Date()
+    : false;
+
   return (
     <Card>
       <CardHeader className="flex items-center justify-between">
@@ -27,7 +44,13 @@ export function WorkoutProgramCard({ client }: { client: ClientDetail }) {
         <div className="min-w-0">
           <p className="wrap-break-word text-sm font-medium text-foreground">{workoutProgram.name}</p>
           <p className="text-sm text-muted-foreground">
-            {workoutProgram.routineCount} routines · Start date {workoutProgram.startDateLabel}
+            {isScheduled
+              ? `Starts on ${new Date(workoutProgram.programStartDate!).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}`
+              : `${workoutProgram.routineCount} routines`}
           </p>
         </div>
       </CardContent>

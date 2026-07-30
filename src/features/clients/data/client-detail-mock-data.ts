@@ -1,13 +1,33 @@
-import {
-  bigbitesAvatar,
-  dev,
-  h1Gyms,
-  johnDoeAvatar,
-  kapilSinghAvatar,
-} from "@/features/clients/data/clients-mock-data";
-import type { ClientDetail, StatSummary } from "@/features/clients/types/client-detail";
+import type { AvatarInfo } from "@/features/clients/types/client";
+import type {
+  ActivityItem,
+  BodyweightSummary,
+  ProgressPicture,
+  StatSummary,
+} from "@/features/clients/types/client-detail";
+
+// Only the stats/activity fields that have no real backend yet (no workout-log,
+// bodyweight, or photo model exists) stay mocked here, keyed by the old mock client
+// ids. Real clients (seeded via user_coach) won't match any of these ids and simply
+// get an empty stats block — see clients/[id]/page.tsx.
+type ClientDetailMockStats = {
+  activities: ActivityItem[];
+  duration: StatSummary;
+  volume: StatSummary;
+  sets: StatSummary;
+  bodyweight: BodyweightSummary;
+  progressPictures: ProgressPicture[];
+};
 
 const WEEK_LABELS = ["May 10", "May 31", "Jun 21", "Jul 12", "Jul 26"];
+
+const kapilSinghAvatar: AvatarInfo = {
+  name: "Kapil Singh",
+  initials: "KS",
+  colorClassName: "bg-emerald-500 text-white",
+};
+const johnDoeAvatar: AvatarInfo = { name: "John Doe", initials: "JD", colorClassName: "bg-amber-500 text-white" };
+const bigbitesAvatar: AvatarInfo = { name: "bigbites", initials: "D", colorClassName: "bg-blue-500 text-white" };
 
 function buildWeeklyStat(label: string, displayValue: string, values: number[]): StatSummary {
   return {
@@ -18,19 +38,8 @@ function buildWeeklyStat(label: string, displayValue: string, values: number[]):
   };
 }
 
-const CLIENT_DETAILS: Record<string, ClientDetail> = {
+const CLIENT_DETAIL_MOCK_STATS: Record<string, ClientDetailMockStats> = {
   "kapil-singh": {
-    id: "kapil-singh",
-    avatar: kapilSinghAvatar,
-    name: "Kapil Singh",
-    email: "singhkapil708@gmail.com",
-    coach: h1Gyms,
-    coachedSinceLabel: "Coached since Jul 28, 2026",
-    workoutProgram: {
-      name: "Push/Pull/Legs (Home Edition) - Beginner - 3 Day Split",
-      routineCount: 3,
-      startDateLabel: "Jul 28, 2026",
-    },
     activities: [
       {
         id: "kapil-a1",
@@ -90,13 +99,6 @@ const CLIENT_DETAILS: Record<string, ClientDetail> = {
     progressPictures: [{ id: "kapil-p1", dateLabel: "2026-01-25", weightLabel: "30 kg" }],
   },
   "john-doe": {
-    id: "john-doe",
-    avatar: johnDoeAvatar,
-    name: "John Doe",
-    email: "sample.client@yaarocoach.com",
-    coach: h1Gyms,
-    coachedSinceLabel: "Coached since Jul 24, 2026",
-    workoutProgram: { name: "Full Body x3", routineCount: 3, startDateLabel: "Jul 24, 2026" },
     activities: [
       {
         id: "john-a1",
@@ -125,17 +127,6 @@ const CLIENT_DETAILS: Record<string, ClientDetail> = {
     progressPictures: [],
   },
   bigbites: {
-    id: "bigbites",
-    avatar: bigbitesAvatar,
-    name: "bigbites",
-    email: "bigbites@example.com",
-    coach: dev,
-    coachedSinceLabel: "Coached since Jul 1, 2026",
-    workoutProgram: {
-      name: "Push/Pull/Legs - Beginner - 3 Day Split",
-      routineCount: 3,
-      startDateLabel: "Jul 1, 2026",
-    },
     activities: [
       {
         id: "bigbites-a1",
@@ -165,6 +156,15 @@ const CLIENT_DETAILS: Record<string, ClientDetail> = {
   },
 };
 
-export function getClientDetail(id: string): ClientDetail | undefined {
-  return CLIENT_DETAILS[id];
+const EMPTY_STATS: ClientDetailMockStats = {
+  activities: [],
+  duration: buildWeeklyStat("Duration", "0min", [0, 0, 0, 0, 0]),
+  volume: buildWeeklyStat("Volume", "0 kg", [0, 0, 0, 0, 0]),
+  sets: buildWeeklyStat("Set", "0 sets", [0, 0, 0, 0, 0]),
+  bodyweight: { currentValue: 0, unit: "kg", data: [] },
+  progressPictures: [],
+};
+
+export function getClientDetailMockStats(id: string): ClientDetailMockStats {
+  return CLIENT_DETAIL_MOCK_STATS[id] ?? EMPTY_STATS;
 }

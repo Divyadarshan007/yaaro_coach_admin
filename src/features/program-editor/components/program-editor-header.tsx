@@ -1,9 +1,16 @@
+"use client";
+
 import { ArrowLeft, CircleCheck, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { AssignProgramDialog } from "@/features/program-editor/components/assign-program-dialog";
+import type { ClientSummary } from "@/features/clients/types/client";
 
-export function ProgramEditorHeader() {
+export function ProgramEditorHeader({ programId, clients }: { programId: string; clients: ClientSummary[] }) {
+  const [assignOpen, setAssignOpen] = useState(false);
+
   return (
     <div className="flex flex-col gap-3">
       <Link href="/program-library" className="w-fit text-sm text-muted-foreground hover:text-foreground">
@@ -27,12 +34,14 @@ export function ProgramEditorHeader() {
             <CircleCheck className="size-4" />
             All changes saved
           </div>
-          <Button variant="outline" size="lg">
+          <Button variant="outline" size="lg" onClick={() => setAssignOpen(true)}>
             <UserPlus />
             Assign Program
           </Button>
         </div>
       </div>
+
+      <AssignProgramDialog programId={programId} clients={clients} open={assignOpen} onOpenChange={setAssignOpen} />
     </div>
   );
 }

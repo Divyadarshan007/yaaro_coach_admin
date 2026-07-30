@@ -22,3 +22,15 @@ export type Client = {
   status: ClientStatus;
   coach: AvatarInfo;
 };
+
+// Shape returned by GET /coach/v1/clients (and the client-list piece of /clients/:id).
+export type ClientSummary = {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  avatar: string;
+  currentProgram: { id: string; title: string; routineCount?: number } | null;
+  programStartDate: string | null;
+  createdAt: string;
+};

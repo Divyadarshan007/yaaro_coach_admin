@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { COACH_BACKEND_URL } from "@/lib/api/config";
+import { assignProgramToClient } from "@/lib/api/clients";
 import type { Program, ProgramRoutine } from "@/features/program-editor/types/program-editor";
 
 async function createProgram(body: { templateId?: string }): Promise<Program> {
@@ -44,4 +45,16 @@ export async function deleteProgramAction(id: string): Promise<void> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/programs/${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error(`Failed to delete program ${id} (${res.status})`);
   revalidatePath("/program-library");
+}
+
+export async function assignProgramToClientsAction(
+  sourceProgramId: string,
+  clientIds: string[],
+  programStartDate: string | null
+): Promise<void> {
+  await Promise.all(
+    clientIds.map((clientId) => assignProgramToClient(clientId, { sourceProgramId, programStartDate }))
+  );
+  revalidatePath("/clients");
+  for (const clientId of clientIds) revalidatePath(`/clients/${clientId}`);
 }

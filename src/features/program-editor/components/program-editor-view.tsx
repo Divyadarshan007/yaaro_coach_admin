@@ -9,13 +9,16 @@ import { ProgramSummaryPanel } from "@/features/program-editor/components/progra
 import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
 import type { Program } from "@/features/program-editor/types/program-editor";
 import type { MuscleCatalogEntry } from "@/lib/muscle-groups";
+import type { ClientSummary } from "@/features/clients/types/client";
 
 export function ProgramEditorView({
   initialProgram,
   muscleCatalog,
+  clients,
 }: {
   initialProgram: Program | null;
   muscleCatalog: MuscleCatalogEntry[];
+  clients: ClientSummary[];
 }) {
   const upsertProgram = useMyProgramsStore((state) => state.upsertProgram);
   const program = useMyProgramsStore((state) =>
@@ -41,7 +44,7 @@ export function ProgramEditorView({
 
   return (
     <div className="flex flex-col gap-6">
-      <ProgramEditorHeader />
+      <ProgramEditorHeader programId={resolvedProgram.id} clients={clients} />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className="flex min-w-0 flex-1 flex-col gap-6">
