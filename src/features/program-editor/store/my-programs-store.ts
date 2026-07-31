@@ -33,6 +33,18 @@ function updateRoutine(program: Program, routineId: string, updater: (routine: P
 const PERSIST_DEBOUNCE_MS = 600;
 const persistTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
+type ProgramPatch = Partial<Pick<Program, "title" | "duration" | "note" | "routines">>;
+type PersistAction = (id: string, patch: ProgramPatch) => Promise<Program>;
+
+// Defaults every program to the coach's-own-library PATCH endpoint. A program fetched
+// through a different route (e.g. a client-scoped program editor) registers its own
+// persist target via registerPersistAction — everything else about the debounce/autosave
+// mechanism below stays the same regardless of where a given program actually saves to.
+const persistActions = new Map<string, PersistAction>();
+function getPersistAction(programId: string): PersistAction {
+  return persistActions.get(programId) ?? updateProgramAction;
+}
+
 function schedulePersist(programId: string, getProgram: () => Program | undefined) {
   const existing = persistTimers.get(programId);
   if (existing) clearTimeout(existing);
@@ -42,7 +54,7 @@ function schedulePersist(programId: string, getProgram: () => Program | undefine
       persistTimers.delete(programId);
       const program = getProgram();
       if (!program) return;
-      void updateProgramAction(programId, {
+      void getPersistAction(programId)(programId, {
         title: program.title,
         duration: program.duration,
         note: program.note,
@@ -56,6 +68,7 @@ type MyProgramsState = {
   programs: Program[];
   hydratePrograms: (programs: Program[]) => void;
   upsertProgram: (program: Program) => void;
+  registerPersistAction: (programId: string, action: PersistAction) => void;
   getProgram: (id: string) => Program | undefined;
   isTemplateAdded: (templateId: string) => boolean;
   addFromTemplate: (template: YaaroCoachProgram) => Promise<string>;
@@ -103,6 +116,8 @@ export const useMyProgramsStore = create<MyProgramsState>((set, get) => ({
           : [...state.programs, program],
       };
     }),
+
+  registerPersistAction: (programId, action) => persistActions.set(programId, action),
 
   getProgram: (id) => get().programs.find((program) => program.id === id),
 

@@ -11,10 +11,12 @@ import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-
 
 export function AddRoutineDialog({
   programId,
+  basePath = `/program/${programId}`,
   open,
   onOpenChange,
 }: {
   programId: string;
+  basePath?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -54,7 +56,7 @@ export function AddRoutineDialog({
     const routineId = addRoutine(programId);
     reset();
     onOpenChange(false);
-    router.push(`/program/${programId}/routine/${routineId}`);
+    router.push(`${basePath}/routine/${routineId}`);
   }
 
   function handleCopy() {

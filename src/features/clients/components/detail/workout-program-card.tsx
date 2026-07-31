@@ -1,4 +1,5 @@
 import { CalendarRange, MoreVertical } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,9 +30,9 @@ export function WorkoutProgramCard({ client }: { client: ClientDetail }) {
       <CardHeader className="flex items-center justify-between">
         <CardTitle>Workout Program</CardTitle>
         <div className="flex items-center gap-3">
-          <button type="button" className="text-sm text-primary hover:underline">
+          <Link href={`/clients/${client.id}/program`} className="text-sm text-primary hover:underline">
             Edit program
-          </button>
+          </Link>
           <Button variant="ghost" size="icon-sm" aria-label="Workout program options">
             <MoreVertical />
           </Button>

@@ -8,7 +8,13 @@ import { AddRoutineDialog } from "@/features/program-editor/components/add-routi
 import { ProgramRoutineCard } from "@/features/program-editor/components/program-routine-card";
 import type { Program } from "@/features/program-editor/types/program-editor";
 
-export function ProgramRoutinesSection({ program }: { program: Program }) {
+export function ProgramRoutinesSection({
+  program,
+  basePath = `/program/${program.id}`,
+}: {
+  program: Program;
+  basePath?: string;
+}) {
   const [addRoutineOpen, setAddRoutineOpen] = useState(false);
 
   return (
@@ -43,12 +49,17 @@ export function ProgramRoutinesSection({ program }: { program: Program }) {
       ) : (
         <div className="flex flex-col gap-4">
           {program.routines.map((routine) => (
-            <ProgramRoutineCard key={routine.id} programId={program.id} routine={routine} />
+            <ProgramRoutineCard key={routine.id} programId={program.id} routine={routine} basePath={basePath} />
           ))}
         </div>
       )}
 
-      <AddRoutineDialog programId={program.id} open={addRoutineOpen} onOpenChange={setAddRoutineOpen} />
+      <AddRoutineDialog
+        programId={program.id}
+        basePath={basePath}
+        open={addRoutineOpen}
+        onOpenChange={setAddRoutineOpen}
+      />
     </div>
   );
 }

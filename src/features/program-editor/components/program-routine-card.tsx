@@ -10,7 +10,15 @@ import { ProgramExerciseRow } from "@/features/program-editor/components/program
 import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
 import type { ProgramRoutine } from "@/features/program-editor/types/program-editor";
 
-export function ProgramRoutineCard({ programId, routine }: { programId: string; routine: ProgramRoutine }) {
+export function ProgramRoutineCard({
+  programId,
+  routine,
+  basePath = `/program/${programId}`,
+}: {
+  programId: string;
+  routine: ProgramRoutine;
+  basePath?: string;
+}) {
   const router = useRouter();
   const renameRoutine = useMyProgramsStore((state) => state.renameRoutine);
   const removeRoutine = useMyProgramsStore((state) => state.removeRoutine);
@@ -19,9 +27,9 @@ export function ProgramRoutineCard({ programId, routine }: { programId: string; 
     <div
       role="button"
       tabIndex={0}
-      onClick={() => router.push(`/program/${programId}/routine/${routine.id}`)}
+      onClick={() => router.push(`${basePath}/routine/${routine.id}`)}
       onKeyDown={(event) => {
-        if (event.key === "Enter") router.push(`/program/${programId}/routine/${routine.id}`);
+        if (event.key === "Enter") router.push(`${basePath}/routine/${routine.id}`);
       }}
       className="flex cursor-pointer flex-col gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10"
     >

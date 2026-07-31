@@ -1,6 +1,7 @@
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 import type { ClientSummary } from "@/features/clients/types/client";
+import type { Program, ProgramRoutine } from "@/features/program-editor/types/program-editor";
 
 export async function getClients(): Promise<ClientSummary[]> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients`, {
@@ -31,5 +32,28 @@ export async function assignProgramToClient(
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`Failed to assign program to client ${clientId} (${res.status})`);
+  return res.json();
+}
+
+export async function getClientProgram(clientId: string): Promise<Program | null> {
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/program`, {
+    cache: "no-store",
+    headers: await getCoachAuthHeaders(),
+  });
+  if (res.status === 404 || res.status === 400) return null;
+  if (!res.ok) throw new Error(`Failed to fetch client ${clientId}'s program (${res.status})`);
+  return res.json();
+}
+
+export async function updateClientProgram(
+  clientId: string,
+  patch: Partial<{ title: string; duration: string; note: string; routines: ProgramRoutine[] }>
+): Promise<Program> {
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/program`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    body: JSON.stringify(patch),
+  });
+  if (!res.ok) throw new Error(`Failed to update client ${clientId}'s program (${res.status})`);
   return res.json();
 }
