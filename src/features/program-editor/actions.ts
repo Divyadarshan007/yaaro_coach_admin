@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { COACH_BACKEND_URL } from "@/lib/api/config";
-import { assignProgramToClient, updateClientProgram } from "@/lib/api/clients";
+import { assignProgramToClient, removeClientProgram, updateClientProgram } from "@/lib/api/clients";
 import type { Program, ProgramRoutine } from "@/features/program-editor/types/program-editor";
 
 async function createProgram(body: { templateId?: string }): Promise<Program> {
@@ -55,6 +55,18 @@ export async function updateClientProgramAction(
   revalidatePath("/clients");
   revalidatePath(`/clients/${clientId}`);
   return program;
+}
+
+export async function removeClientProgramAction(clientId: string): Promise<void> {
+  await removeClientProgram(clientId);
+  revalidatePath("/clients");
+  revalidatePath(`/clients/${clientId}`);
+}
+
+export async function replaceClientProgramAction(clientId: string, sourceProgramId: string): Promise<void> {
+  await assignProgramToClient(clientId, { sourceProgramId, programStartDate: null });
+  revalidatePath("/clients");
+  revalidatePath(`/clients/${clientId}`);
 }
 
 export async function assignProgramToClientsAction(

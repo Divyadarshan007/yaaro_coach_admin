@@ -10,6 +10,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
@@ -22,7 +23,13 @@ import { sidebarNavItems } from "@/navigation/sidebar-items";
 import { cn } from "@/lib/utils";
 import type { CoachProfile } from "@/lib/api/coach";
 
-export function AppSidebar({ coachProfile }: { coachProfile: CoachProfile | null }) {
+export function AppSidebar({
+  coachProfile,
+  badgeCounts,
+}: {
+  coachProfile: CoachProfile | null;
+  badgeCounts?: Partial<Record<string, number>>;
+}) {
   const { state, isMobile, toggleSidebar } = useSidebar();
   const pathname = usePathname();
   const collapsed = state === "collapsed" && !isMobile;
@@ -51,6 +58,7 @@ export function AppSidebar({ coachProfile }: { coachProfile: CoachProfile | null
           {sidebarNavItems.map((item) => {
             const isActive = !item.disabled && pathname === item.href;
             const Icon = item.icon;
+            const badgeCount = badgeCounts?.[item.id];
 
             return (
               <SidebarMenuItem key={item.id}>
@@ -72,6 +80,9 @@ export function AppSidebar({ coachProfile }: { coachProfile: CoachProfile | null
                   <Icon />
                   <span>{item.label}</span>
                 </SidebarMenuButton>
+                {!collapsed && !!badgeCount && (
+                  <SidebarMenuBadge className="bg-background text-foreground">{badgeCount}</SidebarMenuBadge>
+                )}
               </SidebarMenuItem>
             );
           })}

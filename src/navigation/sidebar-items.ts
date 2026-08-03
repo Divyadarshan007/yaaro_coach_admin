@@ -3,7 +3,6 @@ import {
   Dumbbell,
   FolderOpen,
   LayoutGrid,
-  MessageSquare,
   Rocket,
   Settings,
   Users,
@@ -33,8 +32,7 @@ export const sidebarNavItems: NavItem[] = [
     href: "/exercise-library",
     icon: Dumbbell,
   },
-  { id: "chat", label: "Chat", href: "#", icon: MessageSquare, disabled: true },
-  { id: "grow", label: "Grow", href: "#", icon: Rocket, disabled: true },
+  { id: "grow", label: "Grow", href: "/grow", icon: Rocket },
   { id: "settings", label: "Settings", href: "#", icon: Settings, disabled: true },
   { id: "team", label: "Team", href: "#", icon: UsersRound, disabled: true },
 ];

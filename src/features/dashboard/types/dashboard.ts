@@ -1,10 +1,3 @@
-export type OnboardingStep = {
-  id: string;
-  step: number;
-  label: string;
-  href: string;
-};
-
 export type StatCardData = {
   id: string;
   title: string;
@@ -12,7 +5,20 @@ export type StatCardData = {
   href: string;
 };
 
-export type WeeklyChartAxis = {
-  yTicks: number[];
-  weekLabels: string[];
+export type WeeklyActiveClientWeek = {
+  weekStart: string;
+  weekEnd: string;
+  count: number;
+};
+
+export type WeeklyActiveClients = {
+  totalClients: number;
+  weeks: WeeklyActiveClientWeek[];
+};
+
+export type DashboardStats = {
+  totalClients: number;
+  activeClients: number;
+  inactiveClients: number;
+  weeklyActiveClients: WeeklyActiveClients;
 };

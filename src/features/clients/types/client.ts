@@ -32,5 +32,6 @@ export type ClientSummary = {
   avatar: string;
   currentProgram: { id: string; title: string; routineCount?: number } | null;
   programStartDate: string | null;
+  notes: string;
   createdAt: string;
 };

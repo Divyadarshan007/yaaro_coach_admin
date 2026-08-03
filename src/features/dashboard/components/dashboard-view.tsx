@@ -1,5 +1,4 @@
-import type { StatCardData, WeeklyChartAxis } from "@/features/dashboard/types/dashboard";
-import { OnboardingCard } from "@/features/dashboard/components/onboarding-card";
+import type { StatCardData, WeeklyActiveClients } from "@/features/dashboard/types/dashboard";
 import { DashboardGreeting } from "@/features/dashboard/components/dashboard-greeting";
 import { StatCardRow } from "@/features/dashboard/components/stat-card-row";
 import { LatestActivitiesPanel } from "@/features/dashboard/components/latest-activities-panel";
@@ -8,18 +7,17 @@ import { WeeklyActiveClientsPanel } from "@/features/dashboard/components/weekly
 type DashboardViewProps = {
   coachName: string;
   stats: StatCardData[];
-  weeklyChartAxis: WeeklyChartAxis;
+  weeklyActiveClients: WeeklyActiveClients;
 };
 
-export function DashboardView({ coachName, stats, weeklyChartAxis }: DashboardViewProps) {
+export function DashboardView({ coachName, stats, weeklyActiveClients }: DashboardViewProps) {
   return (
     <div className="flex flex-col gap-6">
-      <OnboardingCard />
       <DashboardGreeting name={coachName} />
       <StatCardRow stats={stats} />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <LatestActivitiesPanel />
-        <WeeklyActiveClientsPanel axis={weeklyChartAxis} />
+        <WeeklyActiveClientsPanel data={weeklyActiveClients} />
       </div>
     </div>
   );

@@ -1,34 +1,40 @@
 "use client";
 
 import { Tabs } from "@base-ui/react/tabs";
-import {
-  BarChart3,
-  ClipboardList,
-  Image as ImageIcon,
-  LineChart,
-  Ruler,
-  Settings as SettingsIcon,
-} from "lucide-react";
 import { useState } from "react";
 
+import { ClientAdvancedStatisticsTab } from "@/features/clients/components/detail/client-advanced-statistics-tab";
+import { ClientBodyMeasurementsTab } from "@/features/clients/components/detail/client-body-measurements-tab";
 import { ClientDetailHeader } from "@/features/clients/components/detail/client-detail-header";
+import { ClientExerciseStatisticsTab } from "@/features/clients/components/detail/client-exercise-statistics-tab";
 import { ClientOverviewTab } from "@/features/clients/components/detail/client-overview-tab";
-import { ClientPlaceholderTab } from "@/features/clients/components/detail/client-placeholder-tab";
+import { ClientProgressPicturesTab } from "@/features/clients/components/detail/client-progress-pictures-tab";
+import { ClientSettingsTab } from "@/features/clients/components/detail/client-settings-tab";
+import { ClientWorkoutProgramTab } from "@/features/clients/components/detail/client-workout-program-tab";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
-
-const PLACEHOLDER_TABS = [
-  { value: "workout-program", label: "Workout Program", icon: ClipboardList },
-  { value: "exercise-statistics", label: "Exercise Statistics", icon: BarChart3 },
-  { value: "advanced-statistics", label: "Advanced Statistics", icon: LineChart },
-  { value: "body-measurements", label: "Body Measurements", icon: Ruler },
-  { value: "progress-pictures", label: "Progress Pictures", icon: ImageIcon },
-  { value: "settings", label: "Settings", icon: SettingsIcon },
-] as const;
+import type { ClientMeasurement } from "@/features/clients/types/measurement";
+import type { FeedItem } from "@/features/clients/types/workout-feed";
+import type { ExerciseCatalogEntry } from "@/lib/api/exercises";
+import type { Program } from "@/features/program-editor/types/program-editor";
 
 const tabClassName =
   "relative -mb-px border-b-2 border-transparent px-1 pb-3 text-sm font-medium whitespace-nowrap text-muted-foreground outline-none transition-colors hover:text-foreground data-active:border-primary data-active:text-foreground";
 
-export function ClientDetailView({ client }: { client: ClientDetail }) {
+export function ClientDetailView({
+  client,
+  libraryPrograms,
+  activeProgram,
+  initialFeeds,
+  exerciseCatalog,
+  initialMeasurements,
+}: {
+  client: ClientDetail;
+  libraryPrograms: Program[];
+  activeProgram: Program | null;
+  initialFeeds: FeedItem[];
+  exerciseCatalog: ExerciseCatalogEntry[];
+  initialMeasurements: ClientMeasurement[];
+}) {
   const [activeTab, setActiveTab] = useState<string>("overview");
 
   return (
@@ -40,22 +46,58 @@ export function ClientDetailView({ client }: { client: ClientDetail }) {
           <Tabs.Tab value="overview" className={tabClassName}>
             Overview
           </Tabs.Tab>
-          {PLACEHOLDER_TABS.map((tab) => (
-            <Tabs.Tab key={tab.value} value={tab.value} className={tabClassName}>
-              {tab.label}
-            </Tabs.Tab>
-          ))}
+          <Tabs.Tab value="workout-program" className={tabClassName}>
+            Workout Program
+          </Tabs.Tab>
+          <Tabs.Tab value="exercise-statistics" className={tabClassName}>
+            Exercise Statistics
+          </Tabs.Tab>
+          <Tabs.Tab value="advanced-statistics" className={tabClassName}>
+            Advanced Statistics
+          </Tabs.Tab>
+          <Tabs.Tab value="body-measurements" className={tabClassName}>
+            Body Measurements
+          </Tabs.Tab>
+          <Tabs.Tab value="progress-pictures" className={tabClassName}>
+            Progress Pictures
+          </Tabs.Tab>
+          <Tabs.Tab value="settings" className={tabClassName}>
+            Settings
+          </Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="overview" className="pt-6">
-          <ClientOverviewTab client={client} />
+          <ClientOverviewTab client={client} libraryPrograms={libraryPrograms} />
         </Tabs.Panel>
 
-        {PLACEHOLDER_TABS.map((tab) => (
-          <Tabs.Panel key={tab.value} value={tab.value} className="pt-6">
-            <ClientPlaceholderTab icon={tab.icon} title={tab.label} />
-          </Tabs.Panel>
-        ))}
+        <Tabs.Panel value="workout-program" className="pt-6">
+          <ClientWorkoutProgramTab
+            client={client}
+            libraryPrograms={libraryPrograms}
+            activeProgram={activeProgram}
+            initialFeeds={initialFeeds}
+          />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="exercise-statistics" className="pt-6">
+          <ClientExerciseStatisticsTab catalog={exerciseCatalog} initialFeeds={initialFeeds} />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="advanced-statistics" className="pt-6">
+          <ClientAdvancedStatisticsTab clientId={client.id} />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="body-measurements" className="pt-6">
+          <ClientBodyMeasurementsTab measurements={initialMeasurements} />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="progress-pictures" className="pt-6">
+          <ClientProgressPicturesTab clientId={client.id} measurements={initialMeasurements} />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="settings" className="pt-6">
+          <ClientSettingsTab client={client} />
+        </Tabs.Panel>
       </Tabs.Root>
     </div>
   );

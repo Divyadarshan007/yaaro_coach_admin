@@ -19,19 +19,44 @@ import { Input } from "@/components/ui/input";
 const INVITE_LINK = "https://coach.yaaro.fit/h1gyms/accept";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function AddClientDialog() {
-  const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState("");
+// Uncontrolled by default (self-triggered via the "Add Client" button, as used in
+// clients-toolbar.tsx). Pass open/onOpenChange to drive it externally instead — e.g.
+// Grow's "Invite" action opens it prefilled with a lead's email, with no visible trigger.
+type AddClientDialogProps = {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  defaultEmail?: string;
+};
+
+export function AddClientDialog({
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+  defaultEmail = "",
+}: AddClientDialogProps = {}) {
+  const isControlled = controlledOpen !== undefined;
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
+
+  const [email, setEmail] = useState(defaultEmail);
   const [copied, setCopied] = useState(false);
+
+  // Reset the prefilled email whenever the dialog transitions to open, without a
+  // setState-in-effect cascade — see https://react.dev/learn/you-might-not-need-an-effect.
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) setEmail(defaultEmail);
+  }
 
   const isValidEmail = EMAIL_PATTERN.test(email.trim());
 
   function handleOpenChange(next: boolean) {
-    setOpen(next);
-    if (!next) {
-      setEmail("");
-      setCopied(false);
+    if (isControlled) {
+      controlledOnOpenChange?.(next);
+    } else {
+      setUncontrolledOpen(next);
     }
+    if (!next) setCopied(false);
   }
 
   async function handleCopyLink() {
@@ -42,10 +67,12 @@ export function AddClientDialog() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger render={<Button size="lg" />}>
-        <Plus />
-        Add Client
-      </DialogTrigger>
+      {!isControlled && (
+        <DialogTrigger render={<Button size="lg" />}>
+          <Plus />
+          Add Client
+        </DialogTrigger>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Invite new clients</DialogTitle>

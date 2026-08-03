@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 type EmptyStateProps = {
   icon: LucideIcon;
   title: string;
-  description: string;
+  description: ReactNode;
   action?: ReactNode;
   className?: string;
 };

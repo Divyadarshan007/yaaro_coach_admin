@@ -56,6 +56,8 @@ export type ClientDetail = {
   email: string;
   coach: AvatarInfo;
   coachedSinceLabel: string;
+  coachedSince: string;
+  notes: string;
   workoutProgram: WorkoutProgramSummary | null;
   activities: ActivityItem[];
   duration: StatSummary;

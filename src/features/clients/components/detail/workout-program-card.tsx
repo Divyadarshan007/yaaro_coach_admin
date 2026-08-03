@@ -1,11 +1,20 @@
-import { CalendarRange, MoreVertical } from "lucide-react";
+"use client";
+
+import { CalendarRange } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProgramActionsMenu } from "@/features/clients/components/detail/program-actions-menu";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
+import type { Program } from "@/features/program-editor/types/program-editor";
 
-export function WorkoutProgramCard({ client }: { client: ClientDetail }) {
+export function WorkoutProgramCard({
+  client,
+  libraryPrograms,
+}: {
+  client: ClientDetail;
+  libraryPrograms: Program[];
+}) {
   const { workoutProgram } = client;
 
   if (!workoutProgram) {
@@ -33,9 +42,7 @@ export function WorkoutProgramCard({ client }: { client: ClientDetail }) {
           <Link href={`/clients/${client.id}/program`} className="text-sm text-primary hover:underline">
             Edit program
           </Link>
-          <Button variant="ghost" size="icon-sm" aria-label="Workout program options">
-            <MoreVertical />
-          </Button>
+          <ProgramActionsMenu client={client} libraryPrograms={libraryPrograms} programName={workoutProgram.name} />
         </div>
       </CardHeader>
       <CardContent className="flex items-center gap-3">
