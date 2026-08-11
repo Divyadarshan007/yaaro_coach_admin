@@ -1,4 +1,4 @@
-import { Dumbbell, MessageSquare, MoreVertical } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
@@ -21,14 +21,6 @@ export function ClientDetailHeader({ client }: { client: ClientDetail }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="lg">
-          <Dumbbell />
-          Log Workout
-        </Button>
-        <Button variant="outline" size="lg">
-          <MessageSquare />
-          Send Message
-        </Button>
         <Button variant="ghost" size="icon" aria-label="Client options">
           <MoreVertical />
         </Button>

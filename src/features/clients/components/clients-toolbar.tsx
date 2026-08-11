@@ -8,9 +8,10 @@ import { AddClientDialog } from "@/features/clients/components/add-client-dialog
 type ClientsToolbarProps = {
   search: string;
   onSearchChange: (value: string) => void;
+  coachSlug: string;
 };
 
-export function ClientsToolbar({ search, onSearchChange }: ClientsToolbarProps) {
+export function ClientsToolbar({ search, onSearchChange, coachSlug }: ClientsToolbarProps) {
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
       <div className="relative sm:w-64">
@@ -22,7 +23,7 @@ export function ClientsToolbar({ search, onSearchChange }: ClientsToolbarProps) 
           className="h-9 w-full pl-9"
         />
       </div>
-      <AddClientDialog />
+      <AddClientDialog coachSlug={coachSlug} />
     </div>
   );
 }

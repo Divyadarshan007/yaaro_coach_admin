@@ -39,6 +39,7 @@ export type ProgressPicture = {
   id: string;
   dateLabel: string;
   weightLabel: string;
+  imageUrl: string;
 };
 
 export type WorkoutProgramSummary = {

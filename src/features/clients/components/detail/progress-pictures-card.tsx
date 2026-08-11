@@ -40,8 +40,13 @@ export function ProgressPicturesCard({ pictures }: { pictures: ProgressPicture[]
         <CardTitle>Progress Pictures</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <div className="flex aspect-square items-center justify-center rounded-lg bg-muted">
-          <ImageOff className="size-8 text-muted-foreground" />
+        <div className="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-muted">
+          {picture.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- backend-hosted photo, not worth Next/Image's optimization pipeline
+            <img src={picture.imageUrl} alt={`Progress picture, ${picture.dateLabel}`} className="size-full object-cover" />
+          ) : (
+            <ImageOff className="size-8 text-muted-foreground" />
+          )}
         </div>
         <div className="flex items-center justify-between">
           <Button

@@ -11,7 +11,7 @@ import { AddClientDialog } from "@/features/clients/components/add-client-dialog
 import { declineLeadAction, inviteLeadAction } from "@/features/grow/actions";
 import type { Lead } from "@/features/grow/types/grow";
 
-export function GrowLeadsPanel({ leads }: { leads: Lead[] }) {
+export function GrowLeadsPanel({ leads, coachSlug }: { leads: Lead[]; coachSlug: string }) {
   const [search, setSearch] = useState("");
   const [isPending, startTransition] = useTransition();
   const [invitingLead, setInvitingLead] = useState<Lead | null>(null);
@@ -91,6 +91,7 @@ export function GrowLeadsPanel({ leads }: { leads: Lead[] }) {
           if (!open) setInvitingLead(null);
         }}
         defaultEmail={invitingLead?.email}
+        coachSlug={coachSlug}
       />
     </div>
   );

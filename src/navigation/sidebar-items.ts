@@ -33,6 +33,6 @@ export const sidebarNavItems: NavItem[] = [
     icon: Dumbbell,
   },
   { id: "grow", label: "Grow", href: "/grow", icon: Rocket },
-  { id: "settings", label: "Settings", href: "#", icon: Settings, disabled: true },
+  { id: "settings", label: "Settings", href: "/settings", icon: Settings },
   { id: "team", label: "Team", href: "#", icon: UsersRound, disabled: true },
 ];

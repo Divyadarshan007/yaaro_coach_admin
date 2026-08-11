@@ -4,10 +4,11 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ClientRow } from "@/features/clients/components/client-row";
 import type { Client } from "@/features/clients/types/client";
+import type { Program } from "@/features/program-editor/types/program-editor";
 
 const headerCellClassName = "px-4 py-3 text-xs font-medium tracking-wide text-muted-foreground uppercase";
 
-export function ClientsTable({ clients }: { clients: Client[] }) {
+export function ClientsTable({ clients, libraryPrograms }: { clients: Client[]; libraryPrograms: Program[] }) {
   if (clients.length === 0) {
     return (
       <div className="rounded-xl ring-1 ring-foreground/10">
@@ -35,7 +36,7 @@ export function ClientsTable({ clients }: { clients: Client[] }) {
         </TableHeader>
         <TableBody>
           {clients.map((client) => (
-            <ClientRow key={client.id} client={client} />
+            <ClientRow key={client.id} client={client} libraryPrograms={libraryPrograms} />
           ))}
         </TableBody>
       </Table>

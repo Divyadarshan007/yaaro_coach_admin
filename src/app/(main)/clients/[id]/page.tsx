@@ -3,15 +3,16 @@ import { notFound } from "next/navigation";
 import { ClientDetailView } from "@/features/clients/components/detail/client-detail-view";
 import { getClientDetailMockStats } from "@/features/clients/data/client-detail-mock-data";
 import { avatarFromName } from "@/features/clients/lib/avatar";
+import { buildBodyweightSummary, buildOverviewStats, buildProgressPictures } from "@/features/clients/lib/overview-stats-format";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
-import { getClient, getClientFeeds, getClientMeasurements, getClientProgram } from "@/lib/api/clients";
+import { getClient, getClientAdvancedStats, getClientFeeds, getClientMeasurements, getClientProgram } from "@/lib/api/clients";
 import { getCoachProfile } from "@/lib/api/coach";
 import { getExerciseCatalog } from "@/lib/api/exercises";
 import { getPrograms } from "@/lib/api/programs";
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [summary, coachProfile, libraryPrograms, activeProgram, initialFeeds, exerciseCatalog, initialMeasurements] =
+  const [summary, coachProfile, libraryPrograms, activeProgram, initialFeeds, exerciseCatalog, initialMeasurements, advancedStats] =
     await Promise.all([
       getClient(id),
       getCoachProfile(),
@@ -20,6 +21,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
       getClientFeeds(id, 1),
       getExerciseCatalog(),
       getClientMeasurements(id),
+      getClientAdvancedStats(id, { granularity: "week", range: "1m" }),
     ]);
 
   if (!summary) {
@@ -27,7 +29,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
   }
 
   const coachAvatar = avatarFromName(coachProfile?.name || coachProfile?.email || "Coach", coachProfile?.id ?? "coach");
-  const stats = getClientDetailMockStats(id);
+  // Real workout-log/measurement data (weekly duration+volume+sets, bodyweight, progress
+  // pictures) — only "activities" still falls back to the mock, which is empty for real
+  // clients anyway since no activity-feed model exists yet.
+  const { activities } = getClientDetailMockStats(id);
 
   const client: ClientDetail = {
     id: summary.id,
@@ -50,7 +55,10 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           programStartDate: summary.programStartDate,
         }
       : null,
-    ...stats,
+    activities,
+    ...buildOverviewStats(advancedStats),
+    bodyweight: buildBodyweightSummary(initialMeasurements),
+    progressPictures: buildProgressPictures(initialMeasurements),
   };
 
   return (

@@ -6,8 +6,17 @@ import { ALL_COACHES, ClientsScopeBar } from "@/features/clients/components/clie
 import { ClientsTable } from "@/features/clients/components/clients-table";
 import { ClientsToolbar } from "@/features/clients/components/clients-toolbar";
 import type { Client } from "@/features/clients/types/client";
+import type { Program } from "@/features/program-editor/types/program-editor";
 
-export function ClientsView({ clients }: { clients: Client[] }) {
+export function ClientsView({
+  clients,
+  coachSlug,
+  libraryPrograms,
+}: {
+  clients: Client[];
+  coachSlug: string;
+  libraryPrograms: Program[];
+}) {
   const [search, setSearch] = useState("");
   const [coachFilter, setCoachFilter] = useState(ALL_COACHES);
 
@@ -32,12 +41,12 @@ export function ClientsView({ clients }: { clients: Client[] }) {
           <h1 className="text-xl font-semibold text-foreground">Clients</h1>
           <p className="text-sm text-muted-foreground">Invite and manage your clients</p>
         </div>
-        <ClientsToolbar search={search} onSearchChange={setSearch} />
+        <ClientsToolbar search={search} onSearchChange={setSearch} coachSlug={coachSlug} />
       </div>
 
       <ClientsScopeBar coachFilter={coachFilter} onCoachFilterChange={setCoachFilter} coachNames={coachNames} />
 
-      <ClientsTable clients={filteredClients} />
+      <ClientsTable clients={filteredClients} libraryPrograms={libraryPrograms} />
     </div>
   );
 }

@@ -15,8 +15,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { PUBLIC_APP_URL } from "@/lib/api/config";
 
-const INVITE_LINK = "https://coach.yaaro.fit/h1gyms/accept";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Uncontrolled by default (self-triggered via the "Add Client" button, as used in
@@ -26,12 +26,14 @@ type AddClientDialogProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   defaultEmail?: string;
+  coachSlug?: string;
 };
 
 export function AddClientDialog({
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
   defaultEmail = "",
+  coachSlug = "",
 }: AddClientDialogProps = {}) {
   const isControlled = controlledOpen !== undefined;
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
@@ -49,6 +51,7 @@ export function AddClientDialog({
   }
 
   const isValidEmail = EMAIL_PATTERN.test(email.trim());
+  const inviteLink = `${PUBLIC_APP_URL}/${coachSlug}/accept`;
 
   function handleOpenChange(next: boolean) {
     if (isControlled) {
@@ -60,7 +63,7 @@ export function AddClientDialog({
   }
 
   async function handleCopyLink() {
-    await navigator.clipboard.writeText(INVITE_LINK);
+    await navigator.clipboard.writeText(inviteLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }
@@ -85,7 +88,7 @@ export function AddClientDialog({
 
         <DialogBody>
           <div className="flex items-center gap-2 rounded-lg border border-input px-2.5 py-1.5">
-            <span className="flex-1 truncate text-sm text-muted-foreground">{INVITE_LINK}</span>
+            <span className="flex-1 truncate text-sm text-muted-foreground">{inviteLink}</span>
             <button
               type="button"
               onClick={handleCopyLink}

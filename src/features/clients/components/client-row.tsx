@@ -1,22 +1,22 @@
 "use client";
 
-import { MoreVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { ClientRowActionsMenu } from "@/features/clients/components/client-row-actions-menu";
 import { ClientWeekActivity } from "@/features/clients/components/client-week-activity";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { cn } from "@/lib/utils";
 import type { Client } from "@/features/clients/types/client";
+import type { Program } from "@/features/program-editor/types/program-editor";
 
 const STATUS_LABEL: Record<Client["status"], string> = {
   active: "Active",
   sample: "Sample Client",
 };
 
-export function ClientRow({ client }: { client: Client }) {
+export function ClientRow({ client, libraryPrograms }: { client: Client; libraryPrograms: Program[] }) {
   const router = useRouter();
 
   return (
@@ -59,15 +59,8 @@ export function ClientRow({ client }: { client: Client }) {
         </Badge>
       </TableCell>
 
-      <TableCell className="px-4 py-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Client actions"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <MoreVertical />
-        </Button>
+      <TableCell className="px-4 py-3" onClick={(event) => event.stopPropagation()}>
+        <ClientRowActionsMenu client={client} libraryPrograms={libraryPrograms} />
       </TableCell>
     </TableRow>
   );

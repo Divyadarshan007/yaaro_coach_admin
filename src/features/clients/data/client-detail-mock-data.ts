@@ -96,7 +96,7 @@ const CLIENT_DETAIL_MOCK_STATS: Record<string, ClientDetailMockStats> = {
         { label: "Jul 29", value: 65 },
       ],
     },
-    progressPictures: [{ id: "kapil-p1", dateLabel: "2026-01-25", weightLabel: "30 kg" }],
+    progressPictures: [{ id: "kapil-p1", dateLabel: "2026-01-25", weightLabel: "30 kg", imageUrl: "" }],
   },
   "john-doe": {
     activities: [
@@ -152,7 +152,7 @@ const CLIENT_DETAIL_MOCK_STATS: Record<string, ClientDetailMockStats> = {
         { label: "Jul 29", value: 82 },
       ],
     },
-    progressPictures: [{ id: "bigbites-p1", dateLabel: "2026-07-01", weightLabel: "85 kg" }],
+    progressPictures: [{ id: "bigbites-p1", dateLabel: "2026-07-01", weightLabel: "85 kg", imageUrl: "" }],
   },
 };
 

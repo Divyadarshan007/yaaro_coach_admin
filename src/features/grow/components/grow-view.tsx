@@ -11,7 +11,7 @@ export function GrowView({ slug, leads }: { slug: string; leads: Lead[] }) {
       </div>
 
       <GrowContactFormCard slug={slug} />
-      <GrowLeadsPanel leads={leads} />
+      <GrowLeadsPanel leads={leads} coachSlug={slug} />
     </div>
   );
 }

@@ -13,6 +13,11 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <DashboardView coachName={coachDisplayName} stats={statCards} weeklyActiveClients={stats.weeklyActiveClients} />
+    <DashboardView
+      coachName={coachDisplayName}
+      stats={statCards}
+      weeklyActiveClients={stats.weeklyActiveClients}
+      upcomingBirthdays={stats.upcomingBirthdays}
+    />
   );
 }
