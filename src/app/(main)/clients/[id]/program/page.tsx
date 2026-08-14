@@ -3,13 +3,15 @@ import { notFound } from "next/navigation";
 import { ClientProgramEditorView } from "@/features/program-editor/components/client-program-editor-view";
 import { getClient, getClientProgram } from "@/lib/api/clients";
 import { getMuscleCatalog } from "@/lib/api/muscles";
+import { getRoutines } from "@/lib/api/routines";
 
 export default async function ClientProgramEditorPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [client, program, muscleCatalog] = await Promise.all([
+  const [client, program, muscleCatalog, routines] = await Promise.all([
     getClient(id),
     getClientProgram(id),
     getMuscleCatalog(),
+    getRoutines("mine"),
   ]);
 
   if (!client) {
@@ -22,6 +24,7 @@ export default async function ClientProgramEditorPage({ params }: { params: Prom
       clientName={client.name}
       initialProgram={program}
       muscleCatalog={muscleCatalog}
+      routineLibrary={routines}
     />
   );
 }

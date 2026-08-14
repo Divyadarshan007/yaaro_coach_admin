@@ -1,6 +1,6 @@
 "use client";
 
-import { ClipboardList, LayoutGrid, Plus } from "lucide-react";
+import { ClipboardList, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/empty-state";
 import { createBlankProgramAction } from "@/features/program-editor/actions";
 
-export function ProgramLibraryEmptyState({ onBrowseTemplates }: { onBrowseTemplates: () => void }) {
+export function ProgramLibraryEmptyState() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -24,18 +24,12 @@ export function ProgramLibraryEmptyState({ onBrowseTemplates }: { onBrowseTempla
       className="min-h-105 justify-center rounded-xl bg-card ring-1 ring-foreground/10"
       icon={ClipboardList}
       title="No Workout Programs"
-      description="Create a program yourself, or start with a pre-made Yaaro Coach template."
+      description="Create your own workout program to get started."
       action={
-        <div className="flex w-full max-w-xs flex-col gap-2">
-          <Button size="lg" className="w-full" onClick={handleCreateProgram} disabled={isPending}>
-            <Plus />
-            Create Workout Program
-          </Button>
-          <Button variant="outline" size="lg" className="w-full" onClick={onBrowseTemplates}>
-            <LayoutGrid />
-            Browse Templates
-          </Button>
-        </div>
+        <Button size="lg" className="w-full max-w-xs" onClick={handleCreateProgram} disabled={isPending}>
+          <Plus />
+          Create Workout Program
+        </Button>
       }
     />
   );

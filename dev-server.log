@@ -1,0 +1,29 @@
+
+> yaaro_coach@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.12 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://10.113.74.239:3000
+- Environments: .env.local
+✓ Ready in 4.8s
+- Experiments (use with caution):
+  · serverActions
+
+ GET /login 200 in 4.6s (next.js: 2.6s, proxy.ts: 669ms, application-code: 1364ms)
+ GET /login 200 in 662ms (next.js: 224ms, proxy.ts: 16ms, application-code: 423ms)
+ POST /api/auth/google 401 in 4.7s (next.js: 345ms, application-code: 4.3s)
+ POST /api/auth/google 200 in 714ms (next.js: 8ms, application-code: 706ms)
+ GET /dashboard 200 in 916ms (next.js: 156ms, proxy.ts: 15ms, application-code: 744ms)
+○ Compiling /team ...
+ GET /team 200 in 11.6s (next.js: 10.3s, proxy.ts: 354ms, application-code: 966ms)
+ POST /team 200 in 1201ms (next.js: 46ms, proxy.ts: 31ms, application-code: 1123ms)
+  └─ ƒ inviteTeamMemberAction("invite-test@example.com") in 369ms src/features/team/actions.ts
+ GET /settings 200 in 540ms (next.js: 62ms, proxy.ts: 11ms, application-code: 468ms)
+✓ Finished filesystem cache database compaction in 10.8s
+ GET /team 200 in 451ms (next.js: 9ms, proxy.ts: 6ms, application-code: 437ms)
+ POST /team 200 in 794ms (next.js: 14ms, proxy.ts: 13ms, application-code: 767ms)
+  └─ ƒ inviteTeamMemberAction("invite-test@example.com") in 343ms src/features/team/actions.ts
+ GET /dashboard 200 in 1194ms (next.js: 189ms, proxy.ts: 7ms, application-code: 998ms)
+ GET /team 200 in 430ms (next.js: 10ms, proxy.ts: 5ms, application-code: 415ms)
+ GET /exercise-library 200 in 1142ms (next.js: 91ms, proxy.ts: 5ms, application-code: 1045ms)

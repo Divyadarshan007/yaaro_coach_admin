@@ -1,9 +1,12 @@
-import type { ProgramExercise } from "@/features/program-editor/types/program-editor";
+import { useExerciseCatalogEntry } from "@/lib/exercise-catalog-store";
+import type { RoutineExercise } from "@/features/program-editor/types/program-editor";
 
-export function ProgramExerciseRow({ exercise }: { exercise: ProgramExercise }) {
+export function ProgramExerciseRow({ exercise }: { exercise: RoutineExercise }) {
+  const catalogEntry = useExerciseCatalogEntry(exercise.exerciseId);
+
   return (
     <p className="text-sm text-muted-foreground">
-      {exercise.sets.length}× {exercise.name}
+      {exercise.set.length}× {catalogEntry?.name ?? "Exercise"}
     </p>
   );
 }

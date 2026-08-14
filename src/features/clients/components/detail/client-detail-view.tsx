@@ -16,6 +16,7 @@ import type { ClientMeasurement } from "@/features/clients/types/measurement";
 import type { FeedItem } from "@/features/clients/types/workout-feed";
 import type { ExerciseCatalogEntry } from "@/lib/api/exercises";
 import type { Program } from "@/features/program-editor/types/program-editor";
+import type { TeamMember } from "@/features/team/types/team";
 
 const tabClassName =
   "relative -mb-px border-b-2 border-transparent px-1 pb-3 text-sm font-medium whitespace-nowrap text-muted-foreground outline-none transition-colors hover:text-foreground data-active:border-primary data-active:text-foreground";
@@ -27,6 +28,7 @@ export function ClientDetailView({
   initialFeeds,
   exerciseCatalog,
   initialMeasurements,
+  teamMembers,
 }: {
   client: ClientDetail;
   libraryPrograms: Program[];
@@ -34,6 +36,7 @@ export function ClientDetailView({
   initialFeeds: FeedItem[];
   exerciseCatalog: ExerciseCatalogEntry[];
   initialMeasurements: ClientMeasurement[];
+  teamMembers: TeamMember[];
 }) {
   const [activeTab, setActiveTab] = useState<string>("overview");
 
@@ -67,7 +70,7 @@ export function ClientDetailView({
         </Tabs.List>
 
         <Tabs.Panel value="overview" className="pt-6">
-          <ClientOverviewTab client={client} libraryPrograms={libraryPrograms} />
+          <ClientOverviewTab client={client} libraryPrograms={libraryPrograms} teamMembers={teamMembers} />
         </Tabs.Panel>
 
         <Tabs.Panel value="workout-program" className="pt-6">

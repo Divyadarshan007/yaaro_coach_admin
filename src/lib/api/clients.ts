@@ -4,7 +4,7 @@ import type { AdvancedStatsGranularity, AdvancedStatsRange, ClientAdvancedStats 
 import type { ClientSummary } from "@/features/clients/types/client";
 import type { ClientMeasurement, MeasurementInput } from "@/features/clients/types/measurement";
 import type { FeedItem } from "@/features/clients/types/workout-feed";
-import type { Program, ProgramRoutine } from "@/features/program-editor/types/program-editor";
+import type { Program, ProgramPatch } from "@/features/program-editor/types/program-editor";
 
 export async function getClients(): Promise<ClientSummary[]> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients`, {
@@ -43,6 +43,18 @@ export async function removeClient(clientId: string): Promise<void> {
   if (!res.ok) throw new Error(`Failed to remove client ${clientId} (${res.status})`);
 }
 
+export async function reassignClientCoach(clientId: string, coachId: string): Promise<void> {
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/coach`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    body: JSON.stringify({ coachId }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.message || `Failed to reassign client ${clientId} (${res.status})`);
+  }
+}
+
 export async function assignProgramToClient(
   clientId: string,
   body: { sourceProgramId: string; programStartDate?: string | null }
@@ -71,13 +83,11 @@ export async function getClientProgram(clientId: string): Promise<Program | null
   });
   if (res.status === 404 || res.status === 400) return null;
   if (!res.ok) throw new Error(`Failed to fetch client ${clientId}'s program (${res.status})`);
-  return res.json();
+  const program: Program = await res.json();
+  return program.image?.startsWith("/") ? { ...program, image: `${COACH_BACKEND_URL}${program.image}` } : program;
 }
 
-export async function updateClientProgram(
-  clientId: string,
-  patch: Partial<{ title: string; duration: string; note: string; routines: ProgramRoutine[] }>
-): Promise<Program> {
+export async function updateClientProgram(clientId: string, patch: ProgramPatch): Promise<Program> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/program`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },

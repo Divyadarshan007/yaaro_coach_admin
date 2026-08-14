@@ -1,12 +1,10 @@
 import { buildMuscleLookup, getDistinctMuscleGroups, type MuscleCatalogEntry } from "@/lib/muscle-groups";
-import type {
-  MuscleDistributionAxis,
-  MuscleGroupSetCount,
-  Program,
-} from "@/features/program-editor/types/program-editor";
+import type { ExerciseCatalogEntry } from "@/lib/api/exercises";
+import type { MuscleDistributionAxis, MuscleGroupSetCount, Routine } from "@/features/program-editor/types/program-editor";
 
 export function computeProgramSummary(
-  program: Program,
+  routines: Routine[],
+  exerciseCatalogById: Map<string, ExerciseCatalogEntry>,
   muscleCatalog: MuscleCatalogEntry[]
 ): {
   totalExercises: number;
@@ -14,20 +12,21 @@ export function computeProgramSummary(
   distributionAxes: MuscleDistributionAxis[];
   muscleGroupSetCounts: MuscleGroupSetCount[];
 } {
-  const exercises = program.routines.flatMap((routine) => routine.exercises);
+  const exercises = routines.flatMap((routine) => routine.exercises);
   const totalExercises = exercises.length;
-  const totalSets = exercises.reduce((sum, exercise) => sum + exercise.sets.length, 0);
+  const totalSets = exercises.reduce((sum, exercise) => sum + exercise.set.length, 0);
   const muscleLookup = buildMuscleLookup(muscleCatalog);
 
   const setsByMuscle = new Map<string, number>();
   const setsByGroup = new Map<string, number>();
   for (const exercise of exercises) {
-    if (!exercise.muscleId) continue;
-    setsByMuscle.set(exercise.muscleId, (setsByMuscle.get(exercise.muscleId) ?? 0) + exercise.sets.length);
+    const muscleId = exerciseCatalogById.get(exercise.exerciseId)?.muscleId?._id;
+    if (!muscleId) continue;
+    setsByMuscle.set(muscleId, (setsByMuscle.get(muscleId) ?? 0) + exercise.set.length);
 
-    const groupId = muscleLookup[exercise.muscleId]?.muscleGroupId;
+    const groupId = muscleLookup[muscleId]?.muscleGroupId;
     if (groupId) {
-      setsByGroup.set(groupId, (setsByGroup.get(groupId) ?? 0) + exercise.sets.length);
+      setsByGroup.set(groupId, (setsByGroup.get(groupId) ?? 0) + exercise.set.length);
     }
   }
 

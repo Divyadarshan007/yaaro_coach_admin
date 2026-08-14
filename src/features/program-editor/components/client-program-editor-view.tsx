@@ -8,7 +8,8 @@ import { ProgramRoutinesSection } from "@/features/program-editor/components/pro
 import { ProgramSummaryPanel } from "@/features/program-editor/components/program-summary-panel";
 import { updateClientProgramAction } from "@/features/program-editor/actions";
 import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
-import type { Program } from "@/features/program-editor/types/program-editor";
+import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
+import type { Program, Routine } from "@/features/program-editor/types/program-editor";
 import type { MuscleCatalogEntry } from "@/lib/muscle-groups";
 
 export function ClientProgramEditorView({
@@ -16,14 +17,17 @@ export function ClientProgramEditorView({
   clientName,
   initialProgram,
   muscleCatalog,
+  routineLibrary,
 }: {
   clientId: string;
   clientName: string;
   initialProgram: Program | null;
   muscleCatalog: MuscleCatalogEntry[];
+  routineLibrary: Routine[];
 }) {
   const upsertProgram = useMyProgramsStore((state) => state.upsertProgram);
   const registerPersistAction = useMyProgramsStore((state) => state.registerPersistAction);
+  const hydrateRoutines = useMyRoutinesStore((state) => state.hydrateRoutines);
   const program = useMyProgramsStore((state) =>
     initialProgram ? state.getProgram(initialProgram.id) : undefined
   );
@@ -34,7 +38,8 @@ export function ClientProgramEditorView({
     hasHydrated.current = true;
     registerPersistAction(initialProgram.id, (_id, patch) => updateClientProgramAction(clientId, patch));
     upsertProgram(initialProgram);
-  }, [initialProgram, clientId, upsertProgram, registerPersistAction]);
+    hydrateRoutines(routineLibrary);
+  }, [initialProgram, clientId, upsertProgram, registerPersistAction, hydrateRoutines, routineLibrary]);
 
   const resolvedProgram = program ?? initialProgram ?? undefined;
 

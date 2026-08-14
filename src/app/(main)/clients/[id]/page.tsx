@@ -9,10 +9,11 @@ import { getClient, getClientAdvancedStats, getClientFeeds, getClientMeasurement
 import { getCoachProfile } from "@/lib/api/coach";
 import { getExerciseCatalog } from "@/lib/api/exercises";
 import { getPrograms } from "@/lib/api/programs";
+import { getTeam } from "@/lib/api/team";
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [summary, coachProfile, libraryPrograms, activeProgram, initialFeeds, exerciseCatalog, initialMeasurements, advancedStats] =
+  const [summary, coachProfile, libraryPrograms, activeProgram, initialFeeds, exerciseCatalog, initialMeasurements, advancedStats, team] =
     await Promise.all([
       getClient(id),
       getCoachProfile(),
@@ -22,7 +23,12 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
       getExerciseCatalog(),
       getClientMeasurements(id),
       getClientAdvancedStats(id, { granularity: "week", range: "1m" }),
+      getTeam(),
     ]);
+
+  // Only other active teammates can be reassigned to — "Change Coach" reassigns away from
+  // whoever is currently viewing this client, so they're excluded from their own picker.
+  const reassignableTeamMembers = team.members.filter((member) => member.status === "active" && !member.isMe);
 
   if (!summary) {
     notFound();
@@ -69,6 +75,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
       initialFeeds={initialFeeds}
       exerciseCatalog={exerciseCatalog}
       initialMeasurements={initialMeasurements}
+      teamMembers={reassignableTeamMembers}
     />
   );
 }

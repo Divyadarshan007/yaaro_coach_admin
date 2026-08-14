@@ -15,33 +15,70 @@ export type MuscleGroupSetCount = {
   sets: number;
 };
 
-export type ProgramExerciseSet = {
-  lbs: number | null;
-  reps: number | null;
+export type Visibility = "public" | "private";
+
+export type ProgramLevel = "beginner" | "intermediate" | "advanced";
+export type ProgramGoal = "muscleGain" | "strength" | "weightLose";
+export type ProgramEquipment = "gym" | "dumbbells" | "none";
+
+export type ExerciseAction = {
+  key: string;
 };
 
-export type ProgramExercise = {
-  id: string;
-  sets: ProgramExerciseSet[];
-  name: string;
-  note: string;
-  rest: string;
-  actions: string[];
-  muscleId: string | null;
+// `type` is intentionally a free-form string, not a closed union — new metric types
+// (duration, distance, RPE, ...) shouldn't require a frontend type change either.
+export type ExerciseMetric = {
+  type: string;
+  value: number;
 };
 
-export type ProgramRoutine = {
+export type ExerciseSetEntry = {
+  metrics: ExerciseMetric[];
+};
+
+export type RoutineExercise = {
   id: string;
-  name: string;
-  note: string;
-  exercises: ProgramExercise[];
+  exerciseId: string;
+  notes: string;
+  restSeconds: number;
+  actions: ExerciseAction[];
+  set: ExerciseSetEntry[];
+};
+
+export type Routine = {
+  id: string;
+  title: string;
+  notes: string;
+  createdById: string;
+  visibility: Visibility;
+  exercises: RoutineExercise[];
 };
 
 export type Program = {
   id: string;
-  templateId: string | null;
   title: string;
+  notes: string;
+  image: string;
   duration: string;
-  note: string;
-  routines: ProgramRoutine[];
+  level: ProgramLevel | null;
+  goal: ProgramGoal | null;
+  equipment: ProgramEquipment | null;
+  createdById: string;
+  visibility: Visibility;
+  routineIds: string[];
+  isFeatured: boolean;
+  // Server-incremented only (cloned via "Add to My Library" or assigned to a client) —
+  // never sent in a write payload.
+  clonedCount: number;
+  // Populated by the backend on read responses (GET/PATCH) — absent on plain write payloads.
+  routines?: Routine[];
 };
+
+export type ProgramPatch = Partial<
+  Pick<
+    Program,
+    "title" | "notes" | "image" | "duration" | "level" | "goal" | "equipment" | "visibility" | "routineIds" | "isFeatured"
+  >
+>;
+
+export type RoutinePatch = Partial<Pick<Routine, "title" | "notes" | "visibility" | "exercises">>;

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AddRoutineDialog } from "@/features/program-editor/components/add-routine-dialog";
 import { ProgramRoutineCard } from "@/features/program-editor/components/program-routine-card";
+import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
 import type { Program } from "@/features/program-editor/types/program-editor";
 
 export function ProgramRoutinesSection({
@@ -16,6 +17,10 @@ export function ProgramRoutinesSection({
   basePath?: string;
 }) {
   const [addRoutineOpen, setAddRoutineOpen] = useState(false);
+  const routines = useMyRoutinesStore((state) => state.routines);
+  const programRoutines = program.routineIds
+    .map((id) => routines.find((routine) => routine.id === id))
+    .filter((routine) => routine !== undefined);
 
   return (
     <div className="flex flex-col gap-4">
@@ -23,7 +28,7 @@ export function ProgramRoutinesSection({
         <div className="flex items-center gap-2">
           <h2 className="text-base font-semibold text-foreground">Routines</h2>
           <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-muted px-1.5 text-xs font-medium text-muted-foreground">
-            {program.routines.length}
+            {program.routineIds.length}
           </span>
         </div>
         <Button size="lg" onClick={() => setAddRoutineOpen(true)}>
@@ -32,7 +37,7 @@ export function ProgramRoutinesSection({
         </Button>
       </div>
 
-      {program.routines.length === 0 ? (
+      {programRoutines.length === 0 ? (
         <div className="flex min-h-80 flex-col items-center justify-center gap-3 rounded-xl bg-card p-6 text-center ring-1 ring-foreground/10">
           <div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
             <Dumbbell className="size-6" />
@@ -48,7 +53,7 @@ export function ProgramRoutinesSection({
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {program.routines.map((routine) => (
+          {programRoutines.map((routine) => (
             <ProgramRoutineCard key={routine.id} programId={program.id} routine={routine} basePath={basePath} />
           ))}
         </div>

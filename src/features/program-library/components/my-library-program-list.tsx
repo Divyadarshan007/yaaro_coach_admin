@@ -18,8 +18,8 @@ export function MyLibraryProgramList() {
         <ProgramCard
           key={program.id}
           title={program.title}
-          description={program.note}
-          workouts={program.routines.map((routine) => routine.name)}
+          description={program.notes}
+          workouts={(program.routines ?? []).map((routine) => routine.title)}
           onClick={() => router.push(`/program/${program.id}`)}
           action={
             <Button variant="outline" size="lg" onClick={() => removeProgram(program.id)}>

@@ -1,9 +1,15 @@
 import { ProgramLibraryView } from "@/features/program-library/components/program-library-view";
-import { getProgramTemplates } from "@/lib/api/program-templates";
 import { getPrograms } from "@/lib/api/programs";
+import { getRoutines } from "@/lib/api/routines";
 
 export default async function ProgramLibraryPage() {
-  const [templates, programs] = await Promise.all([getProgramTemplates(), getPrograms()]);
+  const [programs, routines, explorePrograms] = await Promise.all([
+    getPrograms("mine"),
+    getRoutines("mine"),
+    getPrograms("explore"),
+  ]);
 
-  return <ProgramLibraryView templates={templates} initialPrograms={programs} />;
+  return (
+    <ProgramLibraryView initialPrograms={programs} initialRoutines={routines} explorePrograms={explorePrograms} />
+  );
 }

@@ -100,12 +100,12 @@ export function ReplaceProgramDialog({
                   <div className="flex flex-col gap-1">
                     <span className="text-sm font-semibold text-foreground">{program.title}</span>
                     <div className="flex flex-wrap gap-1">
-                      {program.routines.map((routine) => (
+                      {(program.routines ?? []).map((routine) => (
                         <span
                           key={routine.id}
                           className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
                         >
-                          {routine.name}
+                          {routine.title}
                         </span>
                       ))}
                     </div>
@@ -119,7 +119,7 @@ export function ReplaceProgramDialog({
               {selectedProgram ? (
                 <>
                   <p className="text-sm font-medium text-foreground">{selectedProgram.title}</p>
-                  <p className="text-sm text-muted-foreground">{selectedProgram.routines.length} routines</p>
+                  <p className="text-sm text-muted-foreground">{selectedProgram.routineIds.length} routines</p>
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground">Select a Program</p>

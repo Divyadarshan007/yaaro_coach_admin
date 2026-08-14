@@ -7,44 +7,39 @@ import { ExercisePickerPanel } from "@/features/routine-editor/components/exerci
 import { RoutineDetailsForm } from "@/features/routine-editor/components/routine-details-form";
 import { ClientRoutineEditorHeader } from "@/features/routine-editor/components/client-routine-editor-header";
 import { RoutineExerciseCard } from "@/features/routine-editor/components/routine-exercise-card";
-import { updateClientProgramAction } from "@/features/program-editor/actions";
-import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
-import type { Program } from "@/features/program-editor/types/program-editor";
+import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
+import type { Routine } from "@/features/program-editor/types/program-editor";
 import type { ExerciseCatalogEntry } from "@/lib/api/exercises";
 
 export function ClientRoutineEditorView({
   clientId,
   clientName,
-  routineId,
-  initialProgram,
+  programTitle,
+  initialRoutine,
   exerciseCatalog,
 }: {
   clientId: string;
   clientName: string;
-  routineId: string;
-  initialProgram: Program | null;
+  programTitle: string;
+  initialRoutine: Routine | null;
   exerciseCatalog: ExerciseCatalogEntry[];
 }) {
-  const upsertProgram = useMyProgramsStore((state) => state.upsertProgram);
-  const registerPersistAction = useMyProgramsStore((state) => state.registerPersistAction);
-  const addExercise = useMyProgramsStore((state) => state.addExercise);
-  const program = useMyProgramsStore((state) => (initialProgram ? state.getProgram(initialProgram.id) : undefined));
+  const upsertRoutine = useMyRoutinesStore((state) => state.upsertRoutine);
+  const addExercise = useMyRoutinesStore((state) => state.addExercise);
+  const routine = useMyRoutinesStore((state) => (initialRoutine ? state.getRoutine(initialRoutine.id) : undefined));
   const hasHydrated = useRef(false);
 
   useEffect(() => {
-    if (hasHydrated.current || !initialProgram) return;
+    if (hasHydrated.current || !initialRoutine) return;
     hasHydrated.current = true;
-    registerPersistAction(initialProgram.id, (_id, patch) => updateClientProgramAction(clientId, patch));
-    // Same not-yet-persisted-routine guard as RoutineEditorView (see that file for why).
-    if (!useMyProgramsStore.getState().getProgram(initialProgram.id)) {
-      upsertProgram(initialProgram);
+    if (!useMyRoutinesStore.getState().getRoutine(initialRoutine.id)) {
+      upsertRoutine(initialRoutine);
     }
-  }, [initialProgram, clientId, upsertProgram, registerPersistAction]);
+  }, [initialRoutine, upsertRoutine]);
 
-  const resolvedProgram = program ?? initialProgram ?? undefined;
-  const routine = resolvedProgram?.routines.find((candidate) => candidate.id === routineId);
+  const resolvedRoutine = routine ?? initialRoutine ?? undefined;
 
-  if (!resolvedProgram || !routine) {
+  if (!resolvedRoutine) {
     return (
       <div className="flex min-h-80 items-center justify-center text-sm text-muted-foreground">
         Routine not found.
@@ -54,13 +49,13 @@ export function ClientRoutineEditorView({
 
   return (
     <div className="flex flex-col gap-6 lg:h-full lg:min-h-0">
-      <ClientRoutineEditorHeader clientId={clientId} clientName={clientName} programTitle={resolvedProgram.title} />
+      <ClientRoutineEditorHeader clientId={clientId} clientName={clientName} programTitle={programTitle} />
 
       <div className="flex flex-col gap-6 lg:min-h-0 lg:flex-1 lg:flex-row lg:items-stretch">
         <div className="flex min-w-0 flex-1 flex-col gap-4 lg:min-h-0 lg:overflow-y-auto lg:pr-1">
-          <RoutineDetailsForm programId={resolvedProgram.id} routine={routine} />
+          <RoutineDetailsForm routine={resolvedRoutine} />
 
-          {routine.exercises.length === 0 ? (
+          {resolvedRoutine.exercises.length === 0 ? (
             <div className="flex min-h-64 flex-col items-center justify-center gap-2 rounded-xl bg-card p-6 text-center ring-1 ring-foreground/10">
               <Dumbbell className="size-6 text-muted-foreground" />
               <h3 className="text-base font-semibold text-foreground">No Exercises</h3>
@@ -70,13 +65,8 @@ export function ClientRoutineEditorView({
             </div>
           ) : (
             <div className="flex flex-col gap-4">
-              {routine.exercises.map((exercise) => (
-                <RoutineExerciseCard
-                  key={exercise.id}
-                  programId={resolvedProgram.id}
-                  routineId={routine.id}
-                  exercise={exercise}
-                />
+              {resolvedRoutine.exercises.map((exercise) => (
+                <RoutineExerciseCard key={exercise.id} routineId={resolvedRoutine.id} exercise={exercise} />
               ))}
             </div>
           )}
@@ -86,11 +76,13 @@ export function ClientRoutineEditorView({
           <ExercisePickerPanel
             catalog={exerciseCatalog}
             onAddExercise={(exercise) =>
-              addExercise(resolvedProgram.id, routine.id, {
-                name: exercise.name,
-                muscleId: exercise.muscleId?._id ?? null,
-                actions: exercise.exerciseTypeId?.action?.length ? exercise.exerciseTypeId.action : ["KG", "REPS"],
-              })
+              addExercise(
+                resolvedRoutine.id,
+                exercise._id,
+                (exercise.exerciseTypeId?.action?.length ? exercise.exerciseTypeId.action : ["KG", "REPS"]).map(
+                  (key) => ({ key })
+                )
+              )
             }
           />
         </div>

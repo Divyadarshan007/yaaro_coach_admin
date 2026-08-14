@@ -7,7 +7,8 @@ import { ProgramEditorHeader } from "@/features/program-editor/components/progra
 import { ProgramRoutinesSection } from "@/features/program-editor/components/program-routines-section";
 import { ProgramSummaryPanel } from "@/features/program-editor/components/program-summary-panel";
 import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
-import type { Program } from "@/features/program-editor/types/program-editor";
+import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
+import type { Program, Routine } from "@/features/program-editor/types/program-editor";
 import type { MuscleCatalogEntry } from "@/lib/muscle-groups";
 import type { ClientSummary } from "@/features/clients/types/client";
 
@@ -15,22 +16,26 @@ export function ProgramEditorView({
   initialProgram,
   muscleCatalog,
   clients,
+  initialRoutines,
 }: {
   initialProgram: Program | null;
   muscleCatalog: MuscleCatalogEntry[];
   clients: ClientSummary[];
+  initialRoutines: Routine[];
 }) {
   const upsertProgram = useMyProgramsStore((state) => state.upsertProgram);
   const program = useMyProgramsStore((state) =>
     initialProgram ? state.getProgram(initialProgram.id) : undefined
   );
+  const hydrateRoutines = useMyRoutinesStore((state) => state.hydrateRoutines);
   const hasHydrated = useRef(false);
 
   useEffect(() => {
     if (hasHydrated.current || !initialProgram) return;
     hasHydrated.current = true;
     upsertProgram(initialProgram);
-  }, [initialProgram, upsertProgram]);
+    hydrateRoutines(initialRoutines);
+  }, [initialProgram, upsertProgram, initialRoutines, hydrateRoutines]);
 
   const resolvedProgram = program ?? initialProgram ?? undefined;
 

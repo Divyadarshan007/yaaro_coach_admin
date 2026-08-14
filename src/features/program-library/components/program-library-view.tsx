@@ -3,36 +3,44 @@
 import { Tabs } from "@base-ui/react/tabs";
 import { useEffect, useRef, useState } from "react";
 
-import { YaaroCoachLibraryPanel } from "@/features/program-library/components/yaaro-coach-library-panel";
+import { ExploreEmptyState } from "@/features/program-library/components/explore-empty-state";
+import { ExploreProgramList } from "@/features/program-library/components/explore-program-list";
 import { MyLibraryProgramList } from "@/features/program-library/components/my-library-program-list";
+import { MyRoutinesList } from "@/features/program-library/components/my-routines-list";
 import { ProgramLibraryEmptyState } from "@/features/program-library/components/program-library-empty-state";
+import { RoutineLibraryEmptyState } from "@/features/program-library/components/routine-library-empty-state";
 import { ProgramLibraryToolbar } from "@/features/program-library/components/program-library-toolbar";
-import type { YaaroCoachProgram } from "@/features/program-library/types/yaaro-coach-library";
 import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
-import type { Program } from "@/features/program-editor/types/program-editor";
+import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
+import type { Program, Routine } from "@/features/program-editor/types/program-editor";
 
-type LibraryTab = "my-library" | "yaaro-coach-library";
+type LibraryTab = "my-library" | "my-routines" | "explore";
 
 const tabClassName =
   "relative -mb-px border-b-2 border-transparent px-1 pb-3 text-sm font-medium whitespace-nowrap text-muted-foreground outline-none transition-colors hover:text-foreground data-active:border-primary data-active:text-foreground";
 
 export function ProgramLibraryView({
-  templates,
   initialPrograms,
+  initialRoutines,
+  explorePrograms,
 }: {
-  templates: YaaroCoachProgram[];
   initialPrograms: Program[];
+  initialRoutines: Routine[];
+  explorePrograms: Program[];
 }) {
   const [activeTab, setActiveTab] = useState<LibraryTab>("my-library");
   const hydratePrograms = useMyProgramsStore((state) => state.hydratePrograms);
-  const hasAddedPrograms = useMyProgramsStore((state) => state.programs.length > 0);
+  const hasPrograms = useMyProgramsStore((state) => state.programs.length > 0);
+  const hydrateRoutines = useMyRoutinesStore((state) => state.hydrateRoutines);
+  const hasRoutines = useMyRoutinesStore((state) => state.routines.length > 0);
   const hasHydrated = useRef(false);
 
   useEffect(() => {
     if (hasHydrated.current) return;
     hasHydrated.current = true;
     hydratePrograms(initialPrograms);
-  }, [hydratePrograms, initialPrograms]);
+    hydrateRoutines(initialRoutines);
+  }, [hydratePrograms, initialPrograms, hydrateRoutines, initialRoutines]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -46,22 +54,25 @@ export function ProgramLibraryView({
           <Tabs.Tab value="my-library" className={tabClassName}>
             My Library
           </Tabs.Tab>
-          <Tabs.Tab value="yaaro-coach-library" className={tabClassName}>
-            Yaaro Coach Library
+          <Tabs.Tab value="my-routines" className={tabClassName}>
+            My Routines
+          </Tabs.Tab>
+          <Tabs.Tab value="explore" className={tabClassName}>
+            Explore
           </Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="my-library" className="flex flex-col gap-4 pt-6">
           <ProgramLibraryToolbar />
-          {hasAddedPrograms ? (
-            <MyLibraryProgramList />
-          ) : (
-            <ProgramLibraryEmptyState onBrowseTemplates={() => setActiveTab("yaaro-coach-library")} />
-          )}
+          {hasPrograms ? <MyLibraryProgramList /> : <ProgramLibraryEmptyState />}
         </Tabs.Panel>
 
-        <Tabs.Panel value="yaaro-coach-library" className="pt-6">
-          <YaaroCoachLibraryPanel templates={templates} />
+        <Tabs.Panel value="my-routines" className="flex flex-col gap-4 pt-6">
+          {hasRoutines ? <MyRoutinesList /> : <RoutineLibraryEmptyState />}
+        </Tabs.Panel>
+
+        <Tabs.Panel value="explore" className="flex flex-col gap-4 pt-6">
+          {explorePrograms.length > 0 ? <ExploreProgramList programs={explorePrograms} /> : <ExploreEmptyState />}
         </Tabs.Panel>
       </Tabs.Root>
     </div>

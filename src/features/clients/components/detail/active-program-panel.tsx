@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ProgramActionsMenu } from "@/features/clients/components/detail/program-actions-menu";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
-import type { Program, ProgramRoutine } from "@/features/program-editor/types/program-editor";
+import type { Program, Routine } from "@/features/program-editor/types/program-editor";
+import { useExerciseCatalogStore } from "@/lib/exercise-catalog-store";
 
 const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
 
@@ -33,9 +34,10 @@ function computeWeekLabel(duration: string, programStartDate: string | null): st
   return `Week ${currentWeek} out of ${totalWeeks}`;
 }
 
-function routineSummary(routine: ProgramRoutine): string {
+function routineSummary(routine: Routine): string {
+  const exerciseCatalogById = useExerciseCatalogStore.getState().byId;
   return routine.exercises
-    .map((exercise) => `${exercise.sets.length} × ${exercise.name}`)
+    .map((exercise) => `${exercise.set.length} × ${exerciseCatalogById.get(exercise.exerciseId)?.name ?? "Exercise"}`)
     .join(", ");
 }
 
@@ -81,9 +83,9 @@ export function ActiveProgramPanel({
           <ProgramActionsMenu client={client} libraryPrograms={libraryPrograms} programName={activeProgram.title} />
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          {activeProgram.routines.map((routine) => (
+          {(activeProgram.routines ?? []).map((routine) => (
             <div key={routine.id} className="flex flex-col gap-1">
-              <p className="text-sm font-medium text-foreground">{routine.name}</p>
+              <p className="text-sm font-medium text-foreground">{routine.title}</p>
               <p className="text-sm text-muted-foreground">{routineSummary(routine)}</p>
             </div>
           ))}

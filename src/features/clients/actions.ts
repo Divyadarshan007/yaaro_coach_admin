@@ -7,6 +7,7 @@ import {
   createClientMeasurement,
   getClientAdvancedStats,
   getClientFeeds,
+  reassignClientCoach,
   removeClient,
   updateClientNotes,
   uploadClientMeasurementImage,
@@ -33,6 +34,14 @@ export async function updateClientNotesAction(clientId: string, notes: string): 
 
 export async function removeClientAction(clientId: string): Promise<void> {
   await removeClient(clientId);
+  revalidatePath("/clients");
+  redirect("/clients");
+}
+
+// Reassigning hands off the requester's own access to the client (see reassignCoach's
+// backend doc comment), so this redirects away the same way removeClientAction does.
+export async function reassignClientCoachAction(clientId: string, coachId: string): Promise<void> {
+  await reassignClientCoach(clientId, coachId);
   revalidatePath("/clients");
   redirect("/clients");
 }

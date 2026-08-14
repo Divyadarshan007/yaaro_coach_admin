@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreVertical, Trash2 } from "lucide-react";
+import { MoreVertical, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from "@/components/ui/input";
 import { ProgramExerciseRow } from "@/features/program-editor/components/program-exercise-row";
 import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
-import type { ProgramRoutine } from "@/features/program-editor/types/program-editor";
+import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
+import type { Routine } from "@/features/program-editor/types/program-editor";
 
 export function ProgramRoutineCard({
   programId,
@@ -16,12 +17,12 @@ export function ProgramRoutineCard({
   basePath = `/program/${programId}`,
 }: {
   programId: string;
-  routine: ProgramRoutine;
+  routine: Routine;
   basePath?: string;
 }) {
   const router = useRouter();
-  const renameRoutine = useMyProgramsStore((state) => state.renameRoutine);
-  const removeRoutine = useMyProgramsStore((state) => state.removeRoutine);
+  const updateRoutineDetails = useMyRoutinesStore((state) => state.updateRoutineDetails);
+  const removeRoutineFromProgram = useMyProgramsStore((state) => state.removeRoutineFromProgram);
 
   return (
     <div
@@ -35,10 +36,10 @@ export function ProgramRoutineCard({
     >
       <div className="flex items-center justify-between gap-2" onClick={(event) => event.stopPropagation()}>
         <Input
-          value={routine.name}
-          onChange={(event) => renameRoutine(programId, routine.id, event.target.value)}
+          value={routine.title}
+          onChange={(event) => updateRoutineDetails(routine.id, { title: event.target.value })}
           className="h-8 max-w-72 border-transparent bg-transparent px-0 text-base font-semibold text-foreground focus-visible:border-ring focus-visible:bg-background focus-visible:px-2.5"
-          aria-label="Routine name"
+          aria-label="Routine title"
         />
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -47,9 +48,12 @@ export function ProgramRoutineCard({
             <MoreVertical />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem variant="destructive" onClick={() => removeRoutine(programId, routine.id)}>
-              <Trash2 />
-              Delete Routine
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => removeRoutineFromProgram(programId, routine.id)}
+            >
+              <X />
+              Remove from Program
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
