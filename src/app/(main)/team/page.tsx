@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { avatarFromName } from "@/features/clients/lib/avatar";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { TeamView } from "@/features/team/components/team-view";
@@ -10,7 +11,10 @@ export default async function TeamPage() {
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-6 flex items-center gap-4">
-        <PersonAvatar avatar={teamAvatar} size="lg" />
+        <Avatar size="lg">
+          {team.logo && <AvatarImage src={team.logo} alt={team.name} />}
+          <AvatarFallback className={teamAvatar.colorClassName}>{teamAvatar.initials}</AvatarFallback>
+        </Avatar>
         <div>
           <h1 className="font-heading text-2xl font-medium text-foreground">{team.name}</h1>
           <div className="mt-1 flex items-center gap-2">

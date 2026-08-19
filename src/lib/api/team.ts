@@ -2,13 +2,36 @@ import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 import type { InvitedTeamMember, Team } from "@/features/team/types/team";
 
+// Logos come back as backend-relative paths (e.g. "/uploads/team/x.jpg"), which the
+// browser can't load directly — resolve them against COACH_BACKEND_URL here, server-side,
+// same as getCoachProfile does for coach avatars.
+function resolveLogoUrl(logo: string): string {
+  return logo && logo.startsWith("/") ? `${COACH_BACKEND_URL}${logo}` : logo;
+}
+
 export async function getTeam(): Promise<Team> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/team`, {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
   if (!res.ok) throw new Error(`Failed to fetch team (${res.status})`);
-  return res.json();
+  const team: Team = await res.json();
+  return { ...team, logo: resolveLogoUrl(team.logo) };
+}
+
+// Uploads a team logo to temp storage, returning its unresolved path — submit this
+// straight back as the `logo` field on updateTeam, which moves it out of temp on save.
+export async function uploadTeamLogoImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("images", file);
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/uploads/images`, {
+    method: "POST",
+    headers: await getCoachAuthHeaders(),
+    body: formData,
+  });
+  if (!res.ok) throw new Error(`Failed to upload image (${res.status})`);
+  const { images } = (await res.json()) as { images: { url: string }[] };
+  return images[0].url;
 }
 
 export async function updateTeam(patch: { name?: string; logo?: string }): Promise<Team> {
@@ -21,7 +44,8 @@ export async function updateTeam(patch: { name?: string; logo?: string }): Promi
     const body = await res.json().catch(() => null);
     throw new Error(body?.message || `Failed to update team (${res.status})`);
   }
-  return res.json();
+  const team: Team = await res.json();
+  return { ...team, logo: resolveLogoUrl(team.logo) };
 }
 
 export async function inviteTeamMember(email: string): Promise<InvitedTeamMember> {

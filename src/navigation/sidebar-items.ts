@@ -32,7 +32,7 @@ export const sidebarNavItems: NavItem[] = [
     href: "/exercise-library",
     icon: Dumbbell,
   },
+  { id: "team", label: "Team", href: "/team", icon: UsersRound },
   { id: "grow", label: "Grow", href: "/grow", icon: Rocket },
   { id: "settings", label: "Settings", href: "/settings", icon: Settings },
-  { id: "team", label: "Team", href: "/team", icon: UsersRound },
 ];

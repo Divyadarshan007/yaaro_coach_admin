@@ -17,7 +17,7 @@ export function RoutineEditorView({
   initialRoutine,
   exerciseCatalog,
 }: {
-  programId: string;
+  programId?: string;
   programTitle: string;
   initialRoutine: Routine | null;
   exerciseCatalog: ExerciseCatalogEntry[];

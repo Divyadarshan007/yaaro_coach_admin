@@ -45,7 +45,7 @@ export function ClientDetailView({
       <ClientDetailHeader client={client} />
 
       <Tabs.Root value={activeTab} onValueChange={(value) => setActiveTab(value as string)}>
-        <Tabs.List className="flex gap-6 overflow-x-auto border-b border-border">
+        <Tabs.List className="flex gap-6 overflow-x-auto overflow-y-hidden border-b border-border">
           <Tabs.Tab value="overview" className={tabClassName}>
             Overview
           </Tabs.Tab>

@@ -5,10 +5,19 @@ import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components
 import { ClientRow } from "@/features/clients/components/client-row";
 import type { Client } from "@/features/clients/types/client";
 import type { Program } from "@/features/program-editor/types/program-editor";
+import type { TeamMember } from "@/features/team/types/team";
 
 const headerCellClassName = "px-4 py-3 text-xs font-medium tracking-wide text-muted-foreground uppercase";
 
-export function ClientsTable({ clients, libraryPrograms }: { clients: Client[]; libraryPrograms: Program[] }) {
+export function ClientsTable({
+  clients,
+  libraryPrograms,
+  teamMembers,
+}: {
+  clients: Client[];
+  libraryPrograms: Program[];
+  teamMembers: TeamMember[];
+}) {
   if (clients.length === 0) {
     return (
       <div className="rounded-xl ring-1 ring-foreground/10">
@@ -36,7 +45,7 @@ export function ClientsTable({ clients, libraryPrograms }: { clients: Client[]; 
         </TableHeader>
         <TableBody>
           {clients.map((client) => (
-            <ClientRow key={client.id} client={client} libraryPrograms={libraryPrograms} />
+            <ClientRow key={client.id} client={client} libraryPrograms={libraryPrograms} teamMembers={teamMembers} />
           ))}
         </TableBody>
       </Table>

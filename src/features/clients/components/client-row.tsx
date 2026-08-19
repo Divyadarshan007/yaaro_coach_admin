@@ -10,13 +10,22 @@ import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { cn } from "@/lib/utils";
 import type { Client } from "@/features/clients/types/client";
 import type { Program } from "@/features/program-editor/types/program-editor";
+import type { TeamMember } from "@/features/team/types/team";
 
 const STATUS_LABEL: Record<Client["status"], string> = {
   active: "Active",
   sample: "Sample Client",
 };
 
-export function ClientRow({ client, libraryPrograms }: { client: Client; libraryPrograms: Program[] }) {
+export function ClientRow({
+  client,
+  libraryPrograms,
+  teamMembers,
+}: {
+  client: Client;
+  libraryPrograms: Program[];
+  teamMembers: TeamMember[];
+}) {
   const router = useRouter();
 
   return (
@@ -60,7 +69,7 @@ export function ClientRow({ client, libraryPrograms }: { client: Client; library
       </TableCell>
 
       <TableCell className="px-4 py-3" onClick={(event) => event.stopPropagation()}>
-        <ClientRowActionsMenu client={client} libraryPrograms={libraryPrograms} />
+        <ClientRowActionsMenu client={client} libraryPrograms={libraryPrograms} teamMembers={teamMembers} />
       </TableCell>
     </TableRow>
   );

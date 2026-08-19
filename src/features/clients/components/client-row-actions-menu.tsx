@@ -6,12 +6,23 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ChangeCoachDialog } from "@/features/clients/components/detail/change-coach-dialog";
 import { ReplaceProgramDialog } from "@/features/clients/components/detail/replace-program-dialog";
 import { removeClientAction } from "@/features/clients/actions";
 import type { Client } from "@/features/clients/types/client";
 import type { Program } from "@/features/program-editor/types/program-editor";
+import type { TeamMember } from "@/features/team/types/team";
 
-export function ClientRowActionsMenu({ client, libraryPrograms }: { client: Client; libraryPrograms: Program[] }) {
+export function ClientRowActionsMenu({
+  client,
+  libraryPrograms,
+  teamMembers,
+}: {
+  client: Client;
+  libraryPrograms: Program[];
+  teamMembers: TeamMember[];
+}) {
+  const [isChangeCoachOpen, setIsChangeCoachOpen] = useState(false);
   const [isReplaceOpen, setIsReplaceOpen] = useState(false);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isRemoving, startRemoveTransition] = useTransition();
@@ -29,7 +40,7 @@ export function ClientRowActionsMenu({ client, libraryPrograms }: { client: Clie
           <MoreVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem disabled>
+          <DropdownMenuItem onClick={() => setIsChangeCoachOpen(true)}>
             <UserCog />
             Change Client&apos;s Coach
           </DropdownMenuItem>
@@ -43,6 +54,14 @@ export function ClientRowActionsMenu({ client, libraryPrograms }: { client: Clie
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <ChangeCoachDialog
+        clientId={client.id}
+        clientName={client.avatar.name}
+        teamMembers={teamMembers}
+        open={isChangeCoachOpen}
+        onOpenChange={setIsChangeCoachOpen}
+      />
 
       <ReplaceProgramDialog
         clientId={client.id}

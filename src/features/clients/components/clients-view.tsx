@@ -7,15 +7,18 @@ import { ClientsTable } from "@/features/clients/components/clients-table";
 import { ClientsToolbar } from "@/features/clients/components/clients-toolbar";
 import type { Client } from "@/features/clients/types/client";
 import type { Program } from "@/features/program-editor/types/program-editor";
+import type { TeamMember } from "@/features/team/types/team";
 
 export function ClientsView({
   clients,
   coachSlug,
   libraryPrograms,
+  teamMembers,
 }: {
   clients: Client[];
   coachSlug: string;
   libraryPrograms: Program[];
+  teamMembers: TeamMember[];
 }) {
   const [search, setSearch] = useState("");
   const [coachFilter, setCoachFilter] = useState(ALL_COACHES);
@@ -46,7 +49,7 @@ export function ClientsView({
 
       <ClientsScopeBar coachFilter={coachFilter} onCoachFilterChange={setCoachFilter} coachNames={coachNames} />
 
-      <ClientsTable clients={filteredClients} libraryPrograms={libraryPrograms} />
+      <ClientsTable clients={filteredClients} libraryPrograms={libraryPrograms} teamMembers={teamMembers} />
     </div>
   );
 }
