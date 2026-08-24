@@ -1,7 +1,5 @@
 export type ProfileFormValues = {
-  username: string;
-  firstName: string;
-  lastName: string;
+  fullName: string;
   email: string;
   avatarUrl: string;
 };

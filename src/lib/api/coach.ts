@@ -4,7 +4,6 @@ import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 export type CoachProfile = {
   id: string;
   name: string;
-  username: string;
   email: string;
   avatar: string;
   slug: string;
@@ -17,7 +16,6 @@ export type CoachProfile = {
 };
 
 export type CoachProfileUpdate = Partial<{
-  userName: string;
   fullName: string;
   profileImage: string;
   weight: CoachProfile["weight"];

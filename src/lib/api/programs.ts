@@ -12,8 +12,25 @@ function resolveProgramImageUrl(program: Program): Program {
   return program;
 }
 
-export async function getPrograms(visibility?: "mine" | "explore" | "public"): Promise<Program[]> {
-  const query = visibility ? `?visibility=${visibility}` : "";
+export type ProgramListFilters = {
+  search?: string;
+  level?: string;
+  goal?: string;
+  equipment?: string;
+};
+
+export async function getPrograms(
+  visibility?: "mine" | "explore" | "public",
+  filters?: ProgramListFilters
+): Promise<Program[]> {
+  const params = new URLSearchParams();
+  if (visibility) params.set("visibility", visibility);
+  if (filters?.search) params.set("search", filters.search);
+  if (filters?.level) params.set("level", filters.level);
+  if (filters?.goal) params.set("goal", filters.goal);
+  if (filters?.equipment) params.set("equipment", filters.equipment);
+  const query = params.size > 0 ? `?${params.toString()}` : "";
+
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/programs${query}`, {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),

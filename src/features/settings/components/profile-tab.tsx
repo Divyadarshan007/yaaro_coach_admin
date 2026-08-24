@@ -22,21 +22,9 @@ import { updateCoachProfileAction, uploadCoachAvatarAction } from "@/features/se
 import type { ProfileFormValues } from "@/features/settings/types/settings";
 import type { CoachProfile, CoachProfileUpdate } from "@/lib/api/coach";
 
-function splitName(name: string | undefined): { firstName: string; lastName: string } {
-  const parts = (name ?? "").trim().split(/\s+/).filter(Boolean);
-  return { firstName: parts[0] ?? "", lastName: parts.slice(1).join(" ") };
-}
-
-function joinName(firstName: string, lastName: string): string {
-  return `${firstName} ${lastName}`.trim();
-}
-
 function formValuesFromProfile(coachProfile: CoachProfile | null): ProfileFormValues {
-  const { firstName, lastName } = splitName(coachProfile?.name);
   return {
-    username: coachProfile?.username ?? "",
-    firstName,
-    lastName,
+    fullName: coachProfile?.name ?? "",
     email: coachProfile?.email ?? "",
     avatarUrl: coachProfile?.avatar ?? "",
   };
@@ -50,13 +38,9 @@ export function ProfileTab({ coachProfile }: { coachProfile: CoachProfile | null
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const isDirty =
-    values.username !== initialValues.username ||
-    values.firstName !== initialValues.firstName ||
-    values.lastName !== initialValues.lastName ||
-    avatarFile !== null;
+  const isDirty = values.fullName !== initialValues.fullName || avatarFile !== null;
 
-  const avatar = avatarFromName(joinName(values.firstName, values.lastName) || values.email || "Coach", coachProfile?.id ?? "coach");
+  const avatar = avatarFromName(values.fullName || values.email || "Coach", coachProfile?.id ?? "coach");
 
   function updateField<K extends keyof ProfileFormValues>(field: K, value: ProfileFormValues[K]) {
     setValues((prev) => ({ ...prev, [field]: value }));
@@ -74,9 +58,8 @@ export function ProfileTab({ coachProfile }: { coachProfile: CoachProfile | null
     setError(null);
     try {
       const patch: CoachProfileUpdate = {};
-      if (values.username.trim() !== initialValues.username) patch.userName = values.username.trim();
-      const fullName = joinName(values.firstName, values.lastName);
-      if (fullName !== joinName(initialValues.firstName, initialValues.lastName)) patch.fullName = fullName;
+      const fullName = values.fullName.trim();
+      if (fullName !== initialValues.fullName) patch.fullName = fullName;
       if (avatarFile) {
         const formData = new FormData();
         formData.append("avatar", avatarFile);
@@ -101,23 +84,8 @@ export function ProfileTab({ coachProfile }: { coachProfile: CoachProfile | null
         <h2 className="font-heading text-lg font-medium text-foreground">Profile</h2>
 
         <div className="mt-4 divide-y divide-border rounded-xl ring-1 ring-foreground/10">
-          <Field label="Username">
-            <Input value={values.username} onChange={(event) => updateField("username", event.target.value)} />
-          </Field>
-
-          <Field label="Name">
-            <div className="flex flex-col gap-2">
-              <Input
-                value={values.firstName}
-                onChange={(event) => updateField("firstName", event.target.value)}
-                placeholder="First name"
-              />
-              <Input
-                value={values.lastName}
-                onChange={(event) => updateField("lastName", event.target.value)}
-                placeholder="Last name"
-              />
-            </div>
+          <Field label="Full name">
+            <Input value={values.fullName} onChange={(event) => updateField("fullName", event.target.value)} />
           </Field>
 
           <Field label="Email address">

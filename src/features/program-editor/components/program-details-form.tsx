@@ -8,7 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { PROGRAM_DURATION_OPTIONS } from "@/features/program-editor/data/program-editor-data";
+import {
+  PROGRAM_DURATION_OPTIONS,
+  PROGRAM_EQUIPMENT_OPTIONS as EQUIPMENT_OPTIONS,
+  PROGRAM_GOAL_OPTIONS as GOAL_OPTIONS,
+  PROGRAM_LEVEL_OPTIONS as LEVEL_OPTIONS,
+} from "@/features/program-editor/data/program-editor-data";
 import { uploadProgramImageAction } from "@/features/program-editor/actions";
 import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
 import type {
@@ -18,24 +23,6 @@ import type {
   ProgramLevel,
   Visibility,
 } from "@/features/program-editor/types/program-editor";
-
-const LEVEL_OPTIONS: { value: ProgramLevel; label: string }[] = [
-  { value: "beginner", label: "Beginner" },
-  { value: "intermediate", label: "Intermediate" },
-  { value: "advanced", label: "Advanced" },
-];
-
-const GOAL_OPTIONS: { value: ProgramGoal; label: string }[] = [
-  { value: "muscleGain", label: "Muscle Gain" },
-  { value: "strength", label: "Strength" },
-  { value: "weightLose", label: "Weight Loss" },
-];
-
-const EQUIPMENT_OPTIONS: { value: ProgramEquipment; label: string }[] = [
-  { value: "gym", label: "Full Gym" },
-  { value: "dumbbells", label: "Dumbbells" },
-  { value: "none", label: "No Equipment" },
-];
 
 const VISIBILITY_OPTIONS: { value: Visibility; label: string }[] = [
   { value: "private", label: "Private (only you)" },

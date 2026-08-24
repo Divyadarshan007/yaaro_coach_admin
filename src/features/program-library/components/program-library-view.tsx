@@ -3,8 +3,7 @@
 import { Tabs } from "@base-ui/react/tabs";
 import { useEffect, useRef, useState } from "react";
 
-import { ExploreEmptyState } from "@/features/program-library/components/explore-empty-state";
-import { ExploreProgramList } from "@/features/program-library/components/explore-program-list";
+import { ExplorePanel } from "@/features/program-library/components/explore-panel";
 import { MyLibraryProgramList } from "@/features/program-library/components/my-library-program-list";
 import { MyRoutinesList } from "@/features/program-library/components/my-routines-list";
 import { ProgramLibraryEmptyState } from "@/features/program-library/components/program-library-empty-state";
@@ -72,7 +71,7 @@ export function ProgramLibraryView({
         </Tabs.Panel>
 
         <Tabs.Panel value="explore" className="flex flex-col gap-4 pt-6">
-          {explorePrograms.length > 0 ? <ExploreProgramList programs={explorePrograms} /> : <ExploreEmptyState />}
+          <ExplorePanel initialPrograms={explorePrograms} />
         </Tabs.Panel>
       </Tabs.Root>
     </div>

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 import { assignProgramToClient, removeClientProgram, updateClientProgram } from "@/lib/api/clients";
+import { getPrograms, type ProgramListFilters } from "@/lib/api/programs";
 import type { Program, ProgramPatch } from "@/features/program-editor/types/program-editor";
 
 async function createProgram(body: { sourceProgramId?: string | null }): Promise<Program> {
@@ -58,6 +59,13 @@ export async function uploadProgramImageAction(formData: FormData): Promise<stri
   const { images } = (await res.json()) as { images: { url: string }[] };
   const url = images[0].url;
   return url.startsWith("/") ? `${COACH_BACKEND_URL}${url}` : url;
+}
+
+// Backs the Explore tab's search/filter bar — called from a client component on
+// (debounced) search input and filter changes, so it needs to run as its own action
+// rather than a page-load-only server component fetch.
+export async function searchExploreProgramsAction(filters: ProgramListFilters): Promise<Program[]> {
+  return getPrograms("explore", filters);
 }
 
 export async function deleteProgramAction(id: string): Promise<void> {
