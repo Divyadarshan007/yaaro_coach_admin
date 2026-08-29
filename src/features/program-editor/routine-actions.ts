@@ -6,13 +6,26 @@ import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 import type { Routine, RoutinePatch } from "@/features/program-editor/types/program-editor";
 
+// Backend validation failures (400) return `{ message, errors }` — surface that detail
+// instead of an opaque status code so the actual field errors are visible in logs.
+async function routineError(action: string, res: Response): Promise<Error> {
+  let detail = "";
+  try {
+    const body = await res.json();
+    detail = body?.errors ? `: ${JSON.stringify(body.errors)}` : body?.message ? `: ${body.message}` : "";
+  } catch {
+    // non-JSON body — status alone will have to do
+  }
+  return new Error(`Failed to ${action} (${res.status})${detail}`);
+}
+
 export async function createRoutineAction(body: { title: string; notes?: string }): Promise<Routine> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/routines`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`Failed to create routine (${res.status})`);
+  if (!res.ok) throw await routineError("create routine", res);
   const routine: Routine = await res.json();
   revalidatePath("/program-library");
   return routine;
@@ -26,7 +39,7 @@ export async function duplicateRoutineAction(sourceRoutineId: string): Promise<R
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
-  if (!sourceRes.ok) throw new Error(`Failed to fetch routine ${sourceRoutineId} (${sourceRes.status})`);
+  if (!sourceRes.ok) throw await routineError(`fetch routine ${sourceRoutineId}`, sourceRes);
   const source: Routine = await sourceRes.json();
 
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/routines`, {
@@ -34,7 +47,7 @@ export async function duplicateRoutineAction(sourceRoutineId: string): Promise<R
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify({ title: source.title, notes: source.notes, exercises: source.exercises }),
   });
-  if (!res.ok) throw new Error(`Failed to duplicate routine ${sourceRoutineId} (${res.status})`);
+  if (!res.ok) throw await routineError(`duplicate routine ${sourceRoutineId}`, res);
   const routine: Routine = await res.json();
   revalidatePath("/program-library");
   return routine;
@@ -46,7 +59,7 @@ export async function updateRoutineAction(id: string, patch: RoutinePatch): Prom
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(patch),
   });
-  if (!res.ok) throw new Error(`Failed to update routine ${id} (${res.status})`);
+  if (!res.ok) throw await routineError(`update routine ${id}`, res);
   return res.json();
 }
 
@@ -55,6 +68,6 @@ export async function deleteRoutineAction(id: string): Promise<void> {
     method: "DELETE",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) throw new Error(`Failed to delete routine ${id} (${res.status})`);
+  if (!res.ok) throw await routineError(`delete routine ${id}`, res);
   revalidatePath("/program-library");
 }

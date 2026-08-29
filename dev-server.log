@@ -4,26 +4,326 @@
 
 ▲ Next.js 16.2.12 (Turbopack)
 - Local:         http://localhost:3000
-- Network:       http://10.113.74.239:3000
+- Network:       http://192.168.1.7:3000
 - Environments: .env.local
-✓ Ready in 4.8s
+✓ Ready in 1271ms
 - Experiments (use with caution):
   · serverActions
 
- GET /login 200 in 4.6s (next.js: 2.6s, proxy.ts: 669ms, application-code: 1364ms)
- GET /login 200 in 662ms (next.js: 224ms, proxy.ts: 16ms, application-code: 423ms)
- POST /api/auth/google 401 in 4.7s (next.js: 345ms, application-code: 4.3s)
- POST /api/auth/google 200 in 714ms (next.js: 8ms, application-code: 706ms)
- GET /dashboard 200 in 916ms (next.js: 156ms, proxy.ts: 15ms, application-code: 744ms)
-○ Compiling /team ...
- GET /team 200 in 11.6s (next.js: 10.3s, proxy.ts: 354ms, application-code: 966ms)
- POST /team 200 in 1201ms (next.js: 46ms, proxy.ts: 31ms, application-code: 1123ms)
-  └─ ƒ inviteTeamMemberAction("invite-test@example.com") in 369ms src/features/team/actions.ts
- GET /settings 200 in 540ms (next.js: 62ms, proxy.ts: 11ms, application-code: 468ms)
-✓ Finished filesystem cache database compaction in 10.8s
- GET /team 200 in 451ms (next.js: 9ms, proxy.ts: 6ms, application-code: 437ms)
- POST /team 200 in 794ms (next.js: 14ms, proxy.ts: 13ms, application-code: 767ms)
-  └─ ƒ inviteTeamMemberAction("invite-test@example.com") in 343ms src/features/team/actions.ts
- GET /dashboard 200 in 1194ms (next.js: 189ms, proxy.ts: 7ms, application-code: 998ms)
- GET /team 200 in 430ms (next.js: 10ms, proxy.ts: 5ms, application-code: 415ms)
- GET /exercise-library 200 in 1142ms (next.js: 91ms, proxy.ts: 5ms, application-code: 1045ms)
+○ Compiling /login ...
+ GET /login 200 in 15.8s (next.js: 11.8s, proxy.ts: 280ms, application-code: 3.8s)
+ GET /login 200 in 133ms (next.js: 19ms, proxy.ts: 32ms, application-code: 82ms)
+ GET /dashboard 200 in 16.7s (next.js: 15.2s, proxy.ts: 267ms, application-code: 1307ms)
+ GET /h1gyms/join 404 in 8.3s (next.js: 7.7s, proxy.ts: 80ms, application-code: 594ms)
+✓ Compiled in 3.4s
+ GET /dashboard 200 in 1993ms (next.js: 313ms, proxy.ts: 420ms, application-code: 1261ms)
+ GET /dashboard 200 in 1013ms (next.js: 64ms, proxy.ts: 29ms, application-code: 919ms)
+ GET /dashboard 200 in 575ms (next.js: 19ms, proxy.ts: 29ms, application-code: 527ms)
+ GET /dashboard 200 in 1044ms (next.js: 19ms, proxy.ts: 29ms, application-code: 996ms)
+✓ Compiled in 1274ms
+✓ Compiled in 217ms
+✓ Compiled in 213ms
+✓ Compiled in 1683ms
+ GET /dashboard 200 in 2.4s (next.js: 638ms, proxy.ts: 271ms, application-code: 1515ms)
+ GET /dashboard 200 in 1285ms (next.js: 143ms, proxy.ts: 64ms, application-code: 1079ms)
+ GET /dashboard 200 in 966ms (next.js: 350ms, proxy.ts: 44ms, application-code: 572ms)
+ GET /dashboard 200 in 966ms (next.js: 423ms, proxy.ts: 45ms, application-code: 497ms)
+ GET /dashboard 200 in 978ms (next.js: 41ms, proxy.ts: 46ms, application-code: 892ms)
+ GET /dashboard 200 in 976ms (next.js: 130ms, proxy.ts: 44ms, application-code: 801ms)
+ GET /dashboard 200 in 898ms (next.js: 19ms, proxy.ts: 10ms, application-code: 868ms)
+ GET /dashboard 200 in 756ms (next.js: 40ms, proxy.ts: 12ms, application-code: 705ms)
+ GET /dashboard 200 in 816ms (next.js: 96ms, proxy.ts: 168ms, application-code: 552ms)
+ GET /dashboard 200 in 821ms (next.js: 26ms, proxy.ts: 169ms, application-code: 627ms)
+ GET /dashboard 200 in 746ms (next.js: 254ms, proxy.ts: 70ms, application-code: 423ms)
+ GET /dashboard 200 in 862ms (next.js: 187ms, proxy.ts: 168ms, application-code: 507ms)
+ GET /dashboard 200 in 722ms (next.js: 23ms, proxy.ts: 12ms, application-code: 687ms)
+ GET /dashboard 200 in 706ms (next.js: 39ms, proxy.ts: 140ms, application-code: 526ms)
+ GET /dashboard 200 in 576ms (next.js: 170ms, proxy.ts: 25ms, application-code: 381ms)
+ GET /dashboard 200 in 575ms (next.js: 231ms, proxy.ts: 25ms, application-code: 319ms)
+ GET /dashboard 200 in 597ms (next.js: 259ms, proxy.ts: 159ms, application-code: 178ms)
+ GET /dashboard 200 in 667ms (next.js: 219ms, proxy.ts: 159ms, application-code: 290ms)
+ GET /dashboard 200 in 990ms (next.js: 38ms, proxy.ts: 20ms, application-code: 932ms)
+ GET /dashboard 200 in 983ms (next.js: 125ms, proxy.ts: 29ms, application-code: 829ms)
+ GET /dashboard 200 in 980ms (next.js: 156ms, proxy.ts: 113ms, application-code: 710ms)
+ GET /dashboard 200 in 985ms (next.js: 213ms, proxy.ts: 112ms, application-code: 659ms)
+ GET /dashboard 200 in 882ms (next.js: 166ms, proxy.ts: 201ms, application-code: 514ms)
+ GET /dashboard 200 in 874ms (next.js: 220ms, proxy.ts: 280ms, application-code: 374ms)
+ GET /dashboard 200 in 1054ms (next.js: 62ms, proxy.ts: 39ms, application-code: 953ms)
+ GET /dashboard 200 in 1041ms (next.js: 200ms, proxy.ts: 54ms, application-code: 788ms)
+ GET /dashboard 200 in 1012ms (next.js: 301ms, proxy.ts: 159ms, application-code: 552ms)
+ GET /dashboard 200 in 1011ms (next.js: 384ms, proxy.ts: 154ms, application-code: 473ms)
+ GET /dashboard 200 in 1039ms (next.js: 290ms, proxy.ts: 51ms, application-code: 699ms)
+ GET /dashboard 200 in 1015ms (next.js: 536ms, proxy.ts: 195ms, application-code: 284ms)
+ GET /dashboard 200 in 747ms (next.js: 37ms, proxy.ts: 25ms, application-code: 684ms)
+ GET /dashboard 200 in 737ms (next.js: 188ms, proxy.ts: 34ms, application-code: 515ms)
+ GET /dashboard 200 in 740ms (next.js: 126ms, proxy.ts: 34ms, application-code: 580ms)
+ GET /dashboard 200 in 727ms (next.js: 294ms, proxy.ts: 101ms, application-code: 332ms)
+ GET /dashboard 200 in 744ms (next.js: 234ms, proxy.ts: 101ms, application-code: 408ms)
+ GET /dashboard 200 in 760ms (next.js: 399ms, proxy.ts: 122ms, application-code: 238ms)
+ GET /dashboard 200 in 613ms (next.js: 95ms, proxy.ts: 20ms, application-code: 498ms)
+ GET /dashboard 200 in 619ms (next.js: 31ms, proxy.ts: 20ms, application-code: 568ms)
+ GET /dashboard 200 in 622ms (next.js: 142ms, proxy.ts: 24ms, application-code: 456ms)
+ GET /dashboard 200 in 612ms (next.js: 273ms, proxy.ts: 22ms, application-code: 317ms)
+ GET /dashboard 200 in 624ms (next.js: 196ms, proxy.ts: 225ms, application-code: 204ms)
+ GET /dashboard 200 in 471ms (next.js: 96ms, proxy.ts: 183ms, application-code: 192ms)
+ GET /dashboard 200 in 662ms (next.js: 325ms, proxy.ts: 83ms, application-code: 255ms)
+ GET /dashboard 200 in 676ms (next.js: 116ms, proxy.ts: 20ms, application-code: 541ms)
+ GET /dashboard 200 in 686ms (next.js: 25ms, proxy.ts: 18ms, application-code: 644ms)
+ GET /dashboard 200 in 671ms (next.js: 238ms, proxy.ts: 82ms, application-code: 351ms)
+✓ Compiled in 308ms
+ GET /dashboard 200 in 2.5s (next.js: 1055ms, proxy.ts: 680ms, application-code: 810ms)
+ GET /dashboard 200 in 764ms (next.js: 15ms, proxy.ts: 18ms, application-code: 730ms)
+ GET /dashboard 200 in 662ms (next.js: 19ms, proxy.ts: 30ms, application-code: 612ms)
+ GET /dashboard 200 in 665ms (next.js: 159ms, proxy.ts: 30ms, application-code: 476ms)
+ GET /dashboard 200 in 668ms (next.js: 85ms, proxy.ts: 30ms, application-code: 553ms)
+ GET /dashboard 200 in 667ms (next.js: 207ms, proxy.ts: 30ms, application-code: 430ms)
+ GET /dashboard 200 in 794ms (next.js: 18ms, proxy.ts: 10ms, application-code: 765ms)
+ GET /dashboard 200 in 684ms (next.js: 24ms, proxy.ts: 10ms, application-code: 649ms)
+ GET /dashboard 200 in 876ms (next.js: 27ms, proxy.ts: 124ms, application-code: 726ms)
+ GET /dashboard 200 in 800ms (next.js: 80ms, proxy.ts: 49ms, application-code: 670ms)
+ GET /dashboard 200 in 803ms (next.js: 205ms, proxy.ts: 48ms, application-code: 550ms)
+ GET /dashboard 200 in 807ms (next.js: 146ms, proxy.ts: 49ms, application-code: 612ms)
+ GET /dashboard 200 in 887ms (next.js: 28ms, proxy.ts: 13ms, application-code: 846ms)
+ GET /dashboard 200 in 725ms (next.js: 52ms, proxy.ts: 56ms, application-code: 617ms)
+ GET /dashboard 200 in 827ms (next.js: 29ms, proxy.ts: 144ms, application-code: 654ms)
+ GET /dashboard 200 in 824ms (next.js: 85ms, proxy.ts: 150ms, application-code: 589ms)
+ GET /dashboard 200 in 750ms (next.js: 196ms, proxy.ts: 47ms, application-code: 507ms)
+ GET /dashboard 200 in 762ms (next.js: 309ms, proxy.ts: 47ms, application-code: 406ms)
+ GET /dashboard 200 in 712ms (next.js: 30ms, proxy.ts: 14ms, application-code: 668ms)
+ GET /dashboard 200 in 693ms (next.js: 35ms, proxy.ts: 201ms, application-code: 457ms)
+ GET /dashboard 200 in 502ms (next.js: 106ms, proxy.ts: 23ms, application-code: 372ms)
+ GET /dashboard 200 in 504ms (next.js: 89ms, proxy.ts: 87ms, application-code: 328ms)
+ GET /dashboard 200 in 497ms (next.js: 131ms, proxy.ts: 105ms, application-code: 261ms)
+ GET /dashboard 200 in 493ms (next.js: 208ms, proxy.ts: 107ms, application-code: 179ms)
+ GET /dashboard 200 in 710ms (next.js: 40ms, proxy.ts: 12ms, application-code: 658ms)
+ GET /dashboard 200 in 710ms (next.js: 123ms, proxy.ts: 17ms, application-code: 570ms)
+ GET /dashboard 200 in 622ms (next.js: 47ms, proxy.ts: 87ms, application-code: 488ms)
+ GET /dashboard 200 in 625ms (next.js: 117ms, proxy.ts: 87ms, application-code: 421ms)
+ GET /dashboard 200 in 625ms (next.js: 194ms, proxy.ts: 87ms, application-code: 344ms)
+ GET /dashboard 200 in 630ms (next.js: 292ms, proxy.ts: 88ms, application-code: 251ms)
+ GET /dashboard 200 in 625ms (next.js: 40ms, proxy.ts: 14ms, application-code: 571ms)
+ GET /dashboard 200 in 621ms (next.js: 103ms, proxy.ts: 31ms, application-code: 488ms)
+ GET /dashboard 200 in 607ms (next.js: 112ms, proxy.ts: 96ms, application-code: 399ms)
+ GET /dashboard 200 in 605ms (next.js: 170ms, proxy.ts: 94ms, application-code: 341ms)
+ GET /dashboard 200 in 602ms (next.js: 249ms, proxy.ts: 94ms, application-code: 259ms)
+ GET /dashboard 200 in 603ms (next.js: 307ms, proxy.ts: 91ms, application-code: 204ms)
+ GET /dashboard 200 in 782ms (next.js: 30ms, proxy.ts: 15ms, application-code: 736ms)
+ GET /dashboard 200 in 771ms (next.js: 116ms, proxy.ts: 23ms, application-code: 632ms)
+ GET /dashboard 200 in 772ms (next.js: 167ms, proxy.ts: 19ms, application-code: 586ms)
+ GET /dashboard 200 in 768ms (next.js: 169ms, proxy.ts: 73ms, application-code: 526ms)
+ GET /dashboard 200 in 768ms (next.js: 436ms, proxy.ts: 97ms, application-code: 235ms)
+ GET /dashboard 200 in 779ms (next.js: 518ms, proxy.ts: 104ms, application-code: 157ms)
+ GET /dashboard 200 in 201ms (next.js: 16ms, proxy.ts: 13ms, application-code: 172ms)
+ GET /dashboard 200 in 201ms (next.js: 78ms, proxy.ts: 13ms, application-code: 109ms)
+○ Compiling /clubs ...
+ GET /clubs 200 in 9.5s (next.js: 8.4s, proxy.ts: 235ms, application-code: 908ms)
+ GET /clubs 200 in 366ms (next.js: 17ms, proxy.ts: 19ms, application-code: 330ms)
+ GET /clubs 200 in 349ms (next.js: 28ms, proxy.ts: 12ms, application-code: 309ms)
+ POST /clubs 200 in 1116ms (next.js: 65ms, proxy.ts: 53ms, application-code: 998ms)
+  └─ ƒ uploadClubImageAction({}) in 772ms src/features/clubs/actions.ts
+✓ Compiled in 498ms
+ GET /clubs 200 in 662ms (next.js: 198ms, proxy.ts: 114ms, application-code: 349ms)
+ GET /clubs 200 in 200ms (next.js: 24ms, proxy.ts: 24ms, application-code: 152ms)
+✓ Compiled in 139ms
+ GET /clubs 200 in 595ms (next.js: 227ms, proxy.ts: 74ms, application-code: 293ms)
+ GET /clubs 200 in 165ms (next.js: 14ms, proxy.ts: 14ms, application-code: 137ms)
+ POST /clubs 200 in 695ms (next.js: 11ms, proxy.ts: 8ms, application-code: 676ms)
+  └─ ƒ createClubAction({"coverImageUrl":"","description":"jnedndeid","imageUrl":"/uploads/temp/a556c107-ef09-469d-8bd1-10054e4c6eb2.png","...":"6 items not stringified"}) in 91ms src/features/clubs/actions.ts
+ GET /clubs 200 in 691ms (next.js: 201ms, proxy.ts: 108ms, application-code: 382ms)
+ GET /clubs 200 in 2.0s (next.js: 73ms, proxy.ts: 73ms, application-code: 1884ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 12.2s (next.js: 11.4s, proxy.ts: 12ms, application-code: 763ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 753ms (next.js: 78ms, proxy.ts: 9ms, application-code: 666ms)
+ GET /clubs 200 in 275ms (next.js: 18ms, proxy.ts: 11ms, application-code: 246ms)
+ GET /clients 200 in 3.2s (next.js: 2.8s, proxy.ts: 8ms, application-code: 423ms)
+ GET /clubs 200 in 730ms (next.js: 30ms, proxy.ts: 15ms, application-code: 685ms)
+✓ Compiled in 1799ms
+✓ Compiled in 2s
+ GET /clubs 200 in 6.9s (next.js: 2.5s, proxy.ts: 3.5s, application-code: 888ms)
+ GET /clubs 200 in 691ms (next.js: 24ms, proxy.ts: 114ms, application-code: 553ms)
+ GET /clubs 200 in 406ms (next.js: 146ms, proxy.ts: 27ms, application-code: 233ms)
+ GET /clubs 200 in 415ms (next.js: 87ms, proxy.ts: 31ms, application-code: 298ms)
+ GET /clubs 200 in 408ms (next.js: 224ms, proxy.ts: 27ms, application-code: 157ms)
+ GET /clubs 200 in 421ms (next.js: 25ms, proxy.ts: 32ms, application-code: 365ms)
+✓ Compiled in 481ms
+ GET /clubs 200 in 929ms (next.js: 268ms, proxy.ts: 195ms, application-code: 466ms)
+✓ Compiled in 377ms
+ GET /clubs 200 in 1307ms (next.js: 507ms, proxy.ts: 546ms, application-code: 255ms)
+✓ Compiled in 210ms
+ GET /clubs 200 in 461ms (next.js: 202ms, proxy.ts: 104ms, application-code: 156ms)
+✓ Compiled in 588ms
+ GET /clubs 200 in 480ms (next.js: 201ms, proxy.ts: 98ms, application-code: 182ms)
+✓ Compiled in 108ms
+ GET /clubs 200 in 479ms (next.js: 158ms, proxy.ts: 83ms, application-code: 238ms)
+ GET /clubs 200 in 138ms (next.js: 14ms, proxy.ts: 13ms, application-code: 112ms)
+ GET /clients 200 in 2.4s (next.js: 679ms, proxy.ts: 367ms, application-code: 1345ms)
+ GET /clients 200 in 441ms (next.js: 34ms, proxy.ts: 12ms, application-code: 395ms)
+○ Compiling /clients/[id] ...
+ GET /clients/6a6b2835bcc69eab166712ee 200 in 23.3s (proxy.ts: 13ms)
+ GET /clients 200 in 2.5s (next.js: 68ms, proxy.ts: 71ms, application-code: 2.4s)
+[browser] Failed to fetch RSC payload for http://localhost:3000/clients/6a6b2835bcc69eab166712ee. Falling back to browser navigation. TypeError: Failed to fetch
+[browser] Failed to fetch RSC payload for http://localhost:3000/clients/6a6b2835bcc69eab166712ee. Falling back to browser navigation. TypeError: Failed to fetch
+[browser] Failed to fetch RSC payload for http://localhost:3000/clients/6a6b2835bcc69eab166712ee. Falling back to browser navigation. TypeError: Failed to fetch
+[browser] Failed to fetch RSC payload for http://localhost:3000/clients/6a6b2835bcc69eab166712ee. Falling back to browser navigation. TypeError: Failed to fetch
+[browser] Failed to fetch RSC payload for http://localhost:3000/clients/6a6b2835bcc69eab166712ee. Falling back to browser navigation. TypeError: Failed to fetch
+ GET /clients/6a6b2835bcc69eab166712ee 200 in 8.0s (next.js: 2.4s, proxy.ts: 71ms, application-code: 5.5s)
+ GET /clients/6a6b2835bcc69eab166712ee 200 in 4.4s (next.js: 3.4s, proxy.ts: 189ms, application-code: 829ms)
+ GET /clubs 200 in 343ms (next.js: 62ms, proxy.ts: 26ms, application-code: 254ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 381ms (next.js: 82ms, proxy.ts: 9ms, application-code: 290ms)
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 1167ms (next.js: 54ms, proxy.ts: 62ms, application-code: 1050ms)
+  └─ ƒ uploadClubImageAction({}) in 957ms src/features/clubs/actions.ts
+ GET /clubs 200 in 210ms (next.js: 17ms, proxy.ts: 9ms, application-code: 183ms)
+ GET /clients 200 in 232ms (next.js: 20ms, proxy.ts: 7ms, application-code: 206ms)
+ GET /clients/6a6b2835bcc69eab166712ee 200 in 460ms (next.js: 35ms, proxy.ts: 7ms, application-code: 418ms)
+○ Compiling /_not-found/page ...
+ GET /uploads/exercise-thumbnails/00311201-Barbell-Curl_Upper-Arms_thumbnail@3x.jpg 404 in 4.7s (next.js: 4.6s, proxy.ts: 6ms, application-code: 146ms)
+ POST /clients/6a6b2835bcc69eab166712ee 200 in 684ms (next.js: 136ms, proxy.ts: 65ms, application-code: 482ms)
+  └─ ƒ getClientAdvancedStatsAction("6a6b2835bcc69eab166712ee", {"granularity":"week","range":"3m"}) in 256ms src/features/clients/actions.ts
+ POST /clients/6a6b2835bcc69eab166712ee 200 in 215ms (next.js: 37ms, proxy.ts: 20ms, application-code: 158ms)
+  └─ ƒ getClientAdvancedStatsAction("6a6b2835bcc69eab166712ee", {"granularity":"week","range":"3m"}) in 115ms src/features/clients/actions.ts
+ GET /clients 200 in 364ms (next.js: 26ms, proxy.ts: 18ms, application-code: 320ms)
+ GET /clients/6a6b2834bcc69eab166712ec 200 in 605ms (next.js: 65ms, proxy.ts: 10ms, application-code: 530ms)
+ GET /clubs 200 in 216ms (next.js: 20ms, proxy.ts: 11ms, application-code: 185ms)
+ GET /grow 200 in 3.1s (next.js: 3.0s, proxy.ts: 6ms, application-code: 99ms)
+ GET /grow 200 in 369ms (next.js: 42ms, proxy.ts: 27ms, application-code: 300ms)
+ GET /clubs 200 in 239ms (next.js: 20ms, proxy.ts: 13ms, application-code: 205ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 542ms (next.js: 103ms, proxy.ts: 13ms, application-code: 426ms)
+ GET /clubs 200 in 239ms (next.js: 23ms, proxy.ts: 9ms, application-code: 207ms)
+✓ Compiled in 3.9s
+ GET /clubs 200 in 4.2s (next.js: 2.1s, proxy.ts: 717ms, application-code: 1380ms)
+ GET /clubs 200 in 597ms (next.js: 162ms, proxy.ts: 148ms, application-code: 287ms)
+ GET /clubs 200 in 647ms (next.js: 15ms, proxy.ts: 12ms, application-code: 620ms)
+ GET /clubs 200 in 552ms (next.js: 22ms, proxy.ts: 29ms, application-code: 500ms)
+ GET /clubs 200 in 551ms (next.js: 86ms, proxy.ts: 30ms, application-code: 435ms)
+ GET /clubs 200 in 605ms (next.js: 175ms, proxy.ts: 30ms, application-code: 400ms)
+ GET /clubs 200 in 604ms (next.js: 230ms, proxy.ts: 31ms, application-code: 343ms)
+ GET /clubs 200 in 624ms (next.js: 13ms, proxy.ts: 341ms, application-code: 270ms)
+ GET /clubs 200 in 601ms (next.js: 15ms, proxy.ts: 12ms, application-code: 574ms)
+ GET /clubs 200 in 547ms (next.js: 23ms, proxy.ts: 39ms, application-code: 485ms)
+ GET /clubs 200 in 531ms (next.js: 116ms, proxy.ts: 27ms, application-code: 388ms)
+ GET /clubs 200 in 517ms (next.js: 234ms, proxy.ts: 20ms, application-code: 264ms)
+ GET /clubs 200 in 592ms (next.js: 182ms, proxy.ts: 20ms, application-code: 390ms)
+ GET /clubs 200 in 449ms (next.js: 12ms, proxy.ts: 208ms, application-code: 229ms)
+ GET /clubs 200 in 582ms (next.js: 20ms, proxy.ts: 11ms, application-code: 551ms)
+ GET /clubs 200 in 480ms (next.js: 81ms, proxy.ts: 22ms, application-code: 377ms)
+ GET /clubs 200 in 479ms (next.js: 137ms, proxy.ts: 21ms, application-code: 321ms)
+ GET /clubs 200 in 503ms (next.js: 20ms, proxy.ts: 37ms, application-code: 446ms)
+ GET /clubs 200 in 479ms (next.js: 187ms, proxy.ts: 17ms, application-code: 275ms)
+ GET /clubs 200 in 332ms (next.js: 9ms, proxy.ts: 125ms, application-code: 197ms)
+ GET /clubs 200 in 536ms (next.js: 32ms, proxy.ts: 7ms, application-code: 497ms)
+ GET /clubs 200 in 522ms (next.js: 66ms, proxy.ts: 80ms, application-code: 375ms)
+ GET /clubs 200 in 521ms (next.js: 133ms, proxy.ts: 80ms, application-code: 307ms)
+ GET /clubs 200 in 537ms (next.js: 190ms, proxy.ts: 81ms, application-code: 266ms)
+ GET /clubs 200 in 528ms (next.js: 19ms, proxy.ts: 80ms, application-code: 429ms)
+ GET /clubs 200 in 334ms (next.js: 17ms, proxy.ts: 62ms, application-code: 255ms)
+ GET /clubs 200 in 497ms (next.js: 16ms, proxy.ts: 8ms, application-code: 473ms)
+ GET /clubs 200 in 434ms (next.js: 20ms, proxy.ts: 39ms, application-code: 375ms)
+ GET /clubs 200 in 414ms (next.js: 115ms, proxy.ts: 24ms, application-code: 275ms)
+ GET /clubs 200 in 420ms (next.js: 77ms, proxy.ts: 27ms, application-code: 316ms)
+ GET /clubs 200 in 413ms (next.js: 155ms, proxy.ts: 23ms, application-code: 236ms)
+ GET /clubs 200 in 253ms (next.js: 11ms, proxy.ts: 69ms, application-code: 173ms)
+ GET /clubs 200 in 540ms (next.js: 14ms, proxy.ts: 9ms, application-code: 517ms)
+ GET /clubs 200 in 484ms (next.js: 20ms, proxy.ts: 32ms, application-code: 433ms)
+ GET /clubs 200 in 483ms (next.js: 136ms, proxy.ts: 32ms, application-code: 314ms)
+ GET /clubs 200 in 472ms (next.js: 189ms, proxy.ts: 22ms, application-code: 260ms)
+ GET /clubs 200 in 489ms (next.js: 68ms, proxy.ts: 32ms, application-code: 388ms)
+ GET /clubs 200 in 230ms (next.js: 11ms, proxy.ts: 35ms, application-code: 184ms)
+ GET /clubs 200 in 567ms (next.js: 24ms, proxy.ts: 9ms, application-code: 534ms)
+ GET /clubs 200 in 562ms (next.js: 76ms, proxy.ts: 75ms, application-code: 412ms)
+ GET /clubs 200 in 566ms (next.js: 18ms, proxy.ts: 75ms, application-code: 473ms)
+ GET /clubs 200 in 518ms (next.js: 127ms, proxy.ts: 30ms, application-code: 362ms)
+ GET /clubs 200 in 589ms (next.js: 218ms, proxy.ts: 28ms, application-code: 344ms)
+ GET /clubs 200 in 407ms (next.js: 13ms, proxy.ts: 163ms, application-code: 231ms)
+ GET /clubs 200 in 574ms (next.js: 23ms, proxy.ts: 11ms, application-code: 540ms)
+ GET /clubs 200 in 486ms (next.js: 27ms, proxy.ts: 35ms, application-code: 424ms)
+ GET /clubs 200 in 487ms (next.js: 75ms, proxy.ts: 36ms, application-code: 376ms)
+ GET /clubs 200 in 471ms (next.js: 119ms, proxy.ts: 23ms, application-code: 329ms)
+ GET /clubs 200 in 460ms (next.js: 244ms, proxy.ts: 18ms, application-code: 198ms)
+ GET /clubs 200 in 264ms (next.js: 18ms, proxy.ts: 155ms, application-code: 91ms)
+✓ Compiled in 4.9s
+ GET /clubs 200 in 5.9s (next.js: 4.8s, proxy.ts: 35ms, application-code: 1050ms)
+ GET /clubs 200 in 1884ms (next.js: 735ms, proxy.ts: 423ms, application-code: 725ms)
+ GET /clubs 200 in 466ms (next.js: 23ms, proxy.ts: 27ms, application-code: 416ms)
+ GET /clubs 200 in 902ms (next.js: 126ms, proxy.ts: 66ms, application-code: 709ms)
+ GET /clubs 200 in 899ms (next.js: 179ms, proxy.ts: 77ms, application-code: 643ms)
+ GET /clubs 200 in 915ms (next.js: 393ms, proxy.ts: 61ms, application-code: 460ms)
+ GET /clubs 200 in 769ms (next.js: 456ms, proxy.ts: 9ms, application-code: 304ms)
+ GET /clubs 200 in 797ms (next.js: 242ms, proxy.ts: 13ms, application-code: 542ms)
+ GET /clubs 200 in 922ms (next.js: 475ms, proxy.ts: 63ms, application-code: 384ms)
+○ Compiling /clubs/new ...
+ GET /clubs/new 200 in 32.3s (next.js: 25.8s, proxy.ts: 836ms, application-code: 5.7s)
+ GET /clubs/new 200 in 6.2s (next.js: 1839ms, proxy.ts: 2.1s, application-code: 2.3s)
+ GET /clubs 200 in 971ms (next.js: 38ms, proxy.ts: 23ms, application-code: 910ms)
+○ Compiling /clubs/[id] ...
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 11.5s (next.js: 10.0s, proxy.ts: 1047ms, application-code: 483ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 556ms (next.js: 17ms, proxy.ts: 7ms, application-code: 532ms)
+ GET /clubs 200 in 308ms (next.js: 25ms, proxy.ts: 37ms, application-code: 246ms)
+ GET /clubs/new 200 in 241ms (next.js: 33ms, proxy.ts: 9ms, application-code: 199ms)
+ GET /clubs 200 in 185ms (next.js: 11ms, proxy.ts: 7ms, application-code: 167ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 393ms (next.js: 54ms, proxy.ts: 5ms, application-code: 334ms)
+✓ Compiled in 1216ms
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 1325ms (next.js: 525ms, proxy.ts: 502ms, application-code: 298ms)
+✓ Compiled in 249ms
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 459ms (next.js: 182ms, proxy.ts: 78ms, application-code: 200ms)
+✓ Compiled in 1650ms
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 2.2s (next.js: 480ms, proxy.ts: 117ms, application-code: 1648ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 1345ms (next.js: 84ms, proxy.ts: 132ms, application-code: 1130ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 226ms (next.js: 44ms, proxy.ts: 28ms, application-code: 154ms)
+✓ Compiled in 1141ms
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 2.8s (next.js: 595ms, proxy.ts: 445ms, application-code: 1785ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 1098ms (next.js: 84ms, proxy.ts: 93ms, application-code: 922ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 265ms (next.js: 53ms, proxy.ts: 16ms, application-code: 197ms)
+✓ Compiled in 160ms
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 652ms (next.js: 279ms, proxy.ts: 90ms, application-code: 283ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 666ms (next.js: 16ms, proxy.ts: 12ms, application-code: 638ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 569ms (next.js: 33ms, proxy.ts: 47ms, application-code: 490ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 568ms (next.js: 92ms, proxy.ts: 46ms, application-code: 430ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 565ms (next.js: 341ms, proxy.ts: 46ms, application-code: 177ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 569ms (next.js: 185ms, proxy.ts: 45ms, application-code: 339ms)
+✓ Compiled in 2.6s
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 2.2s (next.js: 1096ms, proxy.ts: 72ms, application-code: 1014ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 2.1s (next.js: 18ms, proxy.ts: 59ms, application-code: 2.0s)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 1789ms (next.js: 490ms, proxy.ts: 157ms, application-code: 1141ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 1800ms (next.js: 734ms, proxy.ts: 167ms, application-code: 898ms)
+✓ Compiled in 619ms
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 610ms (next.js: 244ms, proxy.ts: 76ms, application-code: 291ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 587ms (next.js: 27ms, proxy.ts: 11ms, application-code: 550ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 565ms (next.js: 31ms, proxy.ts: 19ms, application-code: 515ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 567ms (next.js: 100ms, proxy.ts: 19ms, application-code: 447ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 664ms (next.js: 157ms, proxy.ts: 20ms, application-code: 487ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 664ms (next.js: 271ms, proxy.ts: 20ms, application-code: 372ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 343ms (next.js: 21ms, proxy.ts: 97ms, application-code: 225ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 169ms (next.js: 27ms, proxy.ts: 24ms, application-code: 118ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 2.2s (next.js: 1307ms, proxy.ts: 7ms, application-code: 876ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 1091ms (next.js: 69ms, proxy.ts: 378ms, application-code: 644ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 459ms (next.js: 87ms, proxy.ts: 19ms, application-code: 353ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 459ms (next.js: 134ms, proxy.ts: 60ms, application-code: 264ms)
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 458ms (next.js: 233ms, proxy.ts: 61ms, application-code: 164ms)
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 999ms (next.js: 279ms, proxy.ts: 8ms, application-code: 711ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "weekly") in 683ms src/features/clubs/actions.ts
+✓ Finished writing to filesystem cache in 14.7s
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 1294ms (next.js: 533ms, proxy.ts: 206ms, application-code: 554ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "monthly") in 300ms src/features/clubs/actions.ts
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 1273ms (next.js: 198ms, proxy.ts: 11ms, application-code: 1064ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "weekly") in 450ms src/features/clubs/actions.ts
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 308ms (next.js: 39ms, proxy.ts: 17ms, application-code: 251ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "monthly") in 229ms src/features/clubs/actions.ts
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 302ms (next.js: 34ms, proxy.ts: 11ms, application-code: 257ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "yearly") in 234ms src/features/clubs/actions.ts
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 1042ms (next.js: 209ms, proxy.ts: 364ms, application-code: 469ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "lifetime") in 347ms src/features/clubs/actions.ts
+✓ Compiled in 448ms
+ GET /clubs/6a927823144ea07a9a5f7f34 200 in 1178ms (next.js: 546ms, proxy.ts: 161ms, application-code: 471ms)
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 1455ms (next.js: 506ms, proxy.ts: 133ms, application-code: 816ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "weekly") in 396ms src/features/clubs/actions.ts
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 628ms (next.js: 36ms, proxy.ts: 29ms, application-code: 564ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "weekly") in 371ms src/features/clubs/actions.ts
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 291ms (next.js: 39ms, proxy.ts: 12ms, application-code: 240ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "weekly") in 213ms src/features/clubs/actions.ts
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 327ms (next.js: 24ms, proxy.ts: 11ms, application-code: 291ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "weekly") in 215ms src/features/clubs/actions.ts
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 1440ms (next.js: 319ms, proxy.ts: 337ms, application-code: 785ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "weekly") in 484ms src/features/clubs/actions.ts
+ POST /clubs/6a927823144ea07a9a5f7f34 200 in 323ms (next.js: 45ms, proxy.ts: 17ms, application-code: 262ms)
+  └─ ƒ getClubStatsAction("6a927823144ea07a9a5f7f34", "weekly") in 227ms src/features/clubs/actions.ts
+ GET /grow 200 in 8.1s (next.js: 5.2s, proxy.ts: 411ms, application-code: 2.5s)
+ GET /clubs 200 in 4.1s (next.js: 2.9s, proxy.ts: 361ms, application-code: 811ms)

@@ -31,7 +31,15 @@ function schedulePersist(routineId: string, getRoutine: () => Routine | undefine
       persistTimers.delete(routineId);
       const routine = getRoutine();
       if (!routine) return;
-      void updateRoutineAction(routineId, { title: routine.title, notes: routine.notes, exercises: routine.exercises });
+      // A routine's title is required backend-side, so never PATCH a blank one — while the
+      // coach has the title field cleared mid-edit we still persist notes/exercises and
+      // just hold the title until it's non-empty again.
+      const trimmedTitle = routine.title.trim();
+      void updateRoutineAction(routineId, {
+        ...(trimmedTitle ? { title: routine.title } : {}),
+        notes: routine.notes,
+        exercises: routine.exercises,
+      });
     }, PERSIST_DEBOUNCE_MS)
   );
 }

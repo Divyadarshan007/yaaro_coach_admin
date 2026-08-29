@@ -5,6 +5,7 @@ import {
   LayoutGrid,
   Rocket,
   Settings,
+  Shield,
   Users,
   UsersRound,
 } from "lucide-react";
@@ -33,6 +34,7 @@ export const sidebarNavItems: NavItem[] = [
     icon: Dumbbell,
   },
   { id: "team", label: "Team", href: "/team", icon: UsersRound },
+  { id: "clubs", label: "Clubs", href: "/clubs", icon: Shield },
   { id: "grow", label: "Grow", href: "/grow", icon: Rocket },
   { id: "settings", label: "Settings", href: "/settings", icon: Settings },
 ];
