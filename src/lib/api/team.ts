@@ -1,6 +1,6 @@
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
-import type { InvitedTeamMember, Team } from "@/features/team/types/team";
+import type { InvitedTeamMember, Team, TeamPatch } from "@/features/team/types/team";
 
 // Logos come back as backend-relative paths (e.g. "/uploads/team/x.jpg"), which the
 // browser can't load directly — resolve them against COACH_BACKEND_URL here, server-side,
@@ -34,7 +34,7 @@ export async function uploadTeamLogoImage(file: File): Promise<string> {
   return images[0].url;
 }
 
-export async function updateTeam(patch: { name?: string; logo?: string }): Promise<Team> {
+export async function updateTeam(patch: TeamPatch): Promise<Team> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/team`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
@@ -69,7 +69,7 @@ export async function removeTeamMember(memberId: string): Promise<void> {
   if (!res.ok) throw new Error(`Failed to remove team member ${memberId} (${res.status})`);
 }
 
-export async function acceptTeamInvite(token: string): Promise<{ teamId: string }> {
+export async function acceptTeamInvite(token: string): Promise<{ fitnessCenterId: string }> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/team/invites/${token}/accept`, {
     method: "POST",
     headers: await getCoachAuthHeaders(),

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { inviteTeamMember, removeTeamMember, updateTeam, uploadTeamLogoImage } from "@/lib/api/team";
-import type { InvitedTeamMember, Team } from "@/features/team/types/team";
+import type { InvitedTeamMember, Team, TeamPatch } from "@/features/team/types/team";
 
 export async function inviteTeamMemberAction(email: string): Promise<InvitedTeamMember> {
   const member = await inviteTeamMember(email);
@@ -16,11 +16,12 @@ export async function removeTeamMemberAction(memberId: string): Promise<void> {
   revalidatePath("/team");
 }
 
-export async function updateTeamAction(patch: { name?: string; logo?: string }): Promise<Team> {
+export async function updateTeamAction(patch: TeamPatch): Promise<Team> {
   const team = await updateTeam(patch);
   // "layout" also revalidates the shared (main) layout, in case the team logo is
   // ever surfaced there — mirrors updateCoachProfileAction's revalidation.
   revalidatePath("/team", "layout");
+  revalidatePath("/fitness-center");
   return team;
 }
 

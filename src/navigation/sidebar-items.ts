@@ -1,11 +1,15 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  Building2,
+  CalendarClock,
+  CreditCard,
   Dumbbell,
   FolderOpen,
   LayoutGrid,
   Rocket,
   Settings,
   Shield,
+  UserPlus,
   Users,
   UsersRound,
 } from "lucide-react";
@@ -34,7 +38,16 @@ export const sidebarNavItems: NavItem[] = [
     icon: Dumbbell,
   },
   { id: "team", label: "Team", href: "/team", icon: UsersRound },
+  { id: "fitness-center", label: "Fitness Center", href: "/fitness-center", icon: Building2 },
+  { id: "batch", label: "Batch", href: "/batch", icon: CalendarClock },
+  {
+    id: "membership-plan",
+    label: "Membership Plan",
+    href: "/membership-plan",
+    icon: CreditCard,
+  },
   { id: "clubs", label: "Clubs", href: "/clubs", icon: Shield },
+  { id: "leads", label: "Leads", href: "/leads", icon: UserPlus },
   { id: "grow", label: "Grow", href: "/grow", icon: Rocket },
   { id: "settings", label: "Settings", href: "/settings", icon: Settings },
 ];

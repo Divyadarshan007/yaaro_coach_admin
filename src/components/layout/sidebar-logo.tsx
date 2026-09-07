@@ -6,13 +6,13 @@ export function SidebarLogo({ collapsed = false }: { collapsed?: boolean }) {
     <Link href="/dashboard" className="flex items-center gap-2 px-1">
       <Image
         src="/yaaro-icon.png"
-        alt="Yaaro Coach"
+        alt="Yaaro Studio"
         width={36}
         height={36}
         priority
         className="size-9 shrink-0 object-contain"
       />
-      {!collapsed && <span className="text-base font-semibold text-sidebar-foreground">Yaaro Coach</span>}
+      {!collapsed && <span className="text-base font-semibold text-sidebar-foreground">Yaaro Studio</span>}
     </Link>
   );
 }
