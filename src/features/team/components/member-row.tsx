@@ -16,7 +16,7 @@ import type { Team, TeamMember } from "@/features/team/types/team";
 
 const ROLE_LABEL: Record<TeamMember["role"], string> = {
   owner: "Owner",
-  member: "Member",
+  coach: "Coach",
 };
 
 const STATUS_LABEL: Record<TeamMember["status"], string> = {

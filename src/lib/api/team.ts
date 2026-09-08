@@ -1,8 +1,13 @@
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
-import type { InvitedTeamMember, Team, TeamPatch } from "@/features/team/types/team";
+import type {
+  StudioUserSearchResult,
+  Team,
+  TeamMember,
+  TeamPatch,
+} from "@/features/team/types/team";
 
-// Logos come back as backend-relative paths (e.g. "/uploads/team/x.jpg"), which the
+// Logos come back as backend-relative paths (e.g. "/uploads/studio/x.jpg"), which the
 // browser can't load directly — resolve them against COACH_BACKEND_URL here, server-side,
 // same as getCoachProfile does for coach avatars.
 function resolveLogoUrl(logo: string): string {
@@ -10,16 +15,16 @@ function resolveLogoUrl(logo: string): string {
 }
 
 export async function getTeam(): Promise<Team> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/team`, {
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio`, {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) throw new Error(`Failed to fetch team (${res.status})`);
+  if (!res.ok) throw new Error(`Failed to fetch studio (${res.status})`);
   const team: Team = await res.json();
   return { ...team, logo: resolveLogoUrl(team.logo) };
 }
 
-// Uploads a team logo to temp storage, returning its unresolved path — submit this
+// Uploads a studio logo to temp storage, returning its unresolved path — submit this
 // straight back as the `logo` field on updateTeam, which moves it out of temp on save.
 export async function uploadTeamLogoImage(file: File): Promise<string> {
   const formData = new FormData();
@@ -35,45 +40,52 @@ export async function uploadTeamLogoImage(file: File): Promise<string> {
 }
 
 export async function updateTeam(patch: TeamPatch): Promise<Team> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/team`, {
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(patch),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    throw new Error(body?.message || `Failed to update team (${res.status})`);
+    throw new Error(body?.message || `Failed to update studio (${res.status})`);
   }
   const team: Team = await res.json();
   return { ...team, logo: resolveLogoUrl(team.logo) };
 }
 
-export async function inviteTeamMember(email: string): Promise<InvitedTeamMember> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/team/members`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
-    body: JSON.stringify({ email }),
+// Search app users to invite as coaches (owner only, server-side).
+export async function searchStudioUsers(username: string): Promise<StudioUserSearchResult[]> {
+  const query = new URLSearchParams({ username }).toString();
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio/members/search?${query}`, {
+    cache: "no-store",
+    headers: await getCoachAuthHeaders(),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    throw new Error(body?.message || `Failed to invite team member (${res.status})`);
+    throw new Error(body?.message || `Failed to search users (${res.status})`);
+  }
+  return res.json();
+}
+
+// Invite a user (by id, from searchStudioUsers) to join the studio as a coach. The
+// backend creates a pending row and pushes an FCM invite; the invitee signs up to accept.
+export async function inviteStudioMember(userId: string): Promise<TeamMember> {
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio/members`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    body: JSON.stringify({ userId }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.message || `Failed to invite coach (${res.status})`);
   }
   return res.json();
 }
 
 export async function removeTeamMember(memberId: string): Promise<void> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/team/members/${memberId}`, {
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio/members/${memberId}`, {
     method: "DELETE",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) throw new Error(`Failed to remove team member ${memberId} (${res.status})`);
-}
-
-export async function acceptTeamInvite(token: string): Promise<{ fitnessCenterId: string }> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/team/invites/${token}/accept`, {
-    method: "POST",
-    headers: await getCoachAuthHeaders(),
-  });
-  if (!res.ok) throw new Error(`Failed to accept team invite (${res.status})`);
-  return res.json();
+  if (!res.ok) throw new Error(`Failed to remove member ${memberId} (${res.status})`);
 }

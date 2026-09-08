@@ -1,4 +1,4 @@
-export type TeamMemberRole = "owner" | "member";
+export type TeamMemberRole = "owner" | "coach";
 export type TeamMemberStatus = "active" | "pending";
 
 export type TeamMember = {
@@ -62,4 +62,10 @@ export type TeamPatch = {
   timeSlots?: TimeSlot[];
 };
 
-export type InvitedTeamMember = TeamMember & { inviteToken: string };
+// A user returned by the coach-invite search (GET /coach/v1/studio/members/search).
+export type StudioUserSearchResult = {
+  userId: string;
+  userName: string;
+  name: string;
+  avatar: string;
+};

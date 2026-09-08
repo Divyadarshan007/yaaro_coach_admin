@@ -6,6 +6,7 @@ import {
   Dumbbell,
   FolderOpen,
   LayoutGrid,
+  QrCode,
   Rocket,
   Settings,
   Shield,
@@ -38,8 +39,9 @@ export const sidebarNavItems: NavItem[] = [
     icon: Dumbbell,
   },
   { id: "team", label: "Team", href: "/team", icon: UsersRound },
-  { id: "fitness-center", label: "Fitness Center", href: "/fitness-center", icon: Building2 },
+  { id: "studio", label: "Studio", href: "/studio", icon: Building2 },
   { id: "batch", label: "Batch", href: "/batch", icon: CalendarClock },
+  { id: "attendance", label: "Attendance", href: "/attendance", icon: QrCode },
   {
     id: "membership-plan",
     label: "Membership Plan",

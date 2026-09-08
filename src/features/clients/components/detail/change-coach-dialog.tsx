@@ -11,7 +11,7 @@ import type { TeamMember } from "@/features/team/types/team";
 
 const ROLE_LABEL: Record<TeamMember["role"], string> = {
   owner: "Owner",
-  member: "Member",
+  coach: "Coach",
 };
 
 export function ChangeCoachDialog({

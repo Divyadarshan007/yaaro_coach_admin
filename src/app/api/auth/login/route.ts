@@ -1,23 +1,21 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+import { COACH_BACKEND_URL } from "@/lib/api/config";
+
 const SESSION_COOKIE = "coach_session";
 
 export async function POST(request: Request) {
-  const { idToken } = await request.json();
+  const body = await request.json();
 
-  if (!idToken) {
-    return NextResponse.json({ message: "idToken is required" }, { status: 400 });
-  }
-
-  const backendResponse = await fetch(`${process.env.COACH_BACKEND_URL}/coach/v1/auth/google`, {
+  const backendResponse = await fetch(`${COACH_BACKEND_URL}/coach/v1/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ idToken }),
+    body: JSON.stringify({ email: body.email, password: body.password }),
   });
 
   if (!backendResponse.ok) {
-    return NextResponse.json({ message: "Authentication failed" }, { status: 401 });
+    return NextResponse.json({ message: "Incorrect email or password" }, { status: 401 });
   }
 
   const data = await backendResponse.json();
@@ -31,5 +29,5 @@ export async function POST(request: Request) {
     maxAge: 60 * 60 * 24 * 7,
   });
 
-  return NextResponse.json({ coach: data.coach });
+  return NextResponse.json({ coach: data.coach, studio: data.studio });
 }

@@ -1,11 +1,9 @@
 "use client";
 
-import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { Input } from "@/components/ui/input";
-import { AddMemberDialog } from "@/features/team/components/add-member-dialog";
 import { MembersTable } from "@/features/team/components/members-table";
+import { MembersToolbar } from "@/features/team/components/members-toolbar";
 import type { Team } from "@/features/team/types/team";
 
 export function MembersTab({ team }: { team: Team }) {
@@ -21,17 +19,12 @@ export function MembersTab({ team }: { team: Team }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative sm:w-64">
-          <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search members"
-            className="h-9 w-full pl-9"
-          />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-foreground">Team</h1>
+          <p className="text-sm text-muted-foreground">Invite and manage your team</p>
         </div>
-        <AddMemberDialog />
+        <MembersToolbar search={search} onSearchChange={setSearch} />
       </div>
 
       <MembersTable members={filteredMembers} myRole={team.myRole} />

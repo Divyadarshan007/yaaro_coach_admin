@@ -2,11 +2,23 @@
 
 import { revalidatePath } from "next/cache";
 
-import { inviteTeamMember, removeTeamMember, updateTeam, uploadTeamLogoImage } from "@/lib/api/team";
-import type { InvitedTeamMember, Team, TeamPatch } from "@/features/team/types/team";
+import {
+  inviteStudioMember,
+  removeTeamMember,
+  searchStudioUsers,
+  updateTeam,
+  uploadTeamLogoImage,
+} from "@/lib/api/team";
+import type { StudioUserSearchResult, Team, TeamMember, TeamPatch } from "@/features/team/types/team";
 
-export async function inviteTeamMemberAction(email: string): Promise<InvitedTeamMember> {
-  const member = await inviteTeamMember(email);
+export async function searchStudioUsersAction(username: string): Promise<StudioUserSearchResult[]> {
+  const term = username.trim();
+  if (!term) return [];
+  return searchStudioUsers(term);
+}
+
+export async function inviteStudioMemberAction(userId: string): Promise<TeamMember> {
+  const member = await inviteStudioMember(userId);
   revalidatePath("/team");
   return member;
 }
@@ -18,10 +30,10 @@ export async function removeTeamMemberAction(memberId: string): Promise<void> {
 
 export async function updateTeamAction(patch: TeamPatch): Promise<Team> {
   const team = await updateTeam(patch);
-  // "layout" also revalidates the shared (main) layout, in case the team logo is
+  // "layout" also revalidates the shared (main) layout, in case the studio logo is
   // ever surfaced there — mirrors updateCoachProfileAction's revalidation.
   revalidatePath("/team", "layout");
-  revalidatePath("/fitness-center");
+  revalidatePath("/studio");
   return team;
 }
 

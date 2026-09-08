@@ -1,48 +1,45 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { GoogleIcon } from "@/features/auth/components/google-icon";
-import { signInWithGoogle, type FirebaseWebConfig } from "@/lib/firebase-client";
+import { Input } from "@/components/ui/input";
 
-export function LoginView({ firebaseConfig }: { firebaseConfig: FirebaseWebConfig }) {
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export function LoginView() {
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleGoogleSignIn() {
+  const canSubmit = EMAIL_PATTERN.test(email.trim()) && password.length > 0 && !isLoading;
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
     setError(null);
     setIsLoading(true);
 
     try {
-      const idToken = await signInWithGoogle(firebaseConfig);
-
-      const response = await fetch("/api/auth/google", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
       });
 
       if (!response.ok) {
-        throw new Error("Sign-in failed");
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || "Incorrect email or password");
       }
 
       router.push("/dashboard");
+      router.refresh();
     } catch (err) {
-      console.error("Google sign-in failed:", err);
-      const code = (err as { code?: string })?.code;
-      if (code === "auth/invalid-api-key" || code === "auth/api-key-not-valid") {
-        setError("Firebase isn't configured correctly — check FIREBASE_WEB_* in yaaro_backend's .env.");
-      } else if (code === "auth/popup-closed-by-user") {
-        setError("Sign-in popup was closed before completing.");
-      } else if (code === "auth/unauthorized-domain") {
-        setError("This domain isn't authorized for sign-in yet (Firebase Console > Authentication > Settings).");
-      } else {
-        setError("Something went wrong signing in. Please try again.");
-      }
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setIsLoading(false);
     }
   }
@@ -55,22 +52,54 @@ export function LoginView({ firebaseConfig }: { firebaseConfig: FirebaseWebConfi
       </header>
 
       <main className="flex flex-1 items-center justify-center px-4">
-        <div className="w-full max-w-sm text-center">
-          <h1 className="text-2xl font-semibold text-foreground">Welcome back!</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Let&apos;s get you signed in</p>
+        <div className="w-full max-w-sm">
+          <div className="text-center">
+            <h1 className="text-2xl font-semibold text-foreground">Welcome back!</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Log in to your studio</p>
+          </div>
 
-          <Button
-            variant="outline"
-            size="lg"
-            className="mt-8 w-full justify-center gap-2"
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-          >
-            <GoogleIcon className="size-4" />
-            Continue with Google
-          </Button>
+          <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="email" className="text-sm font-medium text-foreground">
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="you@studio.com"
+              />
+            </div>
 
-          {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="password" className="text-sm font-medium text-foreground">
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Your password"
+              />
+            </div>
+
+            {error && <p className="text-sm text-destructive">{error}</p>}
+
+            <Button type="submit" size="lg" className="mt-2 w-full justify-center" disabled={!canSubmit}>
+              {isLoading ? "Logging in…" : "Log in"}
+            </Button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Don&apos;t have a studio yet?{" "}
+            <Link href="/signup" className="font-medium text-primary underline-offset-4 hover:underline">
+              Sign up
+            </Link>
+          </p>
         </div>
       </main>
 

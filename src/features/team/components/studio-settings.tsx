@@ -28,7 +28,7 @@ function sortSlots(slots: TimeSlot[]): TimeSlot[] {
   );
 }
 
-export function FitnessCenterSettings({ team }: { team: Team }) {
+export function StudioSettings({ team }: { team: Team }) {
   const [name, setName] = useState(team.name);
   const [address, setAddress] = useState(team.address);
   const [contactNumber, setContactNumber] = useState(team.contactNumber);
@@ -82,7 +82,7 @@ export function FitnessCenterSettings({ team }: { team: Team }) {
         setLogoFile(null);
         setSaved(true);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to update fitness center");
+        setError(err instanceof Error ? err.message : "Failed to update studio");
       }
     });
   }
@@ -116,7 +116,7 @@ export function FitnessCenterSettings({ team }: { team: Team }) {
   return (
     <div className="flex max-w-md flex-col gap-6">
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-foreground">Fitness center photo</label>
+        <label className="text-sm font-medium text-foreground">Studio photo</label>
         <div className="flex items-center gap-3">
           <Avatar size="lg">
             {logoUrl && <AvatarImage src={logoUrl} alt={team.name} />}
@@ -142,7 +142,7 @@ export function FitnessCenterSettings({ team }: { team: Team }) {
 
       <div className="flex flex-col gap-1.5">
         <label htmlFor="team-name" className="text-sm font-medium text-foreground">
-          Fitness center name
+          Studio name
         </label>
         {isOwner ? (
           <Input id="team-name" value={name} onChange={(event) => setName(event.target.value)} />
@@ -226,7 +226,7 @@ export function FitnessCenterSettings({ team }: { team: Team }) {
       </div>
 
       {!isOwner && (
-        <p className="text-sm text-muted-foreground">Only the team owner can change these settings.</p>
+        <p className="text-sm text-muted-foreground">Only the studio owner can change these settings.</p>
       )}
 
       {error && <p className="text-sm text-destructive">{error}</p>}
