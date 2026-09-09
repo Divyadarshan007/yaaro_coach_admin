@@ -52,6 +52,9 @@ export type Team = {
   timeSlots: TimeSlot[];
   myRole: TeamMemberRole;
   members: TeamMember[];
+  // Value encoded in the studio's "add client" QR ("https://yaaro.fit/j/<studioId>").
+  // A person scans it in the Yaaro app to request joining as a client.
+  joinQrValue: string;
 };
 
 export type TeamPatch = {

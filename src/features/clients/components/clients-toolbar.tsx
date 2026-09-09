@@ -4,14 +4,23 @@ import { Search } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { AddClientDialog } from "@/features/clients/components/add-client-dialog";
+import { StudioQrDialog } from "@/features/clients/components/studio-qr-dialog";
 
 type ClientsToolbarProps = {
   search: string;
   onSearchChange: (value: string) => void;
   coachSlug: string;
+  joinQrValue: string;
+  studioName: string;
 };
 
-export function ClientsToolbar({ search, onSearchChange, coachSlug }: ClientsToolbarProps) {
+export function ClientsToolbar({
+  search,
+  onSearchChange,
+  coachSlug,
+  joinQrValue,
+  studioName,
+}: ClientsToolbarProps) {
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
       <div className="relative sm:w-64">
@@ -23,7 +32,10 @@ export function ClientsToolbar({ search, onSearchChange, coachSlug }: ClientsToo
           className="h-9 w-full pl-9"
         />
       </div>
-      <AddClientDialog coachSlug={coachSlug} />
+      <div className="flex items-center gap-2">
+        <AddClientDialog coachSlug={coachSlug} />
+        <StudioQrDialog joinQrValue={joinQrValue} studioName={studioName} />
+      </div>
     </div>
   );
 }

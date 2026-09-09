@@ -4,14 +4,16 @@ import { toClient } from "@/features/clients/lib/to-client";
 import { getClients } from "@/lib/api/clients";
 import { getCoachProfile } from "@/lib/api/coach";
 import { getPrograms } from "@/lib/api/programs";
+import { getStudioJoinRequests } from "@/lib/api/studio-join-requests";
 import { getTeam } from "@/lib/api/team";
 
 export default async function ClientsPage() {
-  const [summaries, coachProfile, libraryPrograms, team] = await Promise.all([
+  const [summaries, coachProfile, libraryPrograms, team, joinRequests] = await Promise.all([
     getClients(),
     getCoachProfile(),
     getPrograms(),
     getTeam(),
+    getStudioJoinRequests(),
   ]);
   const coachAvatar = avatarFromName(coachProfile?.name || coachProfile?.email || "Coach", coachProfile?.id ?? "coach");
   const clients = summaries.map((summary) => toClient(summary, coachAvatar));
@@ -24,6 +26,10 @@ export default async function ClientsPage() {
       coachSlug={coachProfile?.slug ?? ""}
       libraryPrograms={libraryPrograms}
       teamMembers={reassignableTeamMembers}
+      joinRequests={joinRequests}
+      joinQrValue={team.joinQrValue}
+      studioName={team.name}
+      isOwner={team.myRole === "owner"}
     />
   );
 }

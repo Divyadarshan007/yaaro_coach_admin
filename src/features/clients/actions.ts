@@ -12,6 +12,10 @@ import {
   updateClientNotes,
   uploadClientMeasurementImage,
 } from "@/lib/api/clients";
+import {
+  approveStudioJoinRequest,
+  rejectStudioJoinRequest,
+} from "@/lib/api/studio-join-requests";
 import type { AdvancedStatsGranularity, AdvancedStatsRange, ClientAdvancedStats } from "@/features/clients/types/advanced-stats";
 import type { FeedItem } from "@/features/clients/types/workout-feed";
 import type { MeasurementInput } from "@/features/clients/types/measurement";
@@ -25,6 +29,16 @@ export async function getClientAdvancedStatsAction(
   params: { granularity: AdvancedStatsGranularity; range: AdvancedStatsRange }
 ): Promise<ClientAdvancedStats | null> {
   return getClientAdvancedStats(clientId, params);
+}
+
+export async function approveJoinRequestAction(id: string): Promise<void> {
+  await approveStudioJoinRequest(id);
+  revalidatePath("/clients");
+}
+
+export async function rejectJoinRequestAction(id: string): Promise<void> {
+  await rejectStudioJoinRequest(id);
+  revalidatePath("/clients");
 }
 
 export async function updateClientNotesAction(clientId: string, notes: string): Promise<void> {
