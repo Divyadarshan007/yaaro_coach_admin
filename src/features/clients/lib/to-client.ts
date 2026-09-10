@@ -15,5 +15,7 @@ export function toClient(summary: ClientSummary, coach: AvatarInfo): Client {
     weeklyActivity: getLastSevenDaysActivity(new Date(), []),
     status: "active",
     coach,
+    linked: summary.linked,
+    linkQrValue: summary.linkQrValue,
   };
 }

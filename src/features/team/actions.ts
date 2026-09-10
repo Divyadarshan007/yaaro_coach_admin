@@ -3,22 +3,15 @@
 import { revalidatePath } from "next/cache";
 
 import {
-  inviteStudioMember,
+  addStudioMember,
   removeTeamMember,
-  searchStudioUsers,
   updateTeam,
   uploadTeamLogoImage,
 } from "@/lib/api/team";
-import type { StudioUserSearchResult, Team, TeamMember, TeamPatch } from "@/features/team/types/team";
+import type { AddStudioMemberInput, Team, TeamMember, TeamPatch } from "@/features/team/types/team";
 
-export async function searchStudioUsersAction(username: string): Promise<StudioUserSearchResult[]> {
-  const term = username.trim();
-  if (!term) return [];
-  return searchStudioUsers(term);
-}
-
-export async function inviteStudioMemberAction(userId: string): Promise<TeamMember> {
-  const member = await inviteStudioMember(userId);
+export async function addStudioMemberAction(input: AddStudioMemberInput): Promise<TeamMember> {
+  const member = await addStudioMember(input);
   revalidatePath("/team");
   return member;
 }

@@ -1,10 +1,11 @@
 import { DashboardView } from "@/features/dashboard/components/dashboard-view";
 import { coachDisplayName } from "@/features/dashboard/data/dashboard-mock-data";
+import { getCoachProfile } from "@/lib/api/coach";
 import { getDashboardStats } from "@/lib/api/dashboard";
 import type { StatCardData } from "@/features/dashboard/types/dashboard";
 
 export default async function DashboardPage() {
-  const stats = await getDashboardStats();
+  const [stats, coachProfile] = await Promise.all([getDashboardStats(), getCoachProfile()]);
 
   const statCards: StatCardData[] = [
     { id: "total-clients", title: "Total Clients", value: stats.totalClients, href: "/clients" },
@@ -14,7 +15,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardView
-      coachName={coachDisplayName}
+      coachName={coachProfile?.name || coachDisplayName}
       stats={statCards}
       weeklyActiveClients={stats.weeklyActiveClients}
       upcomingBirthdays={stats.upcomingBirthdays}

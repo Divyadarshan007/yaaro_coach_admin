@@ -1,5 +1,21 @@
-export type TeamMemberRole = "owner" | "coach";
+export type TeamMemberRole = "owner" | "coach" | "admin" | "staff";
 export type TeamMemberStatus = "active" | "pending";
+
+export const TEAM_MEMBER_ROLE_LABEL: Record<TeamMemberRole, string> = {
+  owner: "Owner",
+  coach: "Coach",
+  admin: "Admin",
+  staff: "Staff",
+};
+
+// Roles the owner can assign from the "Add Management" form. Same set as the backend
+// STUDIO_TEAM_ROLE enum.
+export const TEAM_MEMBER_ROLE_OPTIONS: { value: TeamMemberRole; label: string }[] = [
+  { value: "admin", label: TEAM_MEMBER_ROLE_LABEL.admin },
+  { value: "coach", label: TEAM_MEMBER_ROLE_LABEL.coach },
+  { value: "staff", label: TEAM_MEMBER_ROLE_LABEL.staff },
+  { value: "owner", label: TEAM_MEMBER_ROLE_LABEL.owner },
+];
 
 export type TeamMember = {
   id: string;
@@ -55,6 +71,9 @@ export type Team = {
   // Value encoded in the studio's "add client" QR ("https://yaaro.fit/j/<studioId>").
   // A person scans it in the Yaaro app to request joining as a client.
   joinQrValue: string;
+  // Value encoded in the studio's "Add Coach" QR ("https://yaaro.fit/jc/<studioId>").
+  // A Yaaro user scans it in the app and is added to the team as an active coach.
+  joinCoachQrValue: string;
 };
 
 export type TeamPatch = {
@@ -65,10 +84,12 @@ export type TeamPatch = {
   timeSlots?: TimeSlot[];
 };
 
-// A user returned by the coach-invite search (GET /coach/v1/studio/members/search).
-export type StudioUserSearchResult = {
-  userId: string;
-  userName: string;
-  name: string;
-  avatar: string;
+// Payload for "Add Management" (POST /coach/v1/studio/members). The person must already
+// have a Yaaro account; `password` (optional) sets their coach web-panel login.
+export type AddStudioMemberInput = {
+  email: string;
+  role: TeamMemberRole;
+  name?: string;
+  phone?: string;
+  password?: string;
 };

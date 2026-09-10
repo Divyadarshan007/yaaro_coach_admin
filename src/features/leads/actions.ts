@@ -7,6 +7,7 @@ import {
   createLeadSource,
   deleteCoachLead,
   deleteLeadSource,
+  getLeadSources,
   updateCoachLead,
   updateLeadSource,
 } from "@/lib/api/coach-leads";
@@ -18,6 +19,12 @@ import type {
   UpdateCoachLeadInput,
   UpdateLeadSourceInput,
 } from "@/features/leads/types/lead";
+
+// Reused outside the Leads feature too — e.g. the Clients page's manual "Add Client"
+// form, which shares this same coach-managed source list.
+export async function getLeadSourcesAction(): Promise<LeadSource[]> {
+  return getLeadSources();
+}
 
 export async function createLeadAction(input: CreateCoachLeadInput): Promise<CoachLead> {
   const lead = await createCoachLead(input);

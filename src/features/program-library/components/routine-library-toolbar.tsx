@@ -1,14 +1,14 @@
 "use client";
 
-import { Dumbbell, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/shared/empty-state";
+import { cn } from "@/lib/utils";
 import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
 
-export function RoutineLibraryEmptyState() {
+export function RoutineLibraryToolbar({ className }: { className?: string }) {
   const router = useRouter();
   const createRoutine = useMyRoutinesStore((state) => state.createRoutine);
   const [isPending, startTransition] = useTransition();
@@ -21,17 +21,9 @@ export function RoutineLibraryEmptyState() {
   }
 
   return (
-    <EmptyState
-      className="min-h-105 justify-center rounded-xl bg-card ring-1 ring-foreground/10"
-      icon={Dumbbell}
-      title="No Routines"
-      description="Create a routine to reuse it across any of your programs."
-      action={
-        <Button size="lg" className="w-full max-w-xs" onClick={handleCreateRoutine} disabled={isPending}>
-          <Plus />
-          Add Routine
-        </Button>
-      }
-    />
+    <Button size="lg" className={cn(className)} onClick={handleCreateRoutine} disabled={isPending}>
+      <Plus />
+      Add Routine
+    </Button>
   );
 }

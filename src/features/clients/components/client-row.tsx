@@ -1,11 +1,15 @@
 "use client";
 
+import { QrCode } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { ClientRowActionsMenu } from "@/features/clients/components/client-row-actions-menu";
 import { ClientWeekActivity } from "@/features/clients/components/client-week-activity";
+import { LinkClientQrDialog } from "@/features/clients/components/link-client-qr-dialog";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { cn } from "@/lib/utils";
 import type { Client } from "@/features/clients/types/client";
@@ -27,6 +31,7 @@ export function ClientRow({
   teamMembers: TeamMember[];
 }) {
   const router = useRouter();
+  const [linkQrOpen, setLinkQrOpen] = useState(false);
 
   return (
     <TableRow className="cursor-pointer" onClick={() => router.push(`/clients/${client.id}`)}>
@@ -66,6 +71,30 @@ export function ClientRow({
         >
           {STATUS_LABEL[client.status]}
         </Badge>
+      </TableCell>
+
+      <TableCell className="px-4 py-3" onClick={(event) => event.stopPropagation()}>
+        {client.linked ? (
+          <Badge
+            variant="secondary"
+            className="h-auto whitespace-normal rounded-md bg-blue-500/10 px-3 py-1.5 text-center leading-tight text-blue-600 dark:bg-blue-500/15 dark:text-blue-400"
+          >
+            Linked
+          </Badge>
+        ) : (
+          <>
+            <Button variant="outline" size="sm" onClick={() => setLinkQrOpen(true)}>
+              <QrCode />
+              Link now
+            </Button>
+            <LinkClientQrDialog
+              clientName={client.avatar.name}
+              linkQrValue={client.linkQrValue}
+              open={linkQrOpen}
+              onOpenChange={setLinkQrOpen}
+            />
+          </>
+        )}
       </TableCell>
 
       <TableCell className="px-4 py-3" onClick={(event) => event.stopPropagation()}>

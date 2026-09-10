@@ -7,12 +7,7 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import { avatarFromName } from "@/features/clients/lib/avatar";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { reassignClientCoachAction } from "@/features/clients/actions";
-import type { TeamMember } from "@/features/team/types/team";
-
-const ROLE_LABEL: Record<TeamMember["role"], string> = {
-  owner: "Owner",
-  coach: "Coach",
-};
+import { TEAM_MEMBER_ROLE_LABEL, type TeamMember } from "@/features/team/types/team";
 
 export function ChangeCoachDialog({
   clientId,
@@ -81,7 +76,7 @@ export function ChangeCoachDialog({
                 <PersonAvatar avatar={avatarFromName(member.name, member.id)} />
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-foreground">{member.name}</span>
-                  <span className="text-xs text-muted-foreground">{ROLE_LABEL[member.role]}</span>
+                  <span className="text-xs text-muted-foreground">{TEAM_MEMBER_ROLE_LABEL[member.role]}</span>
                 </div>
               </label>
             ))}

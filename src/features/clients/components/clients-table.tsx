@@ -40,6 +40,7 @@ export function ClientsTable({
             <TableHead className={headerCellClassName}>Last 7 Days</TableHead>
             <TableHead className={headerCellClassName}>Coach</TableHead>
             <TableHead className={headerCellClassName}>Status</TableHead>
+            <TableHead className={headerCellClassName}>Linked</TableHead>
             <TableHead className={headerCellClassName} />
           </TableRow>
         </TableHeader>

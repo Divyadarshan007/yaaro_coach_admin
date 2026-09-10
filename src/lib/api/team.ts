@@ -1,7 +1,7 @@
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 import type {
-  StudioUserSearchResult,
+  AddStudioMemberInput,
   Team,
   TeamMember,
   TeamPatch,
@@ -53,31 +53,17 @@ export async function updateTeam(patch: TeamPatch): Promise<Team> {
   return { ...team, logo: resolveLogoUrl(team.logo) };
 }
 
-// Search app users to invite as coaches (owner only, server-side).
-export async function searchStudioUsers(username: string): Promise<StudioUserSearchResult[]> {
-  const query = new URLSearchParams({ username }).toString();
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio/members/search?${query}`, {
-    cache: "no-store",
-    headers: await getCoachAuthHeaders(),
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(body?.message || `Failed to search users (${res.status})`);
-  }
-  return res.json();
-}
-
-// Invite a user (by id, from searchStudioUsers) to join the studio as a coach. The
-// backend creates a pending row and pushes an FCM invite; the invitee signs up to accept.
-export async function inviteStudioMember(userId: string): Promise<TeamMember> {
+// Add an existing Yaaro user to the studio team by email, with a chosen role. Owner
+// only. The backend creates an active studio_team row immediately (no invite/email).
+export async function addStudioMember(input: AddStudioMemberInput): Promise<TeamMember> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio/members`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
-    body: JSON.stringify({ userId }),
+    body: JSON.stringify(input),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    throw new Error(body?.message || `Failed to invite coach (${res.status})`);
+    throw new Error(body?.message || `Failed to add member (${res.status})`);
   }
   return res.json();
 }

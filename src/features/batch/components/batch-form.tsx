@@ -43,9 +43,15 @@ export function formToInput(values: BatchFormValues): CreateBatchInput {
   return base;
 }
 
+// Both are "HH:mm" 24h strings, so a lexical compare is also a chronological one.
+export function isEndAfterStart(values: BatchFormValues): boolean {
+  return !values.startTime || !values.endTime || values.endTime > values.startTime;
+}
+
 export function isBatchFormValid(values: BatchFormValues): boolean {
   if (values.title.trim().length === 0) return false;
   if (!values.startTime || !values.endTime) return false;
+  if (!isEndAfterStart(values)) return false;
   if (values.limitType === "limited") {
     const n = Number(values.maxMembers);
     if (!Number.isInteger(n) || n < 1) return false;
@@ -75,19 +81,24 @@ export function BatchForm({ values, onChange, disabled }: BatchFormProps) {
         />
       </div>
 
-      <div className="flex flex-wrap gap-4">
-        <TimeField
-          label="Start time"
-          value={values.startTime}
-          disabled={disabled}
-          onChange={(startTime) => onChange({ startTime })}
-        />
-        <TimeField
-          label="End time"
-          value={values.endTime}
-          disabled={disabled}
-          onChange={(endTime) => onChange({ endTime })}
-        />
+      <div className="flex flex-col gap-1.5">
+        <div className="flex flex-wrap gap-4">
+          <TimeField
+            label="Start time"
+            value={values.startTime}
+            disabled={disabled}
+            onChange={(startTime) => onChange({ startTime })}
+          />
+          <TimeField
+            label="End time"
+            value={values.endTime}
+            disabled={disabled}
+            onChange={(endTime) => onChange({ endTime })}
+          />
+        </div>
+        {!isEndAfterStart(values) && (
+          <p className="text-xs text-destructive">End time must be after start time.</p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1.5">

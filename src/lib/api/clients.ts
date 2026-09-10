@@ -1,7 +1,7 @@
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 import type { AdvancedStatsGranularity, AdvancedStatsRange, ClientAdvancedStats } from "@/features/clients/types/advanced-stats";
-import type { ClientSummary } from "@/features/clients/types/client";
+import type { ClientSummary, CreateClientInput } from "@/features/clients/types/client";
 import type { ClientMeasurement, MeasurementInput } from "@/features/clients/types/measurement";
 import type { FeedItem } from "@/features/clients/types/workout-feed";
 import type { Program, ProgramPatch } from "@/features/program-editor/types/program-editor";
@@ -12,6 +12,20 @@ export async function getClients(): Promise<ClientSummary[]> {
     headers: await getCoachAuthHeaders(),
   });
   if (!res.ok) throw new Error(`Failed to fetch clients (${res.status})`);
+  return res.json();
+}
+
+// Manually add a client who doesn't have (or hasn't linked) a Yaaro account yet.
+export async function createClient(input: CreateClientInput): Promise<ClientSummary> {
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.message || `Failed to add client (${res.status})`);
+  }
   return res.json();
 }
 

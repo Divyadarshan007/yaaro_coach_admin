@@ -24,7 +24,7 @@ export function MembersTab({ team }: { team: Team }) {
           <h1 className="text-xl font-semibold text-foreground">Team</h1>
           <p className="text-sm text-muted-foreground">Invite and manage your team</p>
         </div>
-        <MembersToolbar search={search} onSearchChange={setSearch} />
+        <MembersToolbar team={team} search={search} onSearchChange={setSearch} />
       </div>
 
       <MembersTable members={filteredMembers} myRole={team.myRole} />

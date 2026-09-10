@@ -3,8 +3,8 @@
 import { Search } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AddClientButton } from "@/features/dashboard/components/add-client-button";
 
 export function DashboardGreeting({ name }: { name: string }) {
   const [search, setSearch] = useState("");
@@ -25,7 +25,7 @@ export function DashboardGreeting({ name }: { name: string }) {
             className="h-9 w-full pl-9 sm:w-56"
           />
         </div>
-        <Button size="lg">+ Add Client</Button>
+        <AddClientButton />
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ export function ClubDetailView({
   const [activeTab, setActiveTab] = useState("members");
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <Link
         href="/clubs"
         className="flex w-fit items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"

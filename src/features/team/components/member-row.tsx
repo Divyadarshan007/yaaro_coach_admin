@@ -12,12 +12,7 @@ import { avatarFromName } from "@/features/clients/lib/avatar";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { removeTeamMemberAction } from "@/features/team/actions";
 import { cn } from "@/lib/utils";
-import type { Team, TeamMember } from "@/features/team/types/team";
-
-const ROLE_LABEL: Record<TeamMember["role"], string> = {
-  owner: "Owner",
-  coach: "Coach",
-};
+import { TEAM_MEMBER_ROLE_LABEL, type Team, type TeamMember } from "@/features/team/types/team";
 
 const STATUS_LABEL: Record<TeamMember["status"], string> = {
   active: "Active",
@@ -49,7 +44,7 @@ export function MemberRow({ member, myRole }: { member: TeamMember; myRole: Team
         </div>
       </TableCell>
 
-      <TableCell className="px-4 py-3 text-sm text-foreground">{ROLE_LABEL[member.role]}</TableCell>
+      <TableCell className="px-4 py-3 text-sm text-foreground">{TEAM_MEMBER_ROLE_LABEL[member.role]}</TableCell>
 
       <TableCell className="px-4 py-3 text-sm text-foreground">{member.clientCount}</TableCell>
 
