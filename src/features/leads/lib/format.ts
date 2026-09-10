@@ -7,13 +7,18 @@ import type {
 export function formatLeadDate(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 export function emptyLeadForm(): CoachLeadFormValues {
   return {
     name: "",
     number: "",
+    gender: "",
     sourceId: "",
     date: new Date(),
     status: "pending",
@@ -26,6 +31,7 @@ export function leadToForm(lead: CoachLead): CoachLeadFormValues {
   return {
     name: lead.name,
     number: lead.number,
+    gender: lead.gender,
     sourceId: lead.sourceId ?? "",
     date: Number.isNaN(date.getTime()) ? new Date() : date,
     status: lead.status,
@@ -37,6 +43,7 @@ export function formToInput(values: CoachLeadFormValues): CreateCoachLeadInput {
   return {
     name: values.name.trim(),
     number: values.number.trim(),
+    gender: values.gender,
     sourceId: values.sourceId ? values.sourceId : null,
     date: values.date.toISOString(),
     status: values.status,

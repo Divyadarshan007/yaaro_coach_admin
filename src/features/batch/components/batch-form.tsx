@@ -3,7 +3,12 @@
 import { Input } from "@/components/ui/input";
 import { TimeField } from "@/features/batch/components/time-field";
 import { cn } from "@/lib/utils";
-import type { Batch, BatchFormValues, BatchLimitType, CreateBatchInput } from "@/features/batch/types/batch";
+import type {
+  Batch,
+  BatchFormValues,
+  BatchLimitType,
+  CreateBatchInput,
+} from "@/features/batch/types/batch";
 
 const LIMIT_TYPE_OPTIONS: { value: BatchLimitType; label: string }[] = [
   { value: "unlimited", label: "Unlimited" },
@@ -45,7 +50,9 @@ export function formToInput(values: BatchFormValues): CreateBatchInput {
 
 // Both are "HH:mm" 24h strings, so a lexical compare is also a chronological one.
 export function isEndAfterStart(values: BatchFormValues): boolean {
-  return !values.startTime || !values.endTime || values.endTime > values.startTime;
+  return (
+    !values.startTime || !values.endTime || values.endTime > values.startTime
+  );
 }
 
 export function isBatchFormValid(values: BatchFormValues): boolean {
@@ -69,7 +76,10 @@ export function BatchForm({ values, onChange, disabled }: BatchFormProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="batch-title" className="text-sm font-medium text-foreground">
+        <label
+          htmlFor="batch-title"
+          className="text-sm font-medium text-foreground"
+        >
           Title
         </label>
         <Input
@@ -97,7 +107,9 @@ export function BatchForm({ values, onChange, disabled }: BatchFormProps) {
           />
         </div>
         {!isEndAfterStart(values) && (
-          <p className="text-xs text-destructive">End time must be after start time.</p>
+          <p className="text-xs text-destructive">
+            End time must be after start time.
+          </p>
         )}
       </div>
 
@@ -117,7 +129,7 @@ export function BatchForm({ values, onChange, disabled }: BatchFormProps) {
                   "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50",
                   active
                     ? "border-primary bg-primary text-primary-foreground"
-                    : "border-input bg-background text-foreground hover:bg-muted"
+                    : "border-input bg-background text-foreground hover:bg-muted",
                 )}
               >
                 {option.label}
@@ -129,7 +141,10 @@ export function BatchForm({ values, onChange, disabled }: BatchFormProps) {
 
       {values.limitType === "limited" && (
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="batch-max" className="text-sm font-medium text-foreground">
+          <label
+            htmlFor="batch-max"
+            className="text-sm font-medium text-foreground"
+          >
             Max members
           </label>
           <Input

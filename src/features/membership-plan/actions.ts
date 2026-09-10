@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import {
   createMembershipPlan,
   deleteMembershipPlan,
+  getMembershipPlans,
   updateMembershipPlan,
 } from "@/lib/api/membership-plans";
 import type {
@@ -13,8 +14,14 @@ import type {
   UpdateMembershipPlanInput,
 } from "@/features/membership-plan/types/membership-plan";
 
+// Reused outside the Membership Plan feature — the Clients "Add Client" form and the
+// row's "Assign membership plan" dialog both need the coach's plan list.
+export async function getMembershipPlansAction(): Promise<MembershipPlan[]> {
+  return getMembershipPlans();
+}
+
 export async function createMembershipPlanAction(
-  input: CreateMembershipPlanInput
+  input: CreateMembershipPlanInput,
 ): Promise<MembershipPlan> {
   const plan = await createMembershipPlan(input);
   revalidatePath("/membership-plan");
@@ -23,7 +30,7 @@ export async function createMembershipPlanAction(
 
 export async function updateMembershipPlanAction(
   id: string,
-  patch: UpdateMembershipPlanInput
+  patch: UpdateMembershipPlanInput,
 ): Promise<MembershipPlan> {
   const plan = await updateMembershipPlan(id, patch);
   revalidatePath("/membership-plan");

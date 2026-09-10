@@ -4,7 +4,13 @@ import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { ExerciseListEntry } from "@/features/clients/types/exercise-stats";
 import {
   filterExerciseCatalog,
@@ -31,14 +37,21 @@ export function ClientExerciseListPanel({
   const [equipmentId, setEquipmentId] = useState<string | null>(null);
   const [muscleId, setMuscleId] = useState<string | null>(null);
 
-  const equipmentOptions = useMemo(() => getDistinctEquipment(catalog), [catalog]);
-  const muscleOptions = useMemo(() => getDistinctExerciseMuscles(catalog), [catalog]);
+  const equipmentOptions = useMemo(
+    () => getDistinctEquipment(catalog),
+    [catalog],
+  );
+  const muscleOptions = useMemo(
+    () => getDistinctExerciseMuscles(catalog),
+    [catalog],
+  );
 
-  const isFiltering = search.trim().length > 0 || equipmentId !== null || muscleId !== null;
+  const isFiltering =
+    search.trim().length > 0 || equipmentId !== null || muscleId !== null;
 
   const filteredCatalog = useMemo(
     () => filterExerciseCatalog(catalog, { search, equipmentId, muscleId }),
-    [catalog, search, equipmentId, muscleId]
+    [catalog, search, equipmentId, muscleId],
   );
 
   const listEntries: ExerciseListEntry[] = isFiltering
@@ -54,9 +67,14 @@ export function ClientExerciseListPanel({
     <div className="flex h-full flex-col gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10">
       <div className="grid grid-cols-2 gap-2">
         <Select
-          items={[{ value: ALL_VALUE, label: "Equipment" }, ...equipmentOptions.map((o) => ({ value: o.id, label: o.label }))]}
+          items={[
+            { value: ALL_VALUE, label: "Equipment" },
+            ...equipmentOptions.map((o) => ({ value: o.id, label: o.label })),
+          ]}
           value={equipmentId ?? ALL_VALUE}
-          onValueChange={(value) => setEquipmentId(value === ALL_VALUE ? null : (value as string))}
+          onValueChange={(value) =>
+            setEquipmentId(value === ALL_VALUE ? null : (value as string))
+          }
         >
           <SelectTrigger>
             <SelectValue placeholder="Equipment" />
@@ -72,9 +90,14 @@ export function ClientExerciseListPanel({
         </Select>
 
         <Select
-          items={[{ value: ALL_VALUE, label: "Muscles" }, ...muscleOptions.map((o) => ({ value: o.id, label: o.label }))]}
+          items={[
+            { value: ALL_VALUE, label: "Muscles" },
+            ...muscleOptions.map((o) => ({ value: o.id, label: o.label })),
+          ]}
           value={muscleId ?? ALL_VALUE}
-          onValueChange={(value) => setMuscleId(value === ALL_VALUE ? null : (value as string))}
+          onValueChange={(value) =>
+            setMuscleId(value === ALL_VALUE ? null : (value as string))
+          }
         >
           <SelectTrigger>
             <SelectValue placeholder="Muscles" />
@@ -117,7 +140,7 @@ export function ClientExerciseListPanel({
             onClick={() => onSelectExercise(exercise)}
             className={cn(
               "flex items-center gap-3 rounded-lg p-2 text-left hover:bg-muted/50",
-              selectedId === exercise.id && "bg-muted"
+              selectedId === exercise.id && "bg-muted",
             )}
           >
             {exercise.thumbnailUrl ? (
@@ -131,8 +154,12 @@ export function ClientExerciseListPanel({
               <div className="size-9 shrink-0 rounded-full bg-muted" />
             )}
             <div className="flex min-w-0 flex-col">
-              <span className="truncate text-sm font-medium text-foreground">{exercise.name}</span>
-              <span className="truncate text-xs text-muted-foreground">{exercise.muscleGroup ?? "—"}</span>
+              <span className="truncate text-sm font-medium text-foreground">
+                {exercise.name}
+              </span>
+              <span className="truncate text-xs text-muted-foreground">
+                {exercise.muscleGroup ?? "—"}
+              </span>
             </div>
           </button>
         ))}

@@ -5,10 +5,25 @@ import { useState } from "react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { EmptyState } from "@/components/shared/empty-state";
-import { MEASUREMENT_FIELDS, MEASUREMENT_UNIT_BY_KEY, type MeasurementFieldKey } from "@/features/clients/lib/measurement-fields";
+import {
+  MEASUREMENT_FIELDS,
+  MEASUREMENT_UNIT_BY_KEY,
+  type MeasurementFieldKey,
+} from "@/features/clients/lib/measurement-fields";
 import {
   filterSeriesByRange,
   getMeasurementSeries,
@@ -33,7 +48,10 @@ export function ClientBodyMeasurementDetailPanel({
   const [range, setRange] = useState<MeasurementRange>("all");
   const field = MEASUREMENT_FIELDS.find((f) => f.key === selectedKey)!;
   const unit = MEASUREMENT_UNIT_BY_KEY[selectedKey];
-  const series = filterSeriesByRange(getMeasurementSeries(measurements, selectedKey), range);
+  const series = filterSeriesByRange(
+    getMeasurementSeries(measurements, selectedKey),
+    range,
+  );
   const last = series[series.length - 1] ?? null;
   const history = [...series].reverse();
 
@@ -41,10 +59,15 @@ export function ClientBodyMeasurementDetailPanel({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h2 className="text-base font-medium text-foreground">{field.label}</h2>
-        <Select value={range} onValueChange={(value) => setRange(value as MeasurementRange)}>
+        <Select
+          value={range}
+          onValueChange={(value) => setRange(value as MeasurementRange)}
+        >
           <SelectTrigger className="w-auto">
             <Calendar className="size-4 text-muted-foreground" />
-            <SelectValue>{(value: MeasurementRange) => MEASUREMENT_RANGE_LABELS[value]}</SelectValue>
+            <SelectValue>
+              {(value: MeasurementRange) => MEASUREMENT_RANGE_LABELS[value]}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {RANGE_OPTIONS.map((option) => (
@@ -64,10 +87,19 @@ export function ClientBodyMeasurementDetailPanel({
               <p className="mb-4 text-2xl font-semibold text-foreground">
                 {last.value} {unit}
               </p>
-              <ChartContainer config={chartConfig} className="aspect-auto h-64 w-full">
+              <ChartContainer
+                config={chartConfig}
+                className="aspect-auto h-64 w-full"
+              >
                 <LineChart data={series}>
                   <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                  <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} fontSize={11} />
+                  <XAxis
+                    dataKey="label"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    fontSize={11}
+                  />
                   <ChartTooltip content={<ChartTooltipContent hideLabel />} />
                   <Line
                     dataKey="value"
@@ -111,7 +143,9 @@ export function ClientBodyMeasurementDetailPanel({
                       {point.value} {unit}
                     </span>
                   </div>
-                  <span className="text-sm text-muted-foreground">{point.label}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {point.label}
+                  </span>
                 </div>
               ))}
             </CardContent>

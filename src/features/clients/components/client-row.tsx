@@ -21,6 +21,15 @@ const STATUS_LABEL: Record<Client["status"], string> = {
   sample: "Sample Client",
 };
 
+// "2027-03-08T..." -> "8 Mar 2027"
+function formatShortDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export function ClientRow({
   client,
   libraryPrograms,
@@ -34,7 +43,10 @@ export function ClientRow({
   const [linkQrOpen, setLinkQrOpen] = useState(false);
 
   return (
-    <TableRow className="cursor-pointer" onClick={() => router.push(`/clients/${client.id}`)}>
+    <TableRow
+      className="cursor-pointer"
+      onClick={() => router.push(`/clients/${client.id}`)}
+    >
       <TableCell className="px-4 py-3">
         <div className="flex items-center gap-3">
           <PersonAvatar avatar={client.avatar} />
@@ -45,8 +57,45 @@ export function ClientRow({
       </TableCell>
 
       <TableCell className="max-w-xs px-4 py-3 whitespace-normal">
-        <p className="text-sm font-medium wrap-break-word text-foreground">{client.programName}</p>
-        {client.programWeekLabel && <p className="text-sm text-muted-foreground">{client.programWeekLabel}</p>}
+        <p className="text-sm font-medium wrap-break-word text-foreground">
+          {client.programName}
+        </p>
+        {client.programWeekLabel && (
+          <p className="text-sm text-muted-foreground">
+            {client.programWeekLabel}
+          </p>
+        )}
+      </TableCell>
+
+      <TableCell className="px-4 py-3">
+        {client.batch ? (
+          <span className="text-sm text-foreground">{client.batch.title}</span>
+        ) : (
+          <span className="text-sm text-muted-foreground">—</span>
+        )}
+      </TableCell>
+
+      <TableCell className="px-4 py-3">
+        {client.membership ? (
+          <div className="flex flex-col gap-0.5">
+            <span className="text-sm text-foreground">
+              {client.membership.plan.title}
+            </span>
+            <span
+              className={cn(
+                "text-xs",
+                client.membership.expired
+                  ? "text-destructive"
+                  : "text-muted-foreground",
+              )}
+            >
+              {client.membership.expired ? "Expired " : "Expires "}
+              {formatShortDate(client.membership.endDate)}
+            </span>
+          </div>
+        ) : (
+          <span className="text-sm text-muted-foreground">—</span>
+        )}
       </TableCell>
 
       <TableCell className="px-4 py-3">
@@ -56,7 +105,9 @@ export function ClientRow({
       <TableCell className="px-4 py-3">
         <div className="flex items-center gap-2">
           <PersonAvatar avatar={client.coach} size="sm" />
-          <span className="max-w-30 truncate text-sm text-foreground">{client.coach.name}</span>
+          <span className="max-w-30 truncate text-sm text-foreground">
+            {client.coach.name}
+          </span>
         </div>
       </TableCell>
 
@@ -66,14 +117,17 @@ export function ClientRow({
           className={cn(
             "h-auto whitespace-normal rounded-md px-3 py-1.5 text-center leading-tight",
             client.status === "active" &&
-              "bg-blue-500/10 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400"
+              "bg-blue-500/10 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
           )}
         >
           {STATUS_LABEL[client.status]}
         </Badge>
       </TableCell>
 
-      <TableCell className="px-4 py-3" onClick={(event) => event.stopPropagation()}>
+      <TableCell
+        className="px-4 py-3"
+        onClick={(event) => event.stopPropagation()}
+      >
         {client.linked ? (
           <Badge
             variant="secondary"
@@ -83,7 +137,11 @@ export function ClientRow({
           </Badge>
         ) : (
           <>
-            <Button variant="outline" size="sm" onClick={() => setLinkQrOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLinkQrOpen(true)}
+            >
               <QrCode />
               Link now
             </Button>
@@ -97,8 +155,15 @@ export function ClientRow({
         )}
       </TableCell>
 
-      <TableCell className="px-4 py-3" onClick={(event) => event.stopPropagation()}>
-        <ClientRowActionsMenu client={client} libraryPrograms={libraryPrograms} teamMembers={teamMembers} />
+      <TableCell
+        className="px-4 py-3"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <ClientRowActionsMenu
+          client={client}
+          libraryPrograms={libraryPrograms}
+          teamMembers={teamMembers}
+        />
       </TableCell>
     </TableRow>
   );

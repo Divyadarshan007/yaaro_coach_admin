@@ -40,7 +40,10 @@ export function CreateBatchView() {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <div className="flex flex-col gap-3">
-        <Link href="/batch" className="w-fit text-sm text-muted-foreground hover:text-foreground">
+        <Link
+          href="/batch"
+          className="w-fit text-sm text-muted-foreground hover:text-foreground"
+        >
           Batch
         </Link>
 
@@ -53,8 +56,12 @@ export function CreateBatchView() {
             <ArrowLeft className="size-5" />
           </Link>
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Create a batch</h1>
-            <p className="text-sm text-muted-foreground">A recurring group training slot for your clients.</p>
+            <h1 className="text-xl font-semibold text-foreground">
+              Create a batch
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              A recurring group training slot for your clients.
+            </p>
           </div>
         </div>
       </div>
@@ -63,10 +70,19 @@ export function CreateBatchView() {
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="flex flex-row justify-end gap-2">
-        <Button variant="outline" size="lg" nativeButton={false} render={<Link href="/batch" />}>
+        <Button
+          variant="outline"
+          size="lg"
+          nativeButton={false}
+          render={<Link href="/batch" />}
+        >
           Cancel
         </Button>
-        <Button size="lg" onClick={handleCreate} disabled={isPending || !isBatchFormValid(values)}>
+        <Button
+          size="lg"
+          onClick={handleCreate}
+          disabled={isPending || !isBatchFormValid(values)}
+        >
           {isPending ? "Creating..." : "Create batch"}
         </Button>
       </div>

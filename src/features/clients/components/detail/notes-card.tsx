@@ -5,7 +5,11 @@ import { useState } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function NotesCard() {
   const [note, setNote] = useState("");
@@ -18,7 +22,9 @@ export function NotesCard() {
           <TooltipTrigger className="text-muted-foreground">
             <HelpCircle className="size-4" />
           </TooltipTrigger>
-          <TooltipContent>Notes are only visible to you and your team.</TooltipContent>
+          <TooltipContent>
+            Notes are only visible to you and your team.
+          </TooltipContent>
         </Tooltip>
       </CardHeader>
       <CardContent>

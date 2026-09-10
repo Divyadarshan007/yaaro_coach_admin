@@ -1,10 +1,23 @@
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
-import type { AdvancedStatsGranularity, AdvancedStatsRange, ClientAdvancedStats } from "@/features/clients/types/advanced-stats";
-import type { ClientSummary, CreateClientInput } from "@/features/clients/types/client";
-import type { ClientMeasurement, MeasurementInput } from "@/features/clients/types/measurement";
+import type {
+  AdvancedStatsGranularity,
+  AdvancedStatsRange,
+  ClientAdvancedStats,
+} from "@/features/clients/types/advanced-stats";
+import type {
+  ClientSummary,
+  CreateClientInput,
+} from "@/features/clients/types/client";
+import type {
+  ClientMeasurement,
+  MeasurementInput,
+} from "@/features/clients/types/measurement";
 import type { FeedItem } from "@/features/clients/types/workout-feed";
-import type { Program, ProgramPatch } from "@/features/program-editor/types/program-editor";
+import type {
+  Program,
+  ProgramPatch,
+} from "@/features/program-editor/types/program-editor";
 
 export async function getClients(): Promise<ClientSummary[]> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients`, {
@@ -16,10 +29,15 @@ export async function getClients(): Promise<ClientSummary[]> {
 }
 
 // Manually add a client who doesn't have (or hasn't linked) a Yaaro account yet.
-export async function createClient(input: CreateClientInput): Promise<ClientSummary> {
+export async function createClient(
+  input: CreateClientInput,
+): Promise<ClientSummary> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await getCoachAuthHeaders()),
+    },
     body: JSON.stringify(input),
   });
   if (!res.ok) {
@@ -39,13 +57,22 @@ export async function getClient(id: string): Promise<ClientSummary | null> {
   return res.json();
 }
 
-export async function updateClientNotes(clientId: string, notes: string): Promise<ClientSummary> {
+export async function updateClientNotes(
+  clientId: string,
+  notes: string,
+): Promise<ClientSummary> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await getCoachAuthHeaders()),
+    },
     body: JSON.stringify({ notes }),
   });
-  if (!res.ok) throw new Error(`Failed to update client ${clientId}'s notes (${res.status})`);
+  if (!res.ok)
+    throw new Error(
+      `Failed to update client ${clientId}'s notes (${res.status})`,
+    );
   return res.json();
 }
 
@@ -54,60 +81,159 @@ export async function removeClient(clientId: string): Promise<void> {
     method: "DELETE",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) throw new Error(`Failed to remove client ${clientId} (${res.status})`);
+  if (!res.ok)
+    throw new Error(`Failed to remove client ${clientId} (${res.status})`);
 }
 
-export async function reassignClientCoach(clientId: string, coachId: string): Promise<void> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/coach`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
-    body: JSON.stringify({ coachId }),
-  });
+// Place the client in a batch, or clear it (batchId: null). A full "limited" batch is
+// rejected by the backend with a 400 + message.
+export async function assignClientBatch(
+  clientId: string,
+  batchId: string | null,
+): Promise<ClientSummary> {
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/batch`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getCoachAuthHeaders()),
+      },
+      body: JSON.stringify({ batchId }),
+    },
+  );
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    throw new Error(body?.message || `Failed to reassign client ${clientId} (${res.status})`);
+    throw new Error(body?.message || `Failed to assign batch (${res.status})`);
+  }
+  return res.json();
+}
+
+// Put the client on a membership plan, or clear it (membershipPlanId: null). Assigning
+// a different plan (re)starts the membership from today, server-side.
+export async function assignClientMembershipPlan(
+  clientId: string,
+  membershipPlanId: string | null,
+): Promise<ClientSummary> {
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/membership-plan`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getCoachAuthHeaders()),
+      },
+      body: JSON.stringify({ membershipPlanId }),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(
+      body?.message || `Failed to assign membership plan (${res.status})`,
+    );
+  }
+  return res.json();
+}
+
+export async function reassignClientCoach(
+  clientId: string,
+  coachId: string,
+): Promise<void> {
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/coach`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getCoachAuthHeaders()),
+      },
+      body: JSON.stringify({ coachId }),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(
+      body?.message || `Failed to reassign client ${clientId} (${res.status})`,
+    );
   }
 }
 
 export async function assignProgramToClient(
   clientId: string,
-  body: { sourceProgramId: string; programStartDate?: string | null }
+  body: { sourceProgramId: string; programStartDate?: string | null },
 ): Promise<{ id: string; title: string }> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/program`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`Failed to assign program to client ${clientId} (${res.status})`);
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/program`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getCoachAuthHeaders()),
+      },
+      body: JSON.stringify(body),
+    },
+  );
+  if (!res.ok)
+    throw new Error(
+      `Failed to assign program to client ${clientId} (${res.status})`,
+    );
   return res.json();
 }
 
 export async function removeClientProgram(clientId: string): Promise<void> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/program`, {
-    method: "DELETE",
-    headers: await getCoachAuthHeaders(),
-  });
-  if (!res.ok) throw new Error(`Failed to remove client ${clientId}'s program (${res.status})`);
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/program`,
+    {
+      method: "DELETE",
+      headers: await getCoachAuthHeaders(),
+    },
+  );
+  if (!res.ok)
+    throw new Error(
+      `Failed to remove client ${clientId}'s program (${res.status})`,
+    );
 }
 
-export async function getClientProgram(clientId: string): Promise<Program | null> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/program`, {
-    cache: "no-store",
-    headers: await getCoachAuthHeaders(),
-  });
+export async function getClientProgram(
+  clientId: string,
+): Promise<Program | null> {
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/program`,
+    {
+      cache: "no-store",
+      headers: await getCoachAuthHeaders(),
+    },
+  );
   if (res.status === 404 || res.status === 400) return null;
-  if (!res.ok) throw new Error(`Failed to fetch client ${clientId}'s program (${res.status})`);
+  if (!res.ok)
+    throw new Error(
+      `Failed to fetch client ${clientId}'s program (${res.status})`,
+    );
   const program: Program = await res.json();
-  return program.image?.startsWith("/") ? { ...program, image: `${COACH_BACKEND_URL}${program.image}` } : program;
+  return program.image?.startsWith("/")
+    ? { ...program, image: `${COACH_BACKEND_URL}${program.image}` }
+    : program;
 }
 
-export async function updateClientProgram(clientId: string, patch: ProgramPatch): Promise<Program> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/program`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
-    body: JSON.stringify(patch),
-  });
-  if (!res.ok) throw new Error(`Failed to update client ${clientId}'s program (${res.status})`);
+export async function updateClientProgram(
+  clientId: string,
+  patch: ProgramPatch,
+): Promise<Program> {
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/program`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getCoachAuthHeaders()),
+      },
+      body: JSON.stringify(patch),
+    },
+  );
+  if (!res.ok)
+    throw new Error(
+      `Failed to update client ${clientId}'s program (${res.status})`,
+    );
   return res.json();
 }
 
@@ -118,23 +244,37 @@ function resolveMediaUrl(url: string): string {
   return url.startsWith("/") ? `${COACH_BACKEND_URL}${url}` : url;
 }
 
-export async function getClientFeeds(clientId: string, page: number): Promise<FeedItem[]> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/feeds/${page}`, {
-    cache: "no-store",
-    headers: await getCoachAuthHeaders(),
-  });
+export async function getClientFeeds(
+  clientId: string,
+  page: number,
+): Promise<FeedItem[]> {
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/feeds/${page}`,
+    {
+      cache: "no-store",
+      headers: await getCoachAuthHeaders(),
+    },
+  );
   if (res.status === 404 || res.status === 400) return [];
-  if (!res.ok) throw new Error(`Failed to fetch client ${clientId}'s feeds (${res.status})`);
+  if (!res.ok)
+    throw new Error(
+      `Failed to fetch client ${clientId}'s feeds (${res.status})`,
+    );
   const feeds: FeedItem[] = await res.json();
   return feeds.map((feed) => ({
     ...feed,
-    media: feed.media.map((item) => ({ ...item, url: resolveMediaUrl(item.url) })),
+    media: feed.media.map((item) => ({
+      ...item,
+      url: resolveMediaUrl(item.url),
+    })),
   }));
 }
 
 // Uploads a single image (e.g. a progress picture) to temp storage, returning its
 // resolved URL to be submitted as the `image` field when creating the record that owns it.
-export async function uploadClientMeasurementImage(file: File): Promise<string> {
+export async function uploadClientMeasurementImage(
+  file: File,
+): Promise<string> {
   const formData = new FormData();
   formData.append("images", file);
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/uploads/images`, {
@@ -149,39 +289,68 @@ export async function uploadClientMeasurementImage(file: File): Promise<string> 
 
 export async function createClientMeasurement(
   clientId: string,
-  body: MeasurementInput
+  body: MeasurementInput,
 ): Promise<ClientMeasurement> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/measurements`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`Failed to log measurement for client ${clientId} (${res.status})`);
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/measurements`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getCoachAuthHeaders()),
+      },
+      body: JSON.stringify(body),
+    },
+  );
+  if (!res.ok)
+    throw new Error(
+      `Failed to log measurement for client ${clientId} (${res.status})`,
+    );
   const measurement: ClientMeasurement = await res.json();
-  return { ...measurement, image: measurement.image ? resolveMediaUrl(measurement.image) : "" };
+  return {
+    ...measurement,
+    image: measurement.image ? resolveMediaUrl(measurement.image) : "",
+  };
 }
 
 export async function getClientAdvancedStats(
   clientId: string,
-  params: { granularity: AdvancedStatsGranularity; range: AdvancedStatsRange }
+  params: { granularity: AdvancedStatsGranularity; range: AdvancedStatsRange },
 ): Promise<ClientAdvancedStats | null> {
-  const query = new URLSearchParams({ granularity: params.granularity, range: params.range });
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/advanced-stats?${query}`, {
-    cache: "no-store",
-    headers: await getCoachAuthHeaders(),
+  const query = new URLSearchParams({
+    granularity: params.granularity,
+    range: params.range,
   });
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/advanced-stats?${query}`,
+    {
+      cache: "no-store",
+      headers: await getCoachAuthHeaders(),
+    },
+  );
   if (res.status === 404 || res.status === 400) return null;
-  if (!res.ok) throw new Error(`Failed to fetch client ${clientId}'s advanced stats (${res.status})`);
+  if (!res.ok)
+    throw new Error(
+      `Failed to fetch client ${clientId}'s advanced stats (${res.status})`,
+    );
   return res.json();
 }
 
-export async function getClientMeasurements(clientId: string): Promise<ClientMeasurement[]> {
-  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/measurements`, {
-    cache: "no-store",
-    headers: await getCoachAuthHeaders(),
-  });
+export async function getClientMeasurements(
+  clientId: string,
+): Promise<ClientMeasurement[]> {
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/measurements`,
+    {
+      cache: "no-store",
+      headers: await getCoachAuthHeaders(),
+    },
+  );
   if (res.status === 404 || res.status === 400) return [];
-  if (!res.ok) throw new Error(`Failed to fetch client ${clientId}'s measurements (${res.status})`);
+  if (!res.ok)
+    throw new Error(
+      `Failed to fetch client ${clientId}'s measurements (${res.status})`,
+    );
   const measurements: ClientMeasurement[] = await res.json();
   return measurements.map((measurement) => ({
     ...measurement,

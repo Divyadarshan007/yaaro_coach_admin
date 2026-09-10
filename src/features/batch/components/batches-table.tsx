@@ -1,11 +1,18 @@
 import { CalendarClock } from "lucide-react";
 
 import { EmptyState } from "@/components/shared/empty-state";
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { BatchRow } from "@/features/batch/components/batch-row";
 import type { Batch } from "@/features/batch/types/batch";
 
-const headerCellClassName = "px-4 py-3 text-xs font-medium tracking-wide text-muted-foreground uppercase";
+const headerCellClassName =
+  "px-4 py-3 text-xs font-medium tracking-wide text-muted-foreground uppercase";
 
 export function BatchesTable({ batches }: { batches: Batch[] }) {
   if (batches.length === 0) {
@@ -30,6 +37,7 @@ export function BatchesTable({ batches }: { batches: Batch[] }) {
             <TableHead className={headerCellClassName}>Start</TableHead>
             <TableHead className={headerCellClassName}>End</TableHead>
             <TableHead className={headerCellClassName}>Limit</TableHead>
+            <TableHead className={headerCellClassName}>Members</TableHead>
             <TableHead className={headerCellClassName}>Actions</TableHead>
           </TableRow>
         </TableHeader>

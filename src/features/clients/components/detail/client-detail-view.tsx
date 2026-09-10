@@ -44,7 +44,10 @@ export function ClientDetailView({
     <div className="flex flex-col gap-6">
       <ClientDetailHeader client={client} />
 
-      <Tabs.Root value={activeTab} onValueChange={(value) => setActiveTab(value as string)}>
+      <Tabs.Root
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as string)}
+      >
         <Tabs.List className="flex gap-6 overflow-x-auto overflow-y-hidden border-b border-border">
           <Tabs.Tab value="overview" className={tabClassName}>
             Overview
@@ -70,7 +73,11 @@ export function ClientDetailView({
         </Tabs.List>
 
         <Tabs.Panel value="overview" className="pt-6">
-          <ClientOverviewTab client={client} libraryPrograms={libraryPrograms} teamMembers={teamMembers} />
+          <ClientOverviewTab
+            client={client}
+            libraryPrograms={libraryPrograms}
+            teamMembers={teamMembers}
+          />
         </Tabs.Panel>
 
         <Tabs.Panel value="workout-program" className="pt-6">
@@ -83,7 +90,10 @@ export function ClientDetailView({
         </Tabs.Panel>
 
         <Tabs.Panel value="exercise-statistics" className="pt-6">
-          <ClientExerciseStatisticsTab catalog={exerciseCatalog} initialFeeds={initialFeeds} />
+          <ClientExerciseStatisticsTab
+            catalog={exerciseCatalog}
+            initialFeeds={initialFeeds}
+          />
         </Tabs.Panel>
 
         <Tabs.Panel value="advanced-statistics" className="pt-6">
@@ -95,7 +105,10 @@ export function ClientDetailView({
         </Tabs.Panel>
 
         <Tabs.Panel value="progress-pictures" className="pt-6">
-          <ClientProgressPicturesTab clientId={client.id} measurements={initialMeasurements} />
+          <ClientProgressPicturesTab
+            clientId={client.id}
+            measurements={initialMeasurements}
+          />
         </Tabs.Panel>
 
         <Tabs.Panel value="settings" className="pt-6">

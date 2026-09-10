@@ -6,7 +6,7 @@ export function ProgramExerciseRow({ exercise }: { exercise: RoutineExercise }) 
 
   return (
     <p className="text-sm text-muted-foreground">
-      {exercise.set.length}× {catalogEntry?.name ?? "Exercise"}
+      {exercise.sets.length}× {catalogEntry?.name ?? "Exercise"}
     </p>
   );
 }

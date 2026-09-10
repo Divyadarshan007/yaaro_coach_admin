@@ -16,11 +16,12 @@ export function ClientExerciseStatisticsTab({
   catalog: ExerciseCatalogEntry[];
   initialFeeds: FeedItem[];
 }) {
-  const [selectedExercise, setSelectedExercise] = useState<ExerciseListEntry | null>(null);
+  const [selectedExercise, setSelectedExercise] =
+    useState<ExerciseListEntry | null>(null);
 
   const recentExercises = useMemo(
     () => getRecentExercisesFromFeeds(initialFeeds, catalog),
-    [initialFeeds, catalog]
+    [initialFeeds, catalog],
   );
 
   return (

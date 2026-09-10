@@ -10,12 +10,16 @@ export function ClientDetailHeader({ client }: { client: ClientDetail }) {
       <div className="flex items-start gap-4">
         <PersonAvatar avatar={client.avatar} className="size-20 text-xl" />
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">{client.name}</h1>
+          <h1 className="text-2xl font-semibold text-foreground">
+            {client.name}
+          </h1>
           <p className="text-sm text-muted-foreground">{client.email}</p>
           <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
             <span>Coached by</span>
             <PersonAvatar avatar={client.coach} size="sm" />
-            <span className="font-medium text-foreground">{client.coach.name}</span>
+            <span className="font-medium text-foreground">
+              {client.coach.name}
+            </span>
           </div>
         </div>
       </div>

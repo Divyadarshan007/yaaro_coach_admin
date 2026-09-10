@@ -15,8 +15,15 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { removeClientAction, updateClientNotesAction } from "@/features/clients/actions";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  removeClientAction,
+  updateClientNotesAction,
+} from "@/features/clients/actions";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
 
 function SettingsRow({
@@ -46,11 +53,14 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isRemoving, startRemoveTransition] = useTransition();
 
-  const coachedSinceLabel = new Date(client.coachedSince).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const coachedSinceLabel = new Date(client.coachedSince).toLocaleDateString(
+    "en-US",
+    {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    },
+  );
 
   function handleNotesBlur() {
     if (notes === savedNotes) return;
@@ -90,7 +100,9 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
                 <TooltipTrigger className="text-muted-foreground">
                   <HelpCircle className="size-4" />
                 </TooltipTrigger>
-                <TooltipContent>Notes are only visible to you and your team.</TooltipContent>
+                <TooltipContent>
+                  Notes are only visible to you and your team.
+                </TooltipContent>
               </Tooltip>
             }
           >
@@ -101,41 +113,63 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
               placeholder="Add notes about this client"
               className="min-h-20"
             />
-            {isSavingNotes && <p className="mt-1 text-xs text-muted-foreground">Saving...</p>}
+            {isSavingNotes && (
+              <p className="mt-1 text-xs text-muted-foreground">Saving...</p>
+            )}
           </SettingsRow>
 
           <SettingsRow label="Status">
             <div className="flex items-center gap-1.5 text-sm text-foreground">
               <span className="size-2 rounded-full bg-emerald-500" />
               Currently Coached
-              <span className="text-muted-foreground">(Since {coachedSinceLabel})</span>
+              <span className="text-muted-foreground">
+                (Since {coachedSinceLabel})
+              </span>
             </div>
           </SettingsRow>
         </CardContent>
       </Card>
 
       <div>
-        <Button variant="destructive" size="lg" onClick={() => setIsRemoveOpen(true)}>
+        <Button
+          variant="destructive"
+          size="lg"
+          onClick={() => setIsRemoveOpen(true)}
+        >
           Remove Client
         </Button>
       </div>
 
-      <Dialog open={isRemoveOpen} onOpenChange={(next) => !isRemoving && setIsRemoveOpen(next)}>
+      <Dialog
+        open={isRemoveOpen}
+        onOpenChange={(next) => !isRemoving && setIsRemoveOpen(next)}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Remove {client.name}?</DialogTitle>
           </DialogHeader>
           <DialogBody>
             <p className="text-sm text-muted-foreground">
-              This will remove {client.name} from your client list. Their workout history and
-              account are not affected, and this action cannot be undone from here.
+              This will remove {client.name} from your client list. Their
+              workout history and account are not affected, and this action
+              cannot be undone from here.
             </p>
           </DialogBody>
           <DialogFooter className="flex-row justify-end">
-            <Button variant="outline" size="lg" onClick={() => setIsRemoveOpen(false)} disabled={isRemoving}>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setIsRemoveOpen(false)}
+              disabled={isRemoving}
+            >
               Cancel
             </Button>
-            <Button variant="destructive" size="lg" onClick={handleRemove} disabled={isRemoving}>
+            <Button
+              variant="destructive"
+              size="lg"
+              onClick={handleRemove}
+              disabled={isRemoving}
+            >
               {isRemoving ? "Removing..." : "Remove Client"}
             </Button>
           </DialogFooter>

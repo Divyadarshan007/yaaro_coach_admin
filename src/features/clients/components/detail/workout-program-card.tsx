@@ -24,7 +24,9 @@ export function WorkoutProgramCard({
           <CardTitle>Workout Program</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">No program assigned yet.</p>
+          <p className="text-sm text-muted-foreground">
+            No program assigned yet.
+          </p>
         </CardContent>
       </Card>
     );
@@ -39,10 +41,17 @@ export function WorkoutProgramCard({
       <CardHeader className="flex items-center justify-between">
         <CardTitle>Workout Program</CardTitle>
         <div className="flex items-center gap-3">
-          <Link href={`/clients/${client.id}/program`} className="text-sm text-primary hover:underline">
+          <Link
+            href={`/clients/${client.id}/program`}
+            className="text-sm text-primary hover:underline"
+          >
             Edit program
           </Link>
-          <ProgramActionsMenu client={client} libraryPrograms={libraryPrograms} programName={workoutProgram.name} />
+          <ProgramActionsMenu
+            client={client}
+            libraryPrograms={libraryPrograms}
+            programName={workoutProgram.name}
+          />
         </div>
       </CardHeader>
       <CardContent className="flex items-center gap-3">
@@ -50,10 +59,14 @@ export function WorkoutProgramCard({
           <CalendarRange className="size-5 text-muted-foreground" />
         </div>
         <div className="min-w-0">
-          <p className="wrap-break-word text-sm font-medium text-foreground">{workoutProgram.name}</p>
+          <p className="wrap-break-word text-sm font-medium text-foreground">
+            {workoutProgram.name}
+          </p>
           <p className="text-sm text-muted-foreground">
             {isScheduled
-              ? `Starts on ${new Date(workoutProgram.programStartDate!).toLocaleDateString("en-US", {
+              ? `Starts on ${new Date(
+                  workoutProgram.programStartDate!,
+                ).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",

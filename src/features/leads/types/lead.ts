@@ -21,6 +21,9 @@ export type CoachLead = {
   id: string;
   name: string;
   number: string;
+  // Free-form ("Male" / "Female" / "Other" / ""), same as a client's gender — used to
+  // prefill the Add-client form when a lead is converted.
+  gender: string;
   sourceId: string | null;
   source: LeadSource | null;
   date: string; // ISO
@@ -34,6 +37,7 @@ export type CoachLead = {
 export type CoachLeadFormValues = {
   name: string;
   number: string;
+  gender: string; // "" = unset
   sourceId: string; // "" = no source
   date: Date;
   status: CoachLeadStatus;
@@ -43,6 +47,7 @@ export type CoachLeadFormValues = {
 export type CreateCoachLeadInput = {
   name: string;
   number: string;
+  gender: string;
   sourceId: string | null;
   date: string;
   status: CoachLeadStatus;

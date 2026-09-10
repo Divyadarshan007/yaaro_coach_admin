@@ -8,10 +8,16 @@ type PersonAvatarProps = {
   className?: string;
 };
 
-export function PersonAvatar({ avatar, size = "default", className }: PersonAvatarProps) {
+export function PersonAvatar({
+  avatar,
+  size = "default",
+  className,
+}: PersonAvatarProps) {
   return (
     <Avatar size={size} className={className}>
-      <AvatarFallback className={cn(avatar.colorClassName)}>{avatar.initials}</AvatarFallback>
+      <AvatarFallback className={cn(avatar.colorClassName)}>
+        {avatar.initials}
+      </AvatarFallback>
     </Avatar>
   );
 }

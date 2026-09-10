@@ -8,7 +8,13 @@ import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
 import type { TeamMember } from "@/features/team/types/team";
 
-export function CoachedCard({ client, teamMembers }: { client: ClientDetail; teamMembers: TeamMember[] }) {
+export function CoachedCard({
+  client,
+  teamMembers,
+}: {
+  client: ClientDetail;
+  teamMembers: TeamMember[];
+}) {
   const [isChangeCoachOpen, setIsChangeCoachOpen] = useState(false);
 
   return (
@@ -26,8 +32,12 @@ export function CoachedCard({ client, teamMembers }: { client: ClientDetail; tea
       <CardContent className="flex items-center gap-3">
         <PersonAvatar avatar={client.coach} size="lg" />
         <div>
-          <p className="text-sm font-medium text-foreground">{client.coach.name}</p>
-          <p className="text-sm text-muted-foreground">{client.coachedSinceLabel}</p>
+          <p className="text-sm font-medium text-foreground">
+            {client.coach.name}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {client.coachedSinceLabel}
+          </p>
         </div>
       </CardContent>
 

@@ -28,8 +28,8 @@ export function LinkClientQrDialog({
         <DialogHeader>
           <DialogTitle>Link {clientName}&apos;s account</DialogTitle>
           <DialogDescription>
-            Ask {clientName} to open the Yaaro app and scan this code. Their account will be linked to
-            this client record right away.
+            Ask {clientName} to open the Yaaro app and scan this code. Their
+            account will be linked to this client record right away.
           </DialogDescription>
         </DialogHeader>
 
@@ -38,7 +38,9 @@ export function LinkClientQrDialog({
             <div className="rounded-xl bg-white p-4 ring-1 ring-foreground/10">
               <QRCodeSVG value={linkQrValue} size={220} marginSize={0} />
             </div>
-            <p className="text-center text-sm font-medium text-foreground">{clientName}</p>
+            <p className="text-center text-sm font-medium text-foreground">
+              {clientName}
+            </p>
           </div>
         </DialogBody>
       </DialogContent>

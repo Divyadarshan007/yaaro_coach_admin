@@ -26,13 +26,18 @@ export async function getLeadSourcesAction(): Promise<LeadSource[]> {
   return getLeadSources();
 }
 
-export async function createLeadAction(input: CreateCoachLeadInput): Promise<CoachLead> {
+export async function createLeadAction(
+  input: CreateCoachLeadInput,
+): Promise<CoachLead> {
   const lead = await createCoachLead(input);
   revalidatePath("/leads");
   return lead;
 }
 
-export async function updateLeadAction(id: string, patch: UpdateCoachLeadInput): Promise<CoachLead> {
+export async function updateLeadAction(
+  id: string,
+  patch: UpdateCoachLeadInput,
+): Promise<CoachLead> {
   const lead = await updateCoachLead(id, patch);
   revalidatePath("/leads");
   return lead;
@@ -43,7 +48,9 @@ export async function deleteLeadAction(id: string): Promise<void> {
   revalidatePath("/leads");
 }
 
-export async function createLeadSourceAction(input: CreateLeadSourceInput): Promise<LeadSource> {
+export async function createLeadSourceAction(
+  input: CreateLeadSourceInput,
+): Promise<LeadSource> {
   const source = await createLeadSource(input);
   revalidatePath("/leads");
   return source;
@@ -51,7 +58,7 @@ export async function createLeadSourceAction(input: CreateLeadSourceInput): Prom
 
 export async function updateLeadSourceAction(
   id: string,
-  patch: UpdateLeadSourceInput
+  patch: UpdateLeadSourceInput,
 ): Promise<LeadSource> {
   const source = await updateLeadSource(id, patch);
   revalidatePath("/leads");

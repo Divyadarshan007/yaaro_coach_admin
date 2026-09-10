@@ -11,7 +11,10 @@ type AddClientButtonProps = {
   size?: React.ComponentProps<typeof Button>["size"];
 };
 
-export function AddClientButton({ variant = "default", size = "lg" }: AddClientButtonProps) {
+export function AddClientButton({
+  variant = "default",
+  size = "lg",
+}: AddClientButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (

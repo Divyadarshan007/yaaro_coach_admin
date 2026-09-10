@@ -49,7 +49,7 @@ export function RoutineExerciseList({
                   </span>
                 ))}
               </div>
-              {exercise.set.map((setEntry, index) => (
+              {exercise.sets.map((setEntry, index) => (
                 <div key={index} className="flex items-center gap-2 rounded-lg bg-muted/50 px-1 py-1.5">
                   <span className="flex w-10 shrink-0 items-center justify-center text-sm font-medium text-foreground">
                     {index + 1}

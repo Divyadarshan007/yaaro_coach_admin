@@ -37,13 +37,24 @@ export function BatchRow({ batch }: { batch: Batch }) {
 
   return (
     <TableRow>
-      <TableCell className="px-4 py-3 text-sm font-medium text-foreground">{batch.title}</TableCell>
-      <TableCell className="px-4 py-3 text-sm text-foreground">{formatTime(batch.startTime)}</TableCell>
-      <TableCell className="px-4 py-3 text-sm text-foreground">{formatTime(batch.endTime)}</TableCell>
+      <TableCell className="px-4 py-3 text-sm font-medium text-foreground">
+        {batch.title}
+      </TableCell>
+      <TableCell className="px-4 py-3 text-sm text-foreground">
+        {formatTime(batch.startTime)}
+      </TableCell>
+      <TableCell className="px-4 py-3 text-sm text-foreground">
+        {formatTime(batch.endTime)}
+      </TableCell>
       <TableCell className="px-4 py-3 text-sm text-foreground">
         {batch.limitType === "limited" && batch.maxMembers != null
           ? `${batch.maxMembers} members`
           : "Unlimited"}
+      </TableCell>
+      <TableCell className="px-4 py-3 text-sm text-foreground">
+        {batch.limitType === "limited" && batch.maxMembers != null
+          ? `${batch.memberCount} / ${batch.maxMembers}`
+          : batch.memberCount}
       </TableCell>
       <TableCell className="px-4 py-3">
         <div className="flex items-center gap-2">
@@ -67,16 +78,22 @@ export function BatchRow({ batch }: { batch: Batch }) {
           </Button>
         </div>
 
-        <Dialog open={isDeleteOpen} onOpenChange={(next) => !isDeleting && setIsDeleteOpen(next)}>
+        <Dialog
+          open={isDeleteOpen}
+          onOpenChange={(next) => !isDeleting && setIsDeleteOpen(next)}
+        >
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Delete {batch.title}?</DialogTitle>
             </DialogHeader>
             <DialogBody>
               <p className="text-sm text-muted-foreground">
-                This will permanently remove this batch. This action cannot be undone.
+                This will permanently remove this batch. This action cannot be
+                undone.
               </p>
-              {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+              {error && (
+                <p className="mt-2 text-sm text-destructive">{error}</p>
+              )}
             </DialogBody>
             <DialogFooter className="flex-row justify-end">
               <Button
@@ -87,7 +104,12 @@ export function BatchRow({ batch }: { batch: Batch }) {
               >
                 Cancel
               </Button>
-              <Button variant="destructive" size="lg" onClick={handleDelete} disabled={isDeleting}>
+              <Button
+                variant="destructive"
+                size="lg"
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
                 {isDeleting ? "Deleting..." : "Delete batch"}
               </Button>
             </DialogFooter>

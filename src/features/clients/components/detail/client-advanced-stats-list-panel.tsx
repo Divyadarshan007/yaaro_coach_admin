@@ -4,10 +4,19 @@ import { BarChart3, LineChart } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export type AdvancedStatsMetric = "muscle-groups" | "duration" | "volume" | "sets";
+export type AdvancedStatsMetric =
+  "muscle-groups" | "duration" | "volume" | "sets";
 
-const METRICS: { key: AdvancedStatsMetric; label: string; icon: typeof LineChart }[] = [
-  { key: "muscle-groups", label: "Set Count Per Muscle Group", icon: LineChart },
+const METRICS: {
+  key: AdvancedStatsMetric;
+  label: string;
+  icon: typeof LineChart;
+}[] = [
+  {
+    key: "muscle-groups",
+    label: "Set Count Per Muscle Group",
+    icon: LineChart,
+  },
   { key: "duration", label: "Duration", icon: BarChart3 },
   { key: "volume", label: "Volume", icon: BarChart3 },
   { key: "sets", label: "Sets", icon: BarChart3 },
@@ -29,7 +38,7 @@ export function ClientAdvancedStatsListPanel({
           onClick={() => onSelect(metric.key)}
           className={cn(
             "flex items-center gap-3 rounded-lg p-2 text-left text-sm font-medium text-foreground hover:bg-muted/50",
-            selectedMetric === metric.key && "bg-muted"
+            selectedMetric === metric.key && "bg-muted",
           )}
         >
           <metric.icon className="size-4 shrink-0 text-muted-foreground" />

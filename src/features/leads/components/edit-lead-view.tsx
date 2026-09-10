@@ -8,12 +8,28 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { updateLeadAction } from "@/features/leads/actions";
 import { LeadForm } from "@/features/leads/components/lead-form";
-import { formToInput, isLeadFormValid, leadToForm } from "@/features/leads/lib/format";
-import type { CoachLead, CoachLeadFormValues, LeadSource } from "@/features/leads/types/lead";
+import {
+  formToInput,
+  isLeadFormValid,
+  leadToForm,
+} from "@/features/leads/lib/format";
+import type {
+  CoachLead,
+  CoachLeadFormValues,
+  LeadSource,
+} from "@/features/leads/types/lead";
 
-export function EditLeadView({ lead, sources }: { lead: CoachLead; sources: LeadSource[] }) {
+export function EditLeadView({
+  lead,
+  sources,
+}: {
+  lead: CoachLead;
+  sources: LeadSource[];
+}) {
   const router = useRouter();
-  const [values, setValues] = useState<CoachLeadFormValues>(() => leadToForm(lead));
+  const [values, setValues] = useState<CoachLeadFormValues>(() =>
+    leadToForm(lead),
+  );
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -36,7 +52,10 @@ export function EditLeadView({ lead, sources }: { lead: CoachLead; sources: Lead
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <div className="flex flex-col gap-3">
-        <Link href="/leads" className="w-fit text-sm text-muted-foreground hover:text-foreground">
+        <Link
+          href="/leads"
+          className="w-fit text-sm text-muted-foreground hover:text-foreground"
+        >
           Leads
         </Link>
 
@@ -50,19 +69,35 @@ export function EditLeadView({ lead, sources }: { lead: CoachLead; sources: Lead
           </Link>
           <div>
             <h1 className="text-xl font-semibold text-foreground">Edit lead</h1>
-            <p className="text-sm text-muted-foreground">Update this lead&apos;s details and status.</p>
+            <p className="text-sm text-muted-foreground">
+              Update this lead&apos;s details and status.
+            </p>
           </div>
         </div>
       </div>
 
-      <LeadForm values={values} onChange={handleChange} sources={sources} disabled={isPending} />
+      <LeadForm
+        values={values}
+        onChange={handleChange}
+        sources={sources}
+        disabled={isPending}
+      />
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="flex flex-row justify-end gap-2">
-        <Button variant="outline" size="lg" nativeButton={false} render={<Link href="/leads" />}>
+        <Button
+          variant="outline"
+          size="lg"
+          nativeButton={false}
+          render={<Link href="/leads" />}
+        >
           Cancel
         </Button>
-        <Button size="lg" onClick={handleSave} disabled={isPending || !isLeadFormValid(values)}>
+        <Button
+          size="lg"
+          onClick={handleSave}
+          disabled={isPending || !isLeadFormValid(values)}
+        >
           {isPending ? "Saving..." : "Save changes"}
         </Button>
       </div>

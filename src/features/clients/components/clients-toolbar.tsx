@@ -13,7 +13,12 @@ type ClientsToolbarProps = {
   studioName: string;
 };
 
-export function ClientsToolbar({ search, onSearchChange, joinQrValue, studioName }: ClientsToolbarProps) {
+export function ClientsToolbar({
+  search,
+  onSearchChange,
+  joinQrValue,
+  studioName,
+}: ClientsToolbarProps) {
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
       <div className="relative sm:w-64">

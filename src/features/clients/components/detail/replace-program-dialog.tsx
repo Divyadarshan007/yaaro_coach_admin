@@ -5,7 +5,14 @@ import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { replaceClientProgramAction } from "@/features/program-editor/actions";
 import type { Program } from "@/features/program-editor/types/program-editor";
@@ -24,16 +31,21 @@ export function ReplaceProgramDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const [search, setSearch] = useState("");
-  const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
+  const [selectedProgramId, setSelectedProgramId] = useState<string | null>(
+    null,
+  );
   const [isPending, startTransition] = useTransition();
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
     if (query.length === 0) return programs;
-    return programs.filter((program) => program.title.toLowerCase().includes(query));
+    return programs.filter((program) =>
+      program.title.toLowerCase().includes(query),
+    );
   }, [programs, search]);
 
-  const selectedProgram = programs.find((program) => program.id === selectedProgramId) ?? null;
+  const selectedProgram =
+    programs.find((program) => program.id === selectedProgramId) ?? null;
 
   function reset() {
     setSearch("");
@@ -60,7 +72,9 @@ export function ReplaceProgramDialog({
     >
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Replace &quot;{currentProgramName}&quot; with...</DialogTitle>
+          <DialogTitle>
+            Replace &quot;{currentProgramName}&quot; with...
+          </DialogTitle>
         </DialogHeader>
 
         <DialogBody className="gap-0 p-0">
@@ -83,7 +97,9 @@ export function ReplaceProgramDialog({
                 My Programs
               </div>
               {filtered.length === 0 && (
-                <p className="py-6 text-center text-sm text-muted-foreground">No programs found.</p>
+                <p className="py-6 text-center text-sm text-muted-foreground">
+                  No programs found.
+                </p>
               )}
               {filtered.map((program) => (
                 <label
@@ -98,7 +114,9 @@ export function ReplaceProgramDialog({
                     className="mt-1 size-4 shrink-0 accent-primary"
                   />
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-semibold text-foreground">{program.title}</span>
+                    <span className="text-sm font-semibold text-foreground">
+                      {program.title}
+                    </span>
                     <div className="flex flex-wrap gap-1">
                       {(program.routines ?? []).map((routine) => (
                         <span
@@ -118,21 +136,36 @@ export function ReplaceProgramDialog({
               <ClipboardList className="size-8 text-muted-foreground" />
               {selectedProgram ? (
                 <>
-                  <p className="text-sm font-medium text-foreground">{selectedProgram.title}</p>
-                  <p className="text-sm text-muted-foreground">{selectedProgram.routineIds.length} routines</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {selectedProgram.title}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedProgram.routineIds.length} routines
+                  </p>
                 </>
               ) : (
-                <p className="text-sm text-muted-foreground">Select a Program</p>
+                <p className="text-sm text-muted-foreground">
+                  Select a Program
+                </p>
               )}
             </div>
           </div>
         </DialogBody>
 
         <DialogFooter className="flex-row justify-between">
-          <Button variant="outline" size="lg" nativeButton={false} render={<Link href="/program-library" />}>
+          <Button
+            variant="outline"
+            size="lg"
+            nativeButton={false}
+            render={<Link href="/program-library" />}
+          >
             Create New Program
           </Button>
-          <Button size="lg" disabled={!selectedProgramId || isPending} onClick={handleReplace}>
+          <Button
+            size="lg"
+            disabled={!selectedProgramId || isPending}
+            onClick={handleReplace}
+          >
             {isPending ? "Replacing..." : "Copy Program to Client"}
           </Button>
         </DialogFooter>

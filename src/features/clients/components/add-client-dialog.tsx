@@ -80,21 +80,29 @@ export function AddClientDialog({
         <DialogHeader>
           <DialogTitle>Invite new clients</DialogTitle>
           <DialogDescription>
-            Invite one or more clients. They will receive a link to accept your invitation and be
-            guided to download the Yaaro app to be coached.{" "}
-            <span className="cursor-pointer text-primary hover:underline">Learn More</span>
+            Invite one or more clients. They will receive a link to accept your
+            invitation and be guided to download the Yaaro app to be coached.{" "}
+            <span className="cursor-pointer text-primary hover:underline">
+              Learn More
+            </span>
           </DialogDescription>
         </DialogHeader>
 
         <DialogBody>
           <div className="flex items-center gap-2 rounded-lg border border-input px-2.5 py-1.5">
-            <span className="flex-1 truncate text-sm text-muted-foreground">{inviteLink}</span>
+            <span className="flex-1 truncate text-sm text-muted-foreground">
+              {inviteLink}
+            </span>
             <button
               type="button"
               onClick={handleCopyLink}
               className="flex shrink-0 items-center gap-1.5 text-sm font-medium text-primary hover:underline"
             >
-              {copied ? <Check className="size-4" /> : <Link2 className="size-4" />}
+              {copied ? (
+                <Check className="size-4" />
+              ) : (
+                <Link2 className="size-4" />
+              )}
               {copied ? "Copied" : "Copy Link"}
             </button>
           </div>
@@ -108,7 +116,11 @@ export function AddClientDialog({
         </DialogBody>
 
         <DialogFooter className="flex-row justify-end">
-          <Button size="lg" disabled={!isValidEmail} onClick={() => handleOpenChange(false)}>
+          <Button
+            size="lg"
+            disabled={!isValidEmail}
+            onClick={() => handleOpenChange(false)}
+          >
             Send Invitation
           </Button>
         </DialogFooter>

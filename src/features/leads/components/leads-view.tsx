@@ -30,7 +30,8 @@ export function LeadsView({ leads }: { leads: CoachLead[] }) {
   const filteredLeads = useMemo(() => {
     const query = search.trim().toLowerCase();
     return leads.filter((lead) => {
-      if (statusFilter !== ALL_STATUSES && lead.status !== statusFilter) return false;
+      if (statusFilter !== ALL_STATUSES && lead.status !== statusFilter)
+        return false;
       if (!query) return true;
       return (
         lead.name.toLowerCase().includes(query) ||
@@ -46,12 +47,19 @@ export function LeadsView({ leads }: { leads: CoachLead[] }) {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-medium text-foreground">Leads</h1>
+          <h1 className="font-heading text-2xl font-medium text-foreground">
+            Leads
+          </h1>
           <p className="text-sm text-muted-foreground">
-            Track prospects you&apos;re following up with and where they came from
+            Track prospects you&apos;re following up with and where they came
+            from
           </p>
         </div>
-        <Button size="lg" nativeButton={false} render={<Link href="/leads/new" />}>
+        <Button
+          size="lg"
+          nativeButton={false}
+          render={<Link href="/leads/new" />}
+        >
           <Plus />
           Add Lead
         </Button>

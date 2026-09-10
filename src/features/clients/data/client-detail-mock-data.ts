@@ -26,15 +26,30 @@ const kapilSinghAvatar: AvatarInfo = {
   initials: "KS",
   colorClassName: "bg-emerald-500 text-white",
 };
-const johnDoeAvatar: AvatarInfo = { name: "John Doe", initials: "JD", colorClassName: "bg-amber-500 text-white" };
-const bigbitesAvatar: AvatarInfo = { name: "bigbites", initials: "D", colorClassName: "bg-blue-500 text-white" };
+const johnDoeAvatar: AvatarInfo = {
+  name: "John Doe",
+  initials: "JD",
+  colorClassName: "bg-amber-500 text-white",
+};
+const bigbitesAvatar: AvatarInfo = {
+  name: "bigbites",
+  initials: "D",
+  colorClassName: "bg-blue-500 text-white",
+};
 
-function buildWeeklyStat(label: string, displayValue: string, values: number[]): StatSummary {
+function buildWeeklyStat(
+  label: string,
+  displayValue: string,
+  values: number[],
+): StatSummary {
   return {
     label,
     displayValue,
     subLabel: "This week",
-    data: WEEK_LABELS.map((weekLabel, index) => ({ label: weekLabel, value: values[index] ?? 0 })),
+    data: WEEK_LABELS.map((weekLabel, index) => ({
+      label: weekLabel,
+      value: values[index] ?? 0,
+    })),
   };
 }
 
@@ -96,7 +111,14 @@ const CLIENT_DETAIL_MOCK_STATS: Record<string, ClientDetailMockStats> = {
         { label: "Jul 29", value: 65 },
       ],
     },
-    progressPictures: [{ id: "kapil-p1", dateLabel: "2026-01-25", weightLabel: "30 kg", imageUrl: "" }],
+    progressPictures: [
+      {
+        id: "kapil-p1",
+        dateLabel: "2026-01-25",
+        weightLabel: "30 kg",
+        imageUrl: "",
+      },
+    ],
   },
   "john-doe": {
     activities: [
@@ -152,7 +174,14 @@ const CLIENT_DETAIL_MOCK_STATS: Record<string, ClientDetailMockStats> = {
         { label: "Jul 29", value: 82 },
       ],
     },
-    progressPictures: [{ id: "bigbites-p1", dateLabel: "2026-07-01", weightLabel: "85 kg", imageUrl: "" }],
+    progressPictures: [
+      {
+        id: "bigbites-p1",
+        dateLabel: "2026-07-01",
+        weightLabel: "85 kg",
+        imageUrl: "",
+      },
+    ],
   },
 };
 

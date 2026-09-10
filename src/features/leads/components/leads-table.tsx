@@ -1,14 +1,26 @@
 import { UserPlus } from "lucide-react";
 
 import { EmptyState } from "@/components/shared/empty-state";
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { LeadRow } from "@/features/leads/components/lead-row";
 import type { CoachLead } from "@/features/leads/types/lead";
 
 const headerCellClassName =
   "px-4 py-3 text-xs font-medium tracking-wide text-muted-foreground uppercase";
 
-export function LeadsTable({ leads, isFiltered }: { leads: CoachLead[]; isFiltered: boolean }) {
+export function LeadsTable({
+  leads,
+  isFiltered,
+}: {
+  leads: CoachLead[];
+  isFiltered: boolean;
+}) {
   if (leads.length === 0) {
     return (
       <div className="rounded-xl bg-card ring-1 ring-foreground/10">

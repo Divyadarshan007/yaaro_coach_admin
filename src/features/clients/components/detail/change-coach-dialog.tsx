@@ -3,11 +3,21 @@
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { avatarFromName } from "@/features/clients/lib/avatar";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { reassignClientCoachAction } from "@/features/clients/actions";
-import { TEAM_MEMBER_ROLE_LABEL, type TeamMember } from "@/features/team/types/team";
+import {
+  TEAM_MEMBER_ROLE_LABEL,
+  type TeamMember,
+} from "@/features/team/types/team";
 
 export function ChangeCoachDialog({
   clientId,
@@ -52,13 +62,15 @@ export function ChangeCoachDialog({
 
         <DialogBody>
           <p className="text-sm text-muted-foreground">
-            Pick a teammate to take over this client. You&apos;ll no longer have access to them once reassigned.
+            Pick a teammate to take over this client. You&apos;ll no longer have
+            access to them once reassigned.
           </p>
 
           <div className="flex flex-col gap-2">
             {teamMembers.length === 0 && (
               <p className="py-6 text-center text-sm text-muted-foreground">
-                No other active teammates yet — invite one from the Team page first.
+                No other active teammates yet — invite one from the Team page
+                first.
               </p>
             )}
             {teamMembers.map((member) => (
@@ -75,8 +87,12 @@ export function ChangeCoachDialog({
                 />
                 <PersonAvatar avatar={avatarFromName(member.name, member.id)} />
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-foreground">{member.name}</span>
-                  <span className="text-xs text-muted-foreground">{TEAM_MEMBER_ROLE_LABEL[member.role]}</span>
+                  <span className="text-sm font-semibold text-foreground">
+                    {member.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {TEAM_MEMBER_ROLE_LABEL[member.role]}
+                  </span>
                 </div>
               </label>
             ))}
@@ -84,10 +100,19 @@ export function ChangeCoachDialog({
         </DialogBody>
 
         <DialogFooter className="flex-row justify-end">
-          <Button variant="outline" size="lg" onClick={() => onOpenChange(false)} disabled={isPending}>
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => onOpenChange(false)}
+            disabled={isPending}
+          >
             Cancel
           </Button>
-          <Button size="lg" disabled={!selectedCoachId || isPending} onClick={handleReassign}>
+          <Button
+            size="lg"
+            disabled={!selectedCoachId || isPending}
+            onClick={handleReassign}
+          >
             {isPending ? "Reassigning..." : "Change Coach"}
           </Button>
         </DialogFooter>

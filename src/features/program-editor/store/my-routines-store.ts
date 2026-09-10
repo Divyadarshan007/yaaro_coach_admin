@@ -54,7 +54,7 @@ type MyRoutinesState = {
   removeRoutine: (id: string) => Promise<void>;
   updateRoutineDetails: (id: string, patch: Partial<Pick<Routine, "title" | "notes">>) => void;
   addExercise: (routineId: string, exerciseId: string, actions: ExerciseAction[]) => void;
-  updateExercise: (routineId: string, exerciseId: string, patch: Partial<Omit<RoutineExercise, "id" | "set">>) => void;
+  updateExercise: (routineId: string, exerciseId: string, patch: Partial<Omit<RoutineExercise, "id" | "sets">>) => void;
   removeExercise: (routineId: string, exerciseId: string) => void;
   addExerciseSet: (routineId: string, exerciseId: string) => void;
   removeExerciseSet: (routineId: string, exerciseId: string, setIndex: number) => void;
@@ -134,7 +134,7 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
             notes: "",
             restSeconds: 0,
             actions,
-            set: [{ metrics: [] }],
+            sets: [{ metrics: [] }],
           },
         ],
       })),
@@ -169,7 +169,7 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
       routines: updateRoutine(state.routines, routineId, (routine) => ({
         ...routine,
         exercises: routine.exercises.map((exercise) =>
-          exercise.id === exerciseId ? { ...exercise, set: [...exercise.set, { metrics: [] }] } : exercise
+          exercise.id === exerciseId ? { ...exercise, sets: [...exercise.sets, { metrics: [] }] } : exercise
         ),
       })),
     }));
@@ -182,7 +182,7 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
         ...routine,
         exercises: routine.exercises.map((exercise) =>
           exercise.id === exerciseId
-            ? { ...exercise, set: exercise.set.filter((_, index) => index !== setIndex) }
+            ? { ...exercise, sets: exercise.sets.filter((_, index) => index !== setIndex) }
             : exercise
         ),
       })),
@@ -198,7 +198,7 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
           exercise.id === exerciseId
             ? {
                 ...exercise,
-                set: exercise.set.map((entry, index) =>
+                sets: exercise.sets.map((entry, index) =>
                   index === setIndex ? updateSetMetric(entry, metricType, value) : entry
                 ),
               }

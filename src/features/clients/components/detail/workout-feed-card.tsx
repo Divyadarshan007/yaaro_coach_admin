@@ -30,7 +30,9 @@ function formatActivityValue(activity: string, data: unknown): string {
     case "Set":
       return `${value} sets`;
     case "Distance":
-      return value >= 1000 ? `${(value / 1000).toFixed(2)} km` : `${Math.round(value)} m`;
+      return value >= 1000
+        ? `${(value / 1000).toFixed(2)} km`
+        : `${Math.round(value)} m`;
     case "Steps":
       return `${Math.round(value).toLocaleString("en-US")} steps`;
     case "Calories":
@@ -49,14 +51,20 @@ function formatDate(iso: string): string {
   });
 }
 
-export function WorkoutFeedCard({ feed, clientAvatar, clientName }: {
+export function WorkoutFeedCard({
+  feed,
+  clientAvatar,
+  clientName,
+}: {
   feed: FeedItem;
   clientAvatar: AvatarInfo;
   clientName: string;
 }) {
   const [showAllExercises, setShowAllExercises] = useState(false);
 
-  const visibleExercises = showAllExercises ? feed.exercises : feed.exercises.slice(0, VISIBLE_EXERCISE_COUNT);
+  const visibleExercises = showAllExercises
+    ? feed.exercises
+    : feed.exercises.slice(0, VISIBLE_EXERCISE_COUNT);
   const hiddenCount = feed.exercises.length - visibleExercises.length;
 
   return (
@@ -65,18 +73,24 @@ export function WorkoutFeedCard({ feed, clientAvatar, clientName }: {
         <PersonAvatar avatar={clientAvatar} />
         <div className="min-w-0">
           <p className="text-sm font-medium text-foreground">{clientName}</p>
-          <p className="text-xs text-muted-foreground">{formatDate(feed.startTime)}</p>
+          <p className="text-xs text-muted-foreground">
+            {formatDate(feed.startTime)}
+          </p>
         </div>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-3">
-        {feed.title && <p className="text-base font-medium text-foreground">{feed.title}</p>}
+        {feed.title && (
+          <p className="text-base font-medium text-foreground">{feed.title}</p>
+        )}
 
         {feed.activityData.length > 0 && (
           <div className="flex gap-6">
             {feed.activityData.map((point) => (
               <div key={point.activity}>
-                <p className="text-xs text-muted-foreground">{ACTIVITY_LABELS[point.activity] ?? point.activity}</p>
+                <p className="text-xs text-muted-foreground">
+                  {ACTIVITY_LABELS[point.activity] ?? point.activity}
+                </p>
                 <p className="text-sm font-medium text-foreground">
                   {formatActivityValue(point.activity, point.data)}
                 </p>
@@ -109,8 +123,13 @@ export function WorkoutFeedCard({ feed, clientAvatar, clientName }: {
             {feed.media.map((item, index) =>
               item.type === "image" ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img key={index} src={item.url} alt="" className="w-full object-cover" />
-              ) : null
+                <img
+                  key={index}
+                  src={item.url}
+                  alt=""
+                  className="w-full object-cover"
+                />
+              ) : null,
             )}
           </div>
         )}

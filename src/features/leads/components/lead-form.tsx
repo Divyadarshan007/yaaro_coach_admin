@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { GENDER_OPTIONS } from "@/lib/gender";
 import { cn } from "@/lib/utils";
 import { LeadSourcesDialog } from "@/features/leads/components/lead-sources-dialog";
 import {
@@ -32,13 +33,21 @@ type LeadFormProps = {
   disabled?: boolean;
 };
 
-export function LeadForm({ values, onChange, sources, disabled }: LeadFormProps) {
+export function LeadForm({
+  values,
+  onChange,
+  sources,
+  disabled,
+}: LeadFormProps) {
   const [manageOpen, setManageOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="lead-name" className="text-sm font-medium text-foreground">
+        <label
+          htmlFor="lead-name"
+          className="text-sm font-medium text-foreground"
+        >
           Name
         </label>
         <Input
@@ -51,7 +60,10 @@ export function LeadForm({ values, onChange, sources, disabled }: LeadFormProps)
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="lead-number" className="text-sm font-medium text-foreground">
+        <label
+          htmlFor="lead-number"
+          className="text-sm font-medium text-foreground"
+        >
           Number
         </label>
         <Input
@@ -63,6 +75,32 @@ export function LeadForm({ values, onChange, sources, disabled }: LeadFormProps)
           onChange={(event) => onChange({ number: event.target.value })}
           placeholder="Phone number"
         />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <span className="text-sm font-medium text-foreground">Gender</span>
+        <div className="flex flex-wrap gap-2">
+          {GENDER_OPTIONS.map((option) => {
+            const active = values.gender === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                disabled={disabled}
+                aria-pressed={active}
+                onClick={() => onChange({ gender: active ? "" : option })}
+                className={cn(
+                  "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50",
+                  active
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-input bg-background text-foreground hover:bg-muted",
+                )}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -79,7 +117,7 @@ export function LeadForm({ values, onChange, sources, disabled }: LeadFormProps)
                 {(value: string) =>
                   value === NO_SOURCE
                     ? "No source"
-                    : sources.find((s) => s.id === value)?.name ?? "No source"
+                    : (sources.find((s) => s.id === value)?.name ?? "No source")
                 }
               </SelectValue>
             </SelectTrigger>
@@ -107,7 +145,10 @@ export function LeadForm({ values, onChange, sources, disabled }: LeadFormProps)
 
       <div className="flex flex-col gap-1.5">
         <span className="text-sm font-medium text-foreground">Date</span>
-        <DatePicker value={values.date} onChange={(date) => onChange({ date })} />
+        <DatePicker
+          value={values.date}
+          onChange={(date) => onChange({ date })}
+        />
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -126,7 +167,7 @@ export function LeadForm({ values, onChange, sources, disabled }: LeadFormProps)
                   "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50",
                   active
                     ? "border-primary bg-primary text-primary-foreground"
-                    : "border-input bg-background text-foreground hover:bg-muted"
+                    : "border-input bg-background text-foreground hover:bg-muted",
                 )}
               >
                 {LEAD_STATUS_LABELS[option]}
@@ -137,7 +178,10 @@ export function LeadForm({ values, onChange, sources, disabled }: LeadFormProps)
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="lead-notes" className="text-sm font-medium text-foreground">
+        <label
+          htmlFor="lead-notes"
+          className="text-sm font-medium text-foreground"
+        >
           Notes
         </label>
         <Textarea
@@ -149,7 +193,11 @@ export function LeadForm({ values, onChange, sources, disabled }: LeadFormProps)
         />
       </div>
 
-      <LeadSourcesDialog open={manageOpen} onOpenChange={setManageOpen} sources={sources} />
+      <LeadSourcesDialog
+        open={manageOpen}
+        onOpenChange={setManageOpen}
+        sources={sources}
+      />
     </div>
   );
 }

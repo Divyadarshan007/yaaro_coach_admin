@@ -84,7 +84,7 @@ export function RoutineExerciseCard({ routineId, exercise }: { routineId: string
           <span className="w-7" />
         </div>
 
-        {exercise.set.map((setEntry, index) => (
+        {exercise.sets.map((setEntry, index) => (
           <div key={index} className="flex items-center gap-2 rounded-lg bg-muted/50 px-1 py-1">
             <span className="flex w-10 shrink-0 items-center justify-center text-sm font-medium text-foreground">
               {index + 1}
@@ -114,7 +114,7 @@ export function RoutineExerciseCard({ routineId, exercise }: { routineId: string
               size="icon-sm"
               className="shrink-0 text-muted-foreground"
               aria-label="Remove set"
-              disabled={exercise.set.length <= 1}
+              disabled={exercise.sets.length <= 1}
               onClick={() => removeExerciseSet(routineId, exercise.id, index)}
             >
               <Trash2 className="size-3.5" />

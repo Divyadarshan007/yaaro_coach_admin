@@ -51,20 +51,29 @@ export function LeadSourcesDialog({
   function handleCreate() {
     const name = newName.trim();
     if (!name) return;
-    run(() => createLeadSourceAction({ name }), () => {
-      setNewName("");
-      onOpenChange(false);
-    });
+    run(
+      () => createLeadSourceAction({ name }),
+      () => {
+        setNewName("");
+        onOpenChange(false);
+      },
+    );
   }
 
   function handleRename(id: string) {
     const name = editingName.trim();
     if (!name) return;
-    run(() => updateLeadSourceAction(id, { name }), () => setEditingId(null));
+    run(
+      () => updateLeadSourceAction(id, { name }),
+      () => setEditingId(null),
+    );
   }
 
   return (
-    <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => !isPending && onOpenChange(next)}
+    >
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Manage lead sources</DialogTitle>
@@ -76,13 +85,18 @@ export function LeadSourcesDialog({
         <DialogBody>
           <div className="flex flex-col divide-y divide-border rounded-lg border border-input">
             {sources.length === 0 && (
-              <p className="px-3 py-3 text-sm text-muted-foreground">No sources yet.</p>
+              <p className="px-3 py-3 text-sm text-muted-foreground">
+                No sources yet.
+              </p>
             )}
             {sources.map((source) => {
               const isEditing = editingId === source.id;
               const isConfirming = confirmDeleteId === source.id;
               return (
-                <div key={source.id} className="flex items-center gap-2 px-3 py-2">
+                <div
+                  key={source.id}
+                  className="flex items-center gap-2 px-3 py-2"
+                >
                   {isEditing ? (
                     <>
                       <Input
@@ -135,7 +149,7 @@ export function LeadSourcesDialog({
                         onClick={() =>
                           run(
                             () => deleteLeadSourceAction(source.id),
-                            () => setConfirmDeleteId(null)
+                            () => setConfirmDeleteId(null),
                           )
                         }
                       >
@@ -144,7 +158,9 @@ export function LeadSourcesDialog({
                     </>
                   ) : (
                     <>
-                      <span className="flex-1 truncate text-sm text-foreground">{source.name}</span>
+                      <span className="flex-1 truncate text-sm text-foreground">
+                        {source.name}
+                      </span>
                       <Button
                         size="icon-sm"
                         variant="ghost"
@@ -184,7 +200,10 @@ export function LeadSourcesDialog({
                 if (event.key === "Enter") handleCreate();
               }}
             />
-            <Button disabled={isPending || newName.trim().length === 0} onClick={handleCreate}>
+            <Button
+              disabled={isPending || newName.trim().length === 0}
+              onClick={handleCreate}
+            >
               <Plus />
               Create source
             </Button>

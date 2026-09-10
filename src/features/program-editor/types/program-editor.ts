@@ -42,7 +42,7 @@ export type RoutineExercise = {
   notes: string;
   restSeconds: number;
   actions: ExerciseAction[];
-  set: ExerciseSetEntry[];
+  sets: ExerciseSetEntry[];
 };
 
 export type Routine = {

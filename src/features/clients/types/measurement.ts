@@ -20,4 +20,6 @@ export type ClientMeasurement = {
   rightCalf: string;
 };
 
-export type MeasurementInput = Partial<Omit<ClientMeasurement, "id">> & { date: string };
+export type MeasurementInput = Partial<Omit<ClientMeasurement, "id">> & {
+  date: string;
+};

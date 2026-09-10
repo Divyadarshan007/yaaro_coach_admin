@@ -7,7 +7,7 @@ import {
   FolderOpen,
   LayoutGrid,
   QrCode,
-  Rocket,
+  // Rocket, // Grow — hidden for now
   Settings,
   Shield,
   UserPlus,
@@ -50,6 +50,7 @@ export const sidebarNavItems: NavItem[] = [
   },
   { id: "clubs", label: "Clubs", href: "/clubs", icon: Shield },
   { id: "leads", label: "Leads", href: "/leads", icon: UserPlus },
-  { id: "grow", label: "Grow", href: "/grow", icon: Rocket },
+  // Grow tab hidden for now — route (/grow) still exists, just not linked in the sidebar.
+  // { id: "grow", label: "Grow", href: "/grow", icon: Rocket },
   { id: "settings", label: "Settings", href: "/settings", icon: Settings },
 ];

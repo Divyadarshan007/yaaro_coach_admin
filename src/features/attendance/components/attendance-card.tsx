@@ -34,7 +34,9 @@ export function AttendanceCard({
         qrSize: QR_SIZE,
       });
       await saveBlobAsImage(blob, `attendance-qr-${slugify(centerName)}.png`);
-    } catch {
+    } catch (err) {
+      // Surface the real reason on live — the generic message below hides it.
+      console.error("Attendance card download failed:", err);
       setError(true);
     } finally {
       setSaving(false);

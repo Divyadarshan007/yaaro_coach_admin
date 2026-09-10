@@ -19,11 +19,20 @@ type StudioQrDialogProps = {
   studioName: string;
 };
 
-export function StudioQrDialog({ joinQrValue, studioName }: StudioQrDialogProps) {
+export function StudioQrDialog({
+  joinQrValue,
+  studioName,
+}: StudioQrDialogProps) {
   return (
     <Dialog>
       <DialogTrigger
-        render={<Button variant="outline" size="icon-lg" aria-label="Show join QR code" />}
+        render={
+          <Button
+            variant="outline"
+            size="icon-lg"
+            aria-label="Show join QR code"
+          />
+        }
       >
         <QrCode />
       </DialogTrigger>
@@ -31,8 +40,8 @@ export function StudioQrDialog({ joinQrValue, studioName }: StudioQrDialogProps)
         <DialogHeader>
           <DialogTitle>Add a client by QR</DialogTitle>
           <DialogDescription>
-            Ask the person to open the Yaaro app and scan this code. They&apos;ll be added to your
-            client list right away.
+            Ask the person to open the Yaaro app and scan this code.
+            They&apos;ll be added to your client list right away.
           </DialogDescription>
         </DialogHeader>
 
@@ -41,7 +50,9 @@ export function StudioQrDialog({ joinQrValue, studioName }: StudioQrDialogProps)
             <div className="rounded-xl bg-white p-4 ring-1 ring-foreground/10">
               <QRCodeSVG value={joinQrValue} size={220} marginSize={0} />
             </div>
-            <p className="text-center text-sm font-medium text-foreground">{studioName}</p>
+            <p className="text-center text-sm font-medium text-foreground">
+              {studioName}
+            </p>
           </div>
         </DialogBody>
       </DialogContent>

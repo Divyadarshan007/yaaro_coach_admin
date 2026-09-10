@@ -18,19 +18,25 @@ async function parseError(res: Response, fallback: string): Promise<never> {
   throw new Error(body?.message || `${fallback} (${res.status})`);
 }
 
-function normalizeSource(raw: (LeadSource & RawId) | null | undefined): LeadSource | null {
+function normalizeSource(
+  raw: (LeadSource & RawId) | null | undefined,
+): LeadSource | null {
   if (!raw) return null;
   return { id: String(raw.id ?? raw._id ?? ""), name: raw.name };
 }
 
 // The backend `populate("sourceId", "name")`s the source, so `sourceId` comes back
 // either as an object (populated), a bare id string, or null.
-function normalizeLead(raw: CoachLead & RawId & { sourceId?: unknown }): CoachLead {
+function normalizeLead(
+  raw: CoachLead & RawId & { sourceId?: unknown },
+): CoachLead {
   const rawSource = raw.sourceId;
   const isObject = rawSource !== null && typeof rawSource === "object";
-  const source = isObject ? normalizeSource(rawSource as LeadSource & RawId) : null;
+  const source = isObject
+    ? normalizeSource(rawSource as LeadSource & RawId)
+    : null;
   const sourceId = isObject
-    ? source?.id ?? null
+    ? (source?.id ?? null)
     : typeof rawSource === "string" && rawSource
       ? rawSource
       : null;
@@ -44,6 +50,7 @@ function normalizeLead(raw: CoachLead & RawId & { sourceId?: unknown }): CoachLe
     id: String(raw.id ?? raw._id ?? ""),
     name: raw.name ?? "",
     number: raw.number ?? "",
+    gender: raw.gender ?? "",
     sourceId,
     source,
     date: raw.date ?? new Date().toISOString(),
@@ -64,20 +71,31 @@ export async function getLeadSources(): Promise<LeadSource[]> {
   return sources.map((s) => normalizeSource(s)!).filter(Boolean);
 }
 
-export async function createLeadSource(input: CreateLeadSourceInput): Promise<LeadSource> {
+export async function createLeadSource(
+  input: CreateLeadSourceInput,
+): Promise<LeadSource> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/lead-sources`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await getCoachAuthHeaders()),
+    },
     body: JSON.stringify(input),
   });
   if (!res.ok) return parseError(res, "Failed to create lead source");
   return normalizeSource(await res.json())!;
 }
 
-export async function updateLeadSource(id: string, patch: UpdateLeadSourceInput): Promise<LeadSource> {
+export async function updateLeadSource(
+  id: string,
+  patch: UpdateLeadSourceInput,
+): Promise<LeadSource> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/lead-sources/${id}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await getCoachAuthHeaders()),
+    },
     body: JSON.stringify(patch),
   });
   if (!res.ok) return parseError(res, "Failed to update lead source");
@@ -104,20 +122,31 @@ export async function getCoachLeads(): Promise<CoachLead[]> {
   return leads.map(normalizeLead);
 }
 
-export async function createCoachLead(input: CreateCoachLeadInput): Promise<CoachLead> {
+export async function createCoachLead(
+  input: CreateCoachLeadInput,
+): Promise<CoachLead> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/coach-leads`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await getCoachAuthHeaders()),
+    },
     body: JSON.stringify(input),
   });
   if (!res.ok) return parseError(res, "Failed to create lead");
   return normalizeLead(await res.json());
 }
 
-export async function updateCoachLead(id: string, patch: UpdateCoachLeadInput): Promise<CoachLead> {
+export async function updateCoachLead(
+  id: string,
+  patch: UpdateCoachLeadInput,
+): Promise<CoachLead> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/coach-leads/${id}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await getCoachAuthHeaders()),
+    },
     body: JSON.stringify(patch),
   });
   if (!res.ok) return parseError(res, "Failed to update lead");

@@ -9,11 +9,28 @@ import { cn } from "@/lib/utils";
 type Period = "AM" | "PM";
 
 const PICKER_HOURS = Array.from({ length: 12 }, (_, i) => i + 1); // 1..12
-const PICKER_MINUTES = ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"];
+const PICKER_MINUTES = [
+  "00",
+  "05",
+  "10",
+  "15",
+  "20",
+  "25",
+  "30",
+  "35",
+  "40",
+  "45",
+  "50",
+  "55",
+];
 
 // Split a 24h "HH:mm" string into 12h parts. Returns empty parts for anything
 // that isn't a valid "HH:mm".
-function to12h(value: string): { hour: string; minute: string; period: Period } {
+function to12h(value: string): {
+  hour: string;
+  minute: string;
+  period: Period;
+} {
   const match = /^(\d{2}):(\d{2})$/.exec(value);
   if (!match) return { hour: "", minute: "", period: "AM" };
   let hour = Number(match[1]);
@@ -50,7 +67,12 @@ type TimeFieldProps = {
   disabled?: boolean;
 };
 
-export function TimeField({ label, value, onChange, disabled }: TimeFieldProps) {
+export function TimeField({
+  label,
+  value,
+  onChange,
+  disabled,
+}: TimeFieldProps) {
   const labelId = useId();
   const initial = to12h(value);
   const [hour, setHour] = useState(initial.hour);
@@ -91,8 +113,9 @@ export function TimeField({ label, value, onChange, disabled }: TimeFieldProps) 
         className={cn(
           "flex h-9 w-fit items-center gap-1 rounded-lg border border-input bg-background pr-1 pl-2.5 text-sm",
           "focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50",
-          invalid && "border-destructive focus-within:border-destructive focus-within:ring-destructive/30",
-          disabled && "pointer-events-none opacity-50"
+          invalid &&
+            "border-destructive focus-within:border-destructive focus-within:ring-destructive/30",
+          disabled && "pointer-events-none opacity-50",
         )}
       >
         <input
@@ -102,12 +125,15 @@ export function TimeField({ label, value, onChange, disabled }: TimeFieldProps) 
           placeholder="--"
           disabled={disabled}
           value={hour}
-          onChange={(event) => commit(clampDigits(event.target.value, 2, 12), minute, period)}
+          onChange={(event) =>
+            commit(clampDigits(event.target.value, 2, 12), minute, period)
+          }
           onFocus={(event) => event.target.select()}
           onBlur={() => {
             setTouched(true);
             const h = Number(hour);
-            if (Number.isInteger(h) && h >= 1 && h <= 12) commit(String(h), minute, period);
+            if (Number.isInteger(h) && h >= 1 && h <= 12)
+              commit(String(h), minute, period);
           }}
           className="w-6 bg-transparent text-center tabular-nums outline-none placeholder:text-muted-foreground"
         />
@@ -119,7 +145,9 @@ export function TimeField({ label, value, onChange, disabled }: TimeFieldProps) 
           placeholder="--"
           disabled={disabled}
           value={minute}
-          onChange={(event) => commit(hour, clampDigits(event.target.value, 2, 59), period)}
+          onChange={(event) =>
+            commit(hour, clampDigits(event.target.value, 2, 59), period)
+          }
           onFocus={(event) => event.target.select()}
           onBlur={() => {
             setTouched(true);
@@ -142,7 +170,7 @@ export function TimeField({ label, value, onChange, disabled }: TimeFieldProps) 
                 "rounded px-1.5 py-0.5 text-xs font-medium transition-colors",
                 period === option
                   ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {option}
@@ -163,7 +191,10 @@ export function TimeField({ label, value, onChange, disabled }: TimeFieldProps) 
               <PopoverPrimitive.Popup className="z-50 flex gap-1 rounded-xl border bg-popover bg-clip-padding p-1.5 text-popover-foreground shadow-lg outline-none data-ending-style:opacity-0 data-starting-style:opacity-0">
                 <PickerColumn
                   label="Hr"
-                  options={PICKER_HOURS.map((h) => ({ key: String(h), label: String(h) }))}
+                  options={PICKER_HOURS.map((h) => ({
+                    key: String(h),
+                    label: String(h),
+                  }))}
                   selected={hour}
                   onSelect={(key) => pickHour(Number(key))}
                 />
@@ -175,7 +206,10 @@ export function TimeField({ label, value, onChange, disabled }: TimeFieldProps) 
                 />
                 <PickerColumn
                   label=""
-                  options={(["AM", "PM"] as Period[]).map((p) => ({ key: p, label: p }))}
+                  options={(["AM", "PM"] as Period[]).map((p) => ({
+                    key: p,
+                    label: p,
+                  }))}
                   selected={period}
                   onSelect={(key) => commit(hour, minute, key as Period)}
                 />
@@ -184,7 +218,9 @@ export function TimeField({ label, value, onChange, disabled }: TimeFieldProps) 
           </PopoverPrimitive.Portal>
         </PopoverPrimitive.Root>
       </div>
-      {invalid && <p className="text-xs text-destructive">Enter a valid time.</p>}
+      {invalid && (
+        <p className="text-xs text-destructive">Enter a valid time.</p>
+      )}
     </div>
   );
 }
@@ -218,7 +254,7 @@ function PickerColumn({
               "rounded-md px-2 py-1 text-center text-sm tabular-nums transition-colors",
               selected === option.key
                 ? "bg-primary text-primary-foreground"
-                : "text-foreground hover:bg-muted"
+                : "text-foreground hover:bg-muted",
             )}
           >
             {option.label}

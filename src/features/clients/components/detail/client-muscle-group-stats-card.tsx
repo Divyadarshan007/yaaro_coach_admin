@@ -5,12 +5,31 @@ import { useMemo, useState } from "react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import { Checkbox } from "@/components/ui/checkbox";
 import { EmptyState } from "@/components/shared/empty-state";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { chartColorForIndex, formatBucketLabel, slugifyGroup } from "@/features/clients/lib/advanced-stats-format";
-import type { AdvancedStatsGranularity, MuscleGroupTotal } from "@/features/clients/types/advanced-stats";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  chartColorForIndex,
+  formatBucketLabel,
+  slugifyGroup,
+} from "@/features/clients/lib/advanced-stats-format";
+import type {
+  AdvancedStatsGranularity,
+  MuscleGroupTotal,
+} from "@/features/clients/types/advanced-stats";
 
 const DEFAULT_SELECTED_COUNT = 3;
 
@@ -28,13 +47,16 @@ export function ClientMuscleGroupStatsCard({
   granularity: AdvancedStatsGranularity;
 }) {
   const [selectedGroups, setSelectedGroups] = useState<Set<string>>(
-    () => new Set(groups.slice(0, DEFAULT_SELECTED_COUNT))
+    () => new Set(groups.slice(0, DEFAULT_SELECTED_COUNT)),
   );
 
   const chartConfig = useMemo(() => {
     const config: ChartConfig = {};
     groups.forEach((group, index) => {
-      config[slugifyGroup(group)] = { label: group, color: chartColorForIndex(index) };
+      config[slugifyGroup(group)] = {
+        label: group,
+        color: chartColorForIndex(index),
+      };
     });
     return config;
   }, [groups]);
@@ -42,13 +64,15 @@ export function ClientMuscleGroupStatsCard({
   const chartData = useMemo(
     () =>
       buckets.map((bucketISO, i) => {
-        const point: Record<string, string | number> = { label: formatBucketLabel(bucketISO, granularity) };
+        const point: Record<string, string | number> = {
+          label: formatBucketLabel(bucketISO, granularity),
+        };
         groups.forEach((group) => {
           point[slugifyGroup(group)] = series[group]?.[i] ?? 0;
         });
         return point;
       }),
-    [buckets, groups, series, granularity]
+    [buckets, groups, series, granularity],
   );
 
   function toggleGroup(group: string) {
@@ -82,11 +106,27 @@ export function ClientMuscleGroupStatsCard({
     <div className="flex flex-col gap-4">
       <Card>
         <CardContent>
-          <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full">
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-80 w-full"
+          >
             <LineChart data={chartData}>
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} fontSize={11} />
-              <YAxis tickLine={false} axisLine={false} tickMargin={8} fontSize={11} allowDecimals={false} width={28} />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                fontSize={11}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                fontSize={11}
+                allowDecimals={false}
+                width={28}
+              />
               <ChartTooltip content={<ChartTooltipContent />} />
               {groups
                 .filter((group) => selectedGroups.has(group))
@@ -121,11 +161,16 @@ export function ClientMuscleGroupStatsCard({
                 <TableRow key={group}>
                   <TableCell>
                     <label className="flex cursor-pointer items-center gap-3">
-                      <Checkbox checked={selectedGroups.has(group)} onCheckedChange={() => toggleGroup(group)} />
+                      <Checkbox
+                        checked={selectedGroups.has(group)}
+                        onCheckedChange={() => toggleGroup(group)}
+                      />
                       {group}
                     </label>
                   </TableCell>
-                  <TableCell className="text-right font-mono tabular-nums">{sets}</TableCell>
+                  <TableCell className="text-right font-mono tabular-nums">
+                    {sets}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

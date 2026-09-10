@@ -1,7 +1,14 @@
 "use client";
 
 import { ImagePlus, X } from "lucide-react";
-import { type ChangeEvent, type ReactNode, useEffect, useRef, useState, useTransition } from "react";
+import {
+  type ChangeEvent,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -16,11 +23,22 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { logClientMeasurementAction } from "@/features/clients/actions";
-import { MEASUREMENT_FIELDS, MEASUREMENT_UNIT_BY_KEY } from "@/features/clients/lib/measurement-fields";
+import {
+  MEASUREMENT_FIELDS,
+  MEASUREMENT_UNIT_BY_KEY,
+} from "@/features/clients/lib/measurement-fields";
 
-const EMPTY_VALUES: Record<string, string> = Object.fromEntries(MEASUREMENT_FIELDS.map((field) => [field.key, ""]));
+const EMPTY_VALUES: Record<string, string> = Object.fromEntries(
+  MEASUREMENT_FIELDS.map((field) => [field.key, ""]),
+);
 
-export function LogMeasurementDialog({ clientId, children }: { clientId: string; children: ReactNode }) {
+export function LogMeasurementDialog({
+  clientId,
+  children,
+}: {
+  clientId: string;
+  children: ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState<Date>(() => new Date());
   const [values, setValues] = useState<Record<string, string>>(EMPTY_VALUES);
@@ -65,7 +83,9 @@ export function LogMeasurementDialog({ clientId, children }: { clientId: string;
     setImagePreviewUrl(null);
   }
 
-  const hasAnyValue = imageFile !== null || Object.values(values).some((value) => value.trim() !== "");
+  const hasAnyValue =
+    imageFile !== null ||
+    Object.values(values).some((value) => value.trim() !== "");
 
   function handleSave() {
     setError(null);
@@ -101,7 +121,9 @@ export function LogMeasurementDialog({ clientId, children }: { clientId: string;
           </div>
 
           <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-foreground">Progress Picture</span>
+            <span className="text-sm font-medium text-foreground">
+              Progress Picture
+            </span>
             <input
               ref={fileInputRef}
               type="file"
@@ -112,7 +134,11 @@ export function LogMeasurementDialog({ clientId, children }: { clientId: string;
             {imagePreviewUrl ? (
               <div className="relative size-32 overflow-hidden rounded-lg border border-dashed border-input">
                 {/* eslint-disable-next-line @next/next/no-img-element -- local blob: preview, next/image doesn't support blob URLs */}
-                <img src={imagePreviewUrl} alt="Progress picture preview" className="size-full object-cover" />
+                <img
+                  src={imagePreviewUrl}
+                  alt="Progress picture preview"
+                  className="size-full object-cover"
+                />
                 <Button
                   type="button"
                   variant="secondary"
@@ -154,7 +180,12 @@ export function LogMeasurementDialog({ clientId, children }: { clientId: string;
                   placeholder="-"
                   className="h-8 w-24 text-right"
                   value={values[field.key]}
-                  onChange={(event) => setValues((prev) => ({ ...prev, [field.key]: event.target.value }))}
+                  onChange={(event) =>
+                    setValues((prev) => ({
+                      ...prev,
+                      [field.key]: event.target.value,
+                    }))
+                  }
                 />
               </div>
             ))}
@@ -164,10 +195,18 @@ export function LogMeasurementDialog({ clientId, children }: { clientId: string;
         </DialogBody>
 
         <DialogFooter className="flex-row justify-end">
-          <Button variant="outline" size="lg" onClick={() => handleOpenChange(false)}>
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => handleOpenChange(false)}
+          >
             Cancel
           </Button>
-          <Button size="lg" disabled={!hasAnyValue || isPending} onClick={handleSave}>
+          <Button
+            size="lg"
+            disabled={!hasAnyValue || isPending}
+            onClick={handleSave}
+          >
             {isPending ? "Saving..." : "Save Measurement"}
           </Button>
         </DialogFooter>

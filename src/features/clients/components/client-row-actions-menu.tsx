@@ -1,11 +1,32 @@
 "use client";
 
-import { MoreVertical, RefreshCw, UserCog, X } from "lucide-react";
+import {
+  CalendarClock,
+  CreditCard,
+  MoreVertical,
+  RefreshCw,
+  UserCog,
+  X,
+} from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { AssignBatchDialog } from "@/features/clients/components/assign-batch-dialog";
+import { AssignMembershipPlanDialog } from "@/features/clients/components/assign-membership-plan-dialog";
 import { ChangeCoachDialog } from "@/features/clients/components/detail/change-coach-dialog";
 import { ReplaceProgramDialog } from "@/features/clients/components/detail/replace-program-dialog";
 import { removeClientAction } from "@/features/clients/actions";
@@ -24,6 +45,8 @@ export function ClientRowActionsMenu({
 }) {
   const [isChangeCoachOpen, setIsChangeCoachOpen] = useState(false);
   const [isReplaceOpen, setIsReplaceOpen] = useState(false);
+  const [isBatchOpen, setIsBatchOpen] = useState(false);
+  const [isMembershipOpen, setIsMembershipOpen] = useState(false);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isRemoving, startRemoveTransition] = useTransition();
 
@@ -36,7 +59,11 @@ export function ClientRowActionsMenu({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label="Client actions" />}>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="ghost" size="icon" aria-label="Client actions" />
+          }
+        >
           <MoreVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -48,7 +75,20 @@ export function ClientRowActionsMenu({
             <RefreshCw />
             Replace Program
           </DropdownMenuItem>
-          <DropdownMenuItem variant="destructive" onClick={() => setIsRemoveOpen(true)}>
+          <DropdownMenuItem onClick={() => setIsBatchOpen(true)}>
+            <CalendarClock />
+            {client.batch ? "Change batch" : "Assign batch"}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsMembershipOpen(true)}>
+            <CreditCard />
+            {client.membership
+              ? "Change membership plan"
+              : "Assign membership plan"}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => setIsRemoveOpen(true)}
+          >
             <X />
             Remove client
           </DropdownMenuItem>
@@ -71,22 +111,52 @@ export function ClientRowActionsMenu({
         onOpenChange={setIsReplaceOpen}
       />
 
-      <Dialog open={isRemoveOpen} onOpenChange={(next) => !isRemoving && setIsRemoveOpen(next)}>
+      <AssignBatchDialog
+        clientId={client.id}
+        clientName={client.avatar.name}
+        currentBatchId={client.batch?.id ?? null}
+        open={isBatchOpen}
+        onOpenChange={setIsBatchOpen}
+      />
+
+      <AssignMembershipPlanDialog
+        clientId={client.id}
+        clientName={client.avatar.name}
+        currentPlanId={client.membership?.plan.id ?? null}
+        open={isMembershipOpen}
+        onOpenChange={setIsMembershipOpen}
+      />
+
+      <Dialog
+        open={isRemoveOpen}
+        onOpenChange={(next) => !isRemoving && setIsRemoveOpen(next)}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Remove {client.avatar.name}?</DialogTitle>
           </DialogHeader>
           <DialogBody>
             <p className="text-sm text-muted-foreground">
-              This will remove {client.avatar.name} from your client list. Their workout history and
-              account are not affected, and this action cannot be undone from here.
+              This will remove {client.avatar.name} from your client list. Their
+              workout history and account are not affected, and this action
+              cannot be undone from here.
             </p>
           </DialogBody>
           <DialogFooter className="flex-row justify-end">
-            <Button variant="outline" size="lg" onClick={() => setIsRemoveOpen(false)} disabled={isRemoving}>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setIsRemoveOpen(false)}
+              disabled={isRemoving}
+            >
               Cancel
             </Button>
-            <Button variant="destructive" size="lg" onClick={handleRemove} disabled={isRemoving}>
+            <Button
+              variant="destructive"
+              size="lg"
+              onClick={handleRemove}
+              disabled={isRemoving}
+            >
               {isRemoving ? "Removing..." : "Remove client"}
             </Button>
           </DialogFooter>

@@ -23,6 +23,7 @@ export async function saveBlobAsImage(blob: Blob, fileName: string): Promise<voi
       // User dismissed the share sheet — that's a deliberate cancel, not a failure.
       if (err instanceof Error && err.name === "AbortError") return;
       // Any other share failure (e.g. no matching share target) — fall through to download.
+      console.warn("navigator.share failed, falling back to <a download>:", err);
     }
   }
 

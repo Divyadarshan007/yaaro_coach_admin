@@ -6,7 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ProgramActionsMenu } from "@/features/clients/components/detail/program-actions-menu";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
-import type { Program, Routine } from "@/features/program-editor/types/program-editor";
+import type {
+  Program,
+  Routine,
+} from "@/features/program-editor/types/program-editor";
 import { useExerciseCatalogStore } from "@/lib/exercise-catalog-store";
 
 const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
@@ -16,7 +19,10 @@ function totalWeeksFromDuration(duration: string): number | null {
   return match ? Number(match[1]) : null;
 }
 
-function computeWeekLabel(duration: string, programStartDate: string | null): string | null {
+function computeWeekLabel(
+  duration: string,
+  programStartDate: string | null,
+): string | null {
   if (programStartDate && new Date(programStartDate) > new Date()) {
     return `Starts on ${new Date(programStartDate).toLocaleDateString("en-US", {
       month: "short",
@@ -28,7 +34,9 @@ function computeWeekLabel(duration: string, programStartDate: string | null): st
   const totalWeeks = totalWeeksFromDuration(duration);
   if (!totalWeeks) return null;
 
-  const start = programStartDate ? new Date(programStartDate).getTime() : Date.now();
+  const start = programStartDate
+    ? new Date(programStartDate).getTime()
+    : Date.now();
   const elapsedWeeks = Math.floor((Date.now() - start) / MS_PER_WEEK) + 1;
   const currentWeek = Math.min(Math.max(elapsedWeeks, 1), totalWeeks);
   return `Week ${currentWeek} out of ${totalWeeks}`;
@@ -37,7 +45,10 @@ function computeWeekLabel(duration: string, programStartDate: string | null): st
 function routineSummary(routine: Routine): string {
   const exerciseCatalogById = useExerciseCatalogStore.getState().byId;
   return routine.exercises
-    .map((exercise) => `${exercise.set.length} × ${exerciseCatalogById.get(exercise.exerciseId)?.name ?? "Exercise"}`)
+    .map(
+      (exercise) =>
+        `${exercise.sets.length} × ${exerciseCatalogById.get(exercise.exerciseId)?.name ?? "Exercise"}`,
+    )
     .join(", ");
 }
 
@@ -55,7 +66,9 @@ export function ActiveProgramPanel({
   if (!workoutProgram || !activeProgram) {
     return (
       <div className="flex flex-col gap-4">
-        <h2 className="text-base font-medium text-foreground">Active Program</h2>
+        <h2 className="text-base font-medium text-foreground">
+          Active Program
+        </h2>
         <Card>
           <CardContent>
             <EmptyState
@@ -69,7 +82,10 @@ export function ActiveProgramPanel({
     );
   }
 
-  const weekLabel = computeWeekLabel(activeProgram.duration, workoutProgram.programStartDate);
+  const weekLabel = computeWeekLabel(
+    activeProgram.duration,
+    workoutProgram.programStartDate,
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -77,21 +93,37 @@ export function ActiveProgramPanel({
       <Card>
         <CardHeader className="flex items-center justify-between">
           <div className="min-w-0">
-            <CardTitle className="wrap-break-word">{activeProgram.title}</CardTitle>
-            {weekLabel && <p className="text-sm text-muted-foreground">{weekLabel}</p>}
+            <CardTitle className="wrap-break-word">
+              {activeProgram.title}
+            </CardTitle>
+            {weekLabel && (
+              <p className="text-sm text-muted-foreground">{weekLabel}</p>
+            )}
           </div>
-          <ProgramActionsMenu client={client} libraryPrograms={libraryPrograms} programName={activeProgram.title} />
+          <ProgramActionsMenu
+            client={client}
+            libraryPrograms={libraryPrograms}
+            programName={activeProgram.title}
+          />
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           {(activeProgram.routines ?? []).map((routine) => (
             <div key={routine.id} className="flex flex-col gap-1">
-              <p className="text-sm font-medium text-foreground">{routine.title}</p>
-              <p className="text-sm text-muted-foreground">{routineSummary(routine)}</p>
+              <p className="text-sm font-medium text-foreground">
+                {routine.title}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {routineSummary(routine)}
+              </p>
             </div>
           ))}
         </CardContent>
         <div className="flex justify-end px-4">
-          <Button size="sm" nativeButton={false} render={<Link href={`/clients/${client.id}/program`} />}>
+          <Button
+            size="sm"
+            nativeButton={false}
+            render={<Link href={`/clients/${client.id}/program`} />}
+          >
             Edit Program
           </Button>
         </div>

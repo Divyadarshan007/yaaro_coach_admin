@@ -101,7 +101,13 @@ export async function renderAttendanceCardBlob({
   ctx.strokeStyle = BORDER_COLOR;
   roundedRectPath(ctx, qrBoxX + 0.5, qrBoxY + 0.5, qrBoxSize - 1, qrBoxSize - 1, QR_BOX_RADIUS - 0.5);
   ctx.stroke();
-  ctx.drawImage(qrCanvas, qrBoxX + QR_BOX_PADDING, qrBoxY + QR_BOX_PADDING, qrSize, qrSize);
+  try {
+    ctx.drawImage(qrCanvas, qrBoxX + QR_BOX_PADDING, qrBoxY + QR_BOX_PADDING, qrSize, qrSize);
+  } catch (err) {
+    throw new Error(
+      `Failed to draw QR canvas (${qrCanvas.width}x${qrCanvas.height}): ${(err as Error).message}`,
+    );
+  }
   y = qrBoxY + qrBoxSize + GAP;
 
   // Footer — "Powered by " (muted) + "yaaro.fit" (bold, dark)
@@ -123,6 +129,16 @@ export async function renderAttendanceCardBlob({
   ctx.fillText(brand, startX + prefixWidth, y);
 
   return new Promise((resolve, reject) => {
-    canvas.toBlob(blob => (blob ? resolve(blob) : reject(new Error("Could not render image"))), "image/png");
+    canvas.toBlob(
+      blob =>
+        blob
+          ? resolve(blob)
+          : reject(
+              new Error(
+                `canvas.toBlob returned null (${canvas.width}x${canvas.height}) — canvas may be tainted or too large`,
+              ),
+            ),
+      "image/png",
+    );
   });
 }

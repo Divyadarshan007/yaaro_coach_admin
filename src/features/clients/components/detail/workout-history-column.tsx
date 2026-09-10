@@ -56,12 +56,22 @@ export function WorkoutHistoryColumn({
         </Card>
       ) : (
         feeds.map((feed) => (
-          <WorkoutFeedCard key={feed.id} feed={feed} clientAvatar={clientAvatar} clientName={clientName} />
+          <WorkoutFeedCard
+            key={feed.id}
+            feed={feed}
+            clientAvatar={clientAvatar}
+            clientName={clientName}
+          />
         ))
       )}
 
       {hasMore && (
-        <Button variant="outline" onClick={loadMore} disabled={isPending} className="self-center">
+        <Button
+          variant="outline"
+          onClick={loadMore}
+          disabled={isPending}
+          className="self-center"
+        >
           {isPending ? "Loading..." : "Load more"}
         </Button>
       )}

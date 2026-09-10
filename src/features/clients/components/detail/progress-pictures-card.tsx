@@ -8,7 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
 import type { ProgressPicture } from "@/features/clients/types/client-detail";
 
-export function ProgressPicturesCard({ pictures }: { pictures: ProgressPicture[] }) {
+export function ProgressPicturesCard({
+  pictures,
+}: {
+  pictures: ProgressPicture[];
+}) {
   const [index, setIndex] = useState(0);
 
   if (pictures.length === 0) {
@@ -43,7 +47,11 @@ export function ProgressPicturesCard({ pictures }: { pictures: ProgressPicture[]
         <div className="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-muted">
           {picture.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- backend-hosted photo, not worth Next/Image's optimization pipeline
-            <img src={picture.imageUrl} alt={`Progress picture, ${picture.dateLabel}`} className="size-full object-cover" />
+            <img
+              src={picture.imageUrl}
+              alt={`Progress picture, ${picture.dateLabel}`}
+              className="size-full object-cover"
+            />
           ) : (
             <ImageOff className="size-8 text-muted-foreground" />
           )}
@@ -59,7 +67,10 @@ export function ProgressPicturesCard({ pictures }: { pictures: ProgressPicture[]
             <ChevronLeft />
           </Button>
           <p className="text-sm text-muted-foreground">
-            {picture.dateLabel} <span className="font-medium text-foreground">{picture.weightLabel}</span>
+            {picture.dateLabel}{" "}
+            <span className="font-medium text-foreground">
+              {picture.weightLabel}
+            </span>
           </p>
           <Button
             variant="ghost"

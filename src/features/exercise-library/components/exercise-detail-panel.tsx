@@ -57,6 +57,8 @@ export function ExerciseDetailPanel({ exercise }: { exercise: ExerciseCatalogEnt
               loop
               playsInline
               controls
+              controlsList="nodownload"
+              onContextMenu={(event) => event.preventDefault()}
               className="h-full max-h-64 w-full rounded-lg bg-muted object-contain"
             />
           ) : (

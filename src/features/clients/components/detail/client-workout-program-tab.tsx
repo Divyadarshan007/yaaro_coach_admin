@@ -25,7 +25,11 @@ export function ClientWorkoutProgramTab({
           initialFeeds={initialFeeds}
         />
       </div>
-      <ActiveProgramPanel client={client} libraryPrograms={libraryPrograms} activeProgram={activeProgram} />
+      <ActiveProgramPanel
+        client={client}
+        libraryPrograms={libraryPrograms}
+        activeProgram={activeProgram}
+      />
     </div>
   );
 }

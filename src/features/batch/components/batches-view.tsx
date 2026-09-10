@@ -10,12 +10,18 @@ export function BatchesView({ batches }: { batches: Batch[] }) {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-medium text-foreground">Batch</h1>
+          <h1 className="font-heading text-2xl font-medium text-foreground">
+            Batch
+          </h1>
           <p className="text-sm text-muted-foreground">
             Schedule group training slots and place your clients into them
           </p>
         </div>
-        <Button size="lg" nativeButton={false} render={<Link href="/batch/new" />}>
+        <Button
+          size="lg"
+          nativeButton={false}
+          render={<Link href="/batch/new" />}
+        >
           <Plus />
           Add Batch
         </Button>

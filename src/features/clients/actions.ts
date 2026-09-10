@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 import {
+  assignClientBatch,
+  assignClientMembershipPlan,
   createClient,
   createClientMeasurement,
   getClientAdvancedStats,
@@ -13,30 +15,64 @@ import {
   updateClientNotes,
   uploadClientMeasurementImage,
 } from "@/lib/api/clients";
-import type { AdvancedStatsGranularity, AdvancedStatsRange, ClientAdvancedStats } from "@/features/clients/types/advanced-stats";
-import type { ClientSummary, CreateClientInput } from "@/features/clients/types/client";
+import type {
+  AdvancedStatsGranularity,
+  AdvancedStatsRange,
+  ClientAdvancedStats,
+} from "@/features/clients/types/advanced-stats";
+import type {
+  ClientSummary,
+  CreateClientInput,
+} from "@/features/clients/types/client";
 import type { FeedItem } from "@/features/clients/types/workout-feed";
 import type { MeasurementInput } from "@/features/clients/types/measurement";
 
-export async function createClientAction(input: CreateClientInput): Promise<ClientSummary> {
+export async function createClientAction(
+  input: CreateClientInput,
+): Promise<ClientSummary> {
   const client = await createClient(input);
   revalidatePath("/clients");
   revalidatePath("/dashboard");
   return client;
 }
 
-export async function getClientFeedsAction(clientId: string, page: number): Promise<FeedItem[]> {
+export async function assignClientBatchAction(
+  clientId: string,
+  batchId: string | null,
+): Promise<ClientSummary> {
+  const client = await assignClientBatch(clientId, batchId);
+  revalidatePath("/clients");
+  revalidatePath("/batch");
+  return client;
+}
+
+export async function assignClientMembershipPlanAction(
+  clientId: string,
+  membershipPlanId: string | null,
+): Promise<ClientSummary> {
+  const client = await assignClientMembershipPlan(clientId, membershipPlanId);
+  revalidatePath("/clients");
+  return client;
+}
+
+export async function getClientFeedsAction(
+  clientId: string,
+  page: number,
+): Promise<FeedItem[]> {
   return getClientFeeds(clientId, page);
 }
 
 export async function getClientAdvancedStatsAction(
   clientId: string,
-  params: { granularity: AdvancedStatsGranularity; range: AdvancedStatsRange }
+  params: { granularity: AdvancedStatsGranularity; range: AdvancedStatsRange },
 ): Promise<ClientAdvancedStats | null> {
   return getClientAdvancedStats(clientId, params);
 }
 
-export async function updateClientNotesAction(clientId: string, notes: string): Promise<void> {
+export async function updateClientNotesAction(
+  clientId: string,
+  notes: string,
+): Promise<void> {
   await updateClientNotes(clientId, notes);
   revalidatePath(`/clients/${clientId}`);
 }
@@ -49,7 +85,10 @@ export async function removeClientAction(clientId: string): Promise<void> {
 
 // Reassigning hands off the requester's own access to the client (see reassignCoach's
 // backend doc comment), so this redirects away the same way removeClientAction does.
-export async function reassignClientCoachAction(clientId: string, coachId: string): Promise<void> {
+export async function reassignClientCoachAction(
+  clientId: string,
+  coachId: string,
+): Promise<void> {
   await reassignClientCoach(clientId, coachId);
   revalidatePath("/clients");
   redirect("/clients");
@@ -74,7 +113,10 @@ const MEASUREMENT_FIELD_KEYS = [
   "rightCalf",
 ] as const;
 
-export async function logClientMeasurementAction(clientId: string, formData: FormData): Promise<void> {
+export async function logClientMeasurementAction(
+  clientId: string,
+  formData: FormData,
+): Promise<void> {
   const body: MeasurementInput = { date: String(formData.get("date") ?? "") };
 
   for (const key of MEASUREMENT_FIELD_KEYS) {

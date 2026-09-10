@@ -7,13 +7,23 @@ import { ClientBodyMeasurementListPanel } from "@/features/clients/components/de
 import type { MeasurementFieldKey } from "@/features/clients/lib/measurement-fields";
 import type { ClientMeasurement } from "@/features/clients/types/measurement";
 
-export function ClientBodyMeasurementsTab({ measurements }: { measurements: ClientMeasurement[] }) {
+export function ClientBodyMeasurementsTab({
+  measurements,
+}: {
+  measurements: ClientMeasurement[];
+}) {
   const [selectedKey, setSelectedKey] = useState<MeasurementFieldKey>("weight");
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr]">
-      <ClientBodyMeasurementListPanel selectedKey={selectedKey} onSelect={setSelectedKey} />
-      <ClientBodyMeasurementDetailPanel selectedKey={selectedKey} measurements={measurements} />
+      <ClientBodyMeasurementListPanel
+        selectedKey={selectedKey}
+        onSelect={setSelectedKey}
+      />
+      <ClientBodyMeasurementDetailPanel
+        selectedKey={selectedKey}
+        measurements={measurements}
+      />
     </div>
   );
 }

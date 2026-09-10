@@ -1,62 +1,57 @@
-import { Cake } from "lucide-react";
+import { CalendarClock } from "lucide-react";
 import Link from "next/link";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { avatarFromName } from "@/features/clients/lib/avatar";
-import type { UpcomingBirthday } from "@/features/dashboard/types/dashboard";
+import type { Renewal } from "@/features/dashboard/types/dashboard";
 
-function formatBirthdayLabel(nextBirthdayDate: string): string {
-  return new Date(`${nextBirthdayDate}T00:00:00Z`).toLocaleDateString("en-US", {
-    month: "short",
+function formatExpiry(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-IN", {
     day: "numeric",
-    timeZone: "UTC",
+    month: "short",
+    year: "numeric",
   });
 }
 
-function formatDaysUntil(daysUntil: number): string {
-  if (daysUntil === 0) return "Today";
-  if (daysUntil === 1) return "Tomorrow";
-  return `In ${daysUntil} days`;
+function formatDaysLeft(days: number): string {
+  if (days <= 0) return "Expires today";
+  if (days === 1) return "1 day left";
+  return `${days} days left`;
 }
 
-export function UpcomingBirthdaysPanel({
-  birthdays,
-}: {
-  birthdays: UpcomingBirthday[];
-}) {
+export function RenewalsPanel({ renewals }: { renewals: Renewal[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Upcoming Birthdays</CardTitle>
+        <CardTitle>Renewals ({renewals.length})</CardTitle>
       </CardHeader>
       <CardContent className="min-h-80">
-        {birthdays.length > 0 ? (
-          <ul className="flex flex-col gap-1">
-            {birthdays.map((birthday) => (
-              <li key={birthday.id}>
+        {renewals.length > 0 ? (
+          <ul className="flex max-h-80 flex-col gap-1 overflow-y-auto">
+            {renewals.map((renewal) => (
+              <li key={renewal.id}>
                 <Link
-                  href={`/clients/${birthday.id}`}
+                  href={`/clients/${renewal.id}`}
                   className="flex items-center gap-3 rounded-md px-2 py-2 hover:bg-accent"
                 >
                   <PersonAvatar
                     avatar={avatarFromName(
-                      birthday.name || "Client",
-                      birthday.id,
+                      renewal.name || "Client",
+                      renewal.id,
                     )}
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-foreground">
-                      {birthday.name}
+                      {renewal.name}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {formatBirthdayLabel(birthday.nextBirthdayDate)} · Turning{" "}
-                      {birthday.turningAge}
+                      {renewal.planTitle} · {formatExpiry(renewal.expiryDate)}
                     </p>
                   </div>
                   <span className="shrink-0 text-sm font-medium text-muted-foreground">
-                    {formatDaysUntil(birthday.daysUntil)}
+                    {formatDaysLeft(renewal.daysUntilExpiry)}
                   </span>
                 </Link>
               </li>
@@ -64,9 +59,9 @@ export function UpcomingBirthdaysPanel({
           </ul>
         ) : (
           <EmptyState
-            icon={Cake}
-            title="No upcoming birthdays"
-            description="No clients have a birthday in the next 30 days"
+            icon={CalendarClock}
+            title="No upcoming renewals"
+            description="No memberships expire in the next 30 days"
             className="h-80 justify-center py-0"
           />
         )}

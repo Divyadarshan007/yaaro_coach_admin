@@ -1,6 +1,10 @@
 import { formatBucketLabel } from "@/features/clients/lib/advanced-stats-format";
 import type { ClientAdvancedStats } from "@/features/clients/types/advanced-stats";
-import type { BodyweightSummary, ProgressPicture, StatSummary } from "@/features/clients/types/client-detail";
+import type {
+  BodyweightSummary,
+  ProgressPicture,
+  StatSummary,
+} from "@/features/clients/types/client-detail";
 import type { ClientMeasurement } from "@/features/clients/types/measurement";
 
 function formatDurationDisplay(totalMinutes: number): string {
@@ -27,18 +31,25 @@ export function buildOverviewStats(stats: ClientAdvancedStats | null): {
 } {
   const buckets = stats?.buckets ?? [];
   const granularity = stats?.granularity ?? "week";
-  const durationMinutes = (stats?.duration ?? []).map((seconds) => Math.round(seconds / 60));
+  const durationMinutes = (stats?.duration ?? []).map((seconds) =>
+    Math.round(seconds / 60),
+  );
   const volume = stats?.volume ?? [];
   const sets = stats?.sets ?? [];
 
   function chartData(values: number[]) {
-    return buckets.map((bucketISO, i) => ({ label: formatBucketLabel(bucketISO, granularity), value: values[i] ?? 0 }));
+    return buckets.map((bucketISO, i) => ({
+      label: formatBucketLabel(bucketISO, granularity),
+      value: values[i] ?? 0,
+    }));
   }
 
   return {
     duration: {
       label: "Duration",
-      displayValue: formatDurationDisplay(durationMinutes[durationMinutes.length - 1] ?? 0),
+      displayValue: formatDurationDisplay(
+        durationMinutes[durationMinutes.length - 1] ?? 0,
+      ),
       subLabel: "This week",
       data: chartData(durationMinutes),
     },
@@ -65,9 +76,15 @@ function formatShortDate(isoDate: string): string {
   });
 }
 
-export function buildBodyweightSummary(measurements: ClientMeasurement[]): BodyweightSummary {
+export function buildBodyweightSummary(
+  measurements: ClientMeasurement[],
+): BodyweightSummary {
   const weighIns = measurements
-    .filter((measurement) => measurement.weight.trim() !== "" && !Number.isNaN(Number(measurement.weight)))
+    .filter(
+      (measurement) =>
+        measurement.weight.trim() !== "" &&
+        !Number.isNaN(Number(measurement.weight)),
+    )
     .slice()
     .sort((a, b) => a.date.localeCompare(b.date));
 
@@ -82,7 +99,9 @@ export function buildBodyweightSummary(measurements: ClientMeasurement[]): Bodyw
   };
 }
 
-export function buildProgressPictures(measurements: ClientMeasurement[]): ProgressPicture[] {
+export function buildProgressPictures(
+  measurements: ClientMeasurement[],
+): ProgressPicture[] {
   return measurements
     .filter((measurement) => measurement.image.trim() !== "")
     .slice()

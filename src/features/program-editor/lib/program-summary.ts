@@ -14,7 +14,7 @@ export function computeProgramSummary(
 } {
   const exercises = routines.flatMap((routine) => routine.exercises);
   const totalExercises = exercises.length;
-  const totalSets = exercises.reduce((sum, exercise) => sum + exercise.set.length, 0);
+  const totalSets = exercises.reduce((sum, exercise) => sum + exercise.sets.length, 0);
   const muscleLookup = buildMuscleLookup(muscleCatalog);
 
   const setsByMuscle = new Map<string, number>();
@@ -22,11 +22,11 @@ export function computeProgramSummary(
   for (const exercise of exercises) {
     const muscleId = exerciseCatalogById.get(exercise.exerciseId)?.muscleId?._id;
     if (!muscleId) continue;
-    setsByMuscle.set(muscleId, (setsByMuscle.get(muscleId) ?? 0) + exercise.set.length);
+    setsByMuscle.set(muscleId, (setsByMuscle.get(muscleId) ?? 0) + exercise.sets.length);
 
     const groupId = muscleLookup[muscleId]?.muscleGroupId;
     if (groupId) {
-      setsByGroup.set(groupId, (setsByGroup.get(groupId) ?? 0) + exercise.set.length);
+      setsByGroup.set(groupId, (setsByGroup.get(groupId) ?? 0) + exercise.sets.length);
     }
   }
 

@@ -15,14 +15,21 @@ export const MEASUREMENT_RANGE_LABELS: Record<MeasurementRange, string> = {
   all: "All Time",
 };
 
-const MEASUREMENT_RANGE_DAYS: Record<Exclude<MeasurementRange, "all">, number> = {
+const MEASUREMENT_RANGE_DAYS: Record<
+  Exclude<MeasurementRange, "all">,
+  number
+> = {
   "12weeks": 12 * 7,
   year: 365,
 };
 
-export function filterSeriesByRange(series: MeasurementPoint[], range: MeasurementRange): MeasurementPoint[] {
+export function filterSeriesByRange(
+  series: MeasurementPoint[],
+  range: MeasurementRange,
+): MeasurementPoint[] {
   if (range === "all") return series;
-  const cutoff = Date.now() - MEASUREMENT_RANGE_DAYS[range] * 24 * 60 * 60 * 1000;
+  const cutoff =
+    Date.now() - MEASUREMENT_RANGE_DAYS[range] * 24 * 60 * 60 * 1000;
   return series.filter((point) => new Date(point.date).getTime() >= cutoff);
 }
 
@@ -34,7 +41,10 @@ function formatDateLabel(date: string): string {
 
 // `measurements` comes in most-recent-first (backend sorts by date desc); charts read
 // left-to-right chronologically, so the series is reversed to oldest-first here.
-export function getMeasurementSeries(measurements: ClientMeasurement[], key: MeasurementFieldKey): MeasurementPoint[] {
+export function getMeasurementSeries(
+  measurements: ClientMeasurement[],
+  key: MeasurementFieldKey,
+): MeasurementPoint[] {
   return measurements
     .filter((measurement) => measurement[key].trim() !== "")
     .map((measurement) => ({

@@ -1,6 +1,9 @@
 import type { WeekDayActivity } from "@/features/clients/types/client";
 
-export function getLastSevenDaysActivity(today: Date, activeDayOffsets: number[]): WeekDayActivity[] {
+export function getLastSevenDaysActivity(
+  today: Date,
+  activeDayOffsets: number[],
+): WeekDayActivity[] {
   const days: WeekDayActivity[] = [];
 
   for (let offset = 6; offset >= 0; offset--) {
@@ -9,7 +12,9 @@ export function getLastSevenDaysActivity(today: Date, activeDayOffsets: number[]
 
     days.push({
       key: date.toISOString().slice(0, 10),
-      dayLabel: date.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 2),
+      dayLabel: date
+        .toLocaleDateString("en-US", { weekday: "short" })
+        .slice(0, 2),
       dayNumber: date.getDate(),
       active: activeDayOffsets.includes(offset),
     });

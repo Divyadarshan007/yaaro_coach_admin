@@ -8,8 +8,15 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createLeadAction } from "@/features/leads/actions";
 import { LeadForm } from "@/features/leads/components/lead-form";
-import { emptyLeadForm, formToInput, isLeadFormValid } from "@/features/leads/lib/format";
-import type { CoachLeadFormValues, LeadSource } from "@/features/leads/types/lead";
+import {
+  emptyLeadForm,
+  formToInput,
+  isLeadFormValid,
+} from "@/features/leads/lib/format";
+import type {
+  CoachLeadFormValues,
+  LeadSource,
+} from "@/features/leads/types/lead";
 
 export function CreateLeadView({ sources }: { sources: LeadSource[] }) {
   const router = useRouter();
@@ -36,7 +43,10 @@ export function CreateLeadView({ sources }: { sources: LeadSource[] }) {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <div className="flex flex-col gap-3">
-        <Link href="/leads" className="w-fit text-sm text-muted-foreground hover:text-foreground">
+        <Link
+          href="/leads"
+          className="w-fit text-sm text-muted-foreground hover:text-foreground"
+        >
           Leads
         </Link>
 
@@ -50,19 +60,35 @@ export function CreateLeadView({ sources }: { sources: LeadSource[] }) {
           </Link>
           <div>
             <h1 className="text-xl font-semibold text-foreground">Add lead</h1>
-            <p className="text-sm text-muted-foreground">A prospect you want to follow up with.</p>
+            <p className="text-sm text-muted-foreground">
+              A prospect you want to follow up with.
+            </p>
           </div>
         </div>
       </div>
 
-      <LeadForm values={values} onChange={handleChange} sources={sources} disabled={isPending} />
+      <LeadForm
+        values={values}
+        onChange={handleChange}
+        sources={sources}
+        disabled={isPending}
+      />
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="flex flex-row justify-end gap-2">
-        <Button variant="outline" size="lg" nativeButton={false} render={<Link href="/leads" />}>
+        <Button
+          variant="outline"
+          size="lg"
+          nativeButton={false}
+          render={<Link href="/leads" />}
+        >
           Cancel
         </Button>
-        <Button size="lg" onClick={handleCreate} disabled={isPending || !isLeadFormValid(values)}>
+        <Button
+          size="lg"
+          onClick={handleCreate}
+          disabled={isPending || !isLeadFormValid(values)}
+        >
           {isPending ? "Adding..." : "Add lead"}
         </Button>
       </div>

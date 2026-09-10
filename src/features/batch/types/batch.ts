@@ -10,6 +10,8 @@ export type Batch = {
   endTime: string; // "HH:mm"
   limitType: BatchLimitType;
   maxMembers: number | null;
+  // Live count of non-deleted clients currently placed in this batch (server-computed).
+  memberCount: number;
   createdAt?: string;
   updatedAt?: string;
 };
