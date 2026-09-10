@@ -19,7 +19,7 @@ export default async function AttendancePage() {
       </div>
 
       <div className="grid items-start gap-6 md:grid-cols-2">
-        <AttendanceCard centerName={attendance.centerName} qrValue={attendance.qrValue} />
+        <AttendanceCard studioName={attendance.studioName} qrValue={attendance.qrValue} />
         <TodayCheckIns
           date={attendance.date}
           count={attendance.todayCount}

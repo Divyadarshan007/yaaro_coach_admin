@@ -35,6 +35,6 @@ export async function saveBlobAsImage(blob: Blob, fileName: string): Promise<voi
   URL.revokeObjectURL(url);
 }
 
-export function slugify(name: string): string {
-  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "studio";
+export function slugify(name: string | null | undefined): string {
+  return (name ?? "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "studio";
 }

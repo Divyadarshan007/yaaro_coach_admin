@@ -35,11 +35,11 @@ function resolvePageFontFamily(): string {
 }
 
 export async function renderAttendanceCardBlob({
-  centerName,
+  studioName,
   qrCanvas,
   qrSize,
 }: {
-  centerName: string;
+  studioName: string;
   qrCanvas: HTMLCanvasElement;
   /** The logical size (CSS px) the QR was rendered at — i.e. its `size` prop, NOT
    * qrCanvas.width, which qrcode.react multiplies by devicePixelRatio internally for
@@ -82,7 +82,7 @@ export async function renderAttendanceCardBlob({
   ctx.fillStyle = TITLE_COLOR;
   ctx.font = `500 20px ${fontFamily}`;
   y += titleHeight * 0.72;
-  ctx.fillText(centerName, width / 2, y);
+  ctx.fillText(studioName, width / 2, y);
   y += titleHeight * 0.28 + GAP;
 
   // Subtitle

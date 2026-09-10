@@ -13,10 +13,10 @@ const QR_SIZE = 220;
 // The scannable card meant to be shown on a screen/tablet at the front desk (or
 // printed/downloaded). Members scan it from the yaaro app to mark today's attendance.
 export function AttendanceCard({
-  centerName,
+  studioName,
   qrValue,
 }: {
-  centerName: string;
+  studioName: string;
   qrValue: string;
 }) {
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -29,11 +29,11 @@ export function AttendanceCard({
     setError(false);
     try {
       const blob = await renderAttendanceCardBlob({
-        centerName,
+        studioName,
         qrCanvas: qrCanvasRef.current,
         qrSize: QR_SIZE,
       });
-      await saveBlobAsImage(blob, `attendance-qr-${slugify(centerName)}.png`);
+      await saveBlobAsImage(blob, `attendance-qr-${slugify(studioName)}.png`);
     } catch (err) {
       // Surface the real reason on live — the generic message below hides it.
       console.error("Attendance card download failed:", err);
@@ -46,7 +46,7 @@ export function AttendanceCard({
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="mx-auto flex w-full max-w-sm flex-col items-center gap-5 rounded-2xl bg-card px-6 py-8 text-center ring-1 ring-foreground/10">
-        <h2 className="font-heading text-xl font-medium text-foreground">{centerName}</h2>
+        <h2 className="font-heading text-xl font-medium text-foreground">{studioName}</h2>
         <p className="text-sm text-muted-foreground">Scan for attendance</p>
         <AttendanceQr ref={qrCanvasRef} value={qrValue} size={QR_SIZE} />
         <p className="text-xs text-muted-foreground">

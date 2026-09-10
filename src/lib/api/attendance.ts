@@ -9,8 +9,8 @@ export type AttendanceCheckIn = {
 };
 
 export type Attendance = {
-  centerId: string;
-  centerName: string;
+  studioId: string;
+  studioName: string;
   qrValue: string;
   date: string;
   todayCount: number;
