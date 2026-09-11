@@ -18,10 +18,10 @@ async function createProgram(body: { sourceProgramId?: string | null }): Promise
   return res.json();
 }
 
-export async function createBlankProgramAction(): Promise<string> {
+export async function createBlankProgramAction(): Promise<Program> {
   const program = await createProgram({});
   revalidatePath("/program-library");
-  return program.id;
+  return program;
 }
 
 export async function duplicateProgramAction(sourceProgramId: string): Promise<Program> {
@@ -73,7 +73,10 @@ export async function deleteProgramAction(id: string): Promise<void> {
     method: "DELETE",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) throw new Error(`Failed to delete program ${id} (${res.status})`);
+  // A 404 here means it's already gone (e.g. deleted from another tab, or a stale local
+  // list entry) — the end state the caller wanted is already true, so treat it as a
+  // no-op success rather than crashing the page over something that isn't an error.
+  if (!res.ok && res.status !== 404) throw new Error(`Failed to delete program ${id} (${res.status})`);
   revalidatePath("/program-library");
 }
 

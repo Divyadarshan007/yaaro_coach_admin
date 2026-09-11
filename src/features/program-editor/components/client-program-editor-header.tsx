@@ -23,7 +23,10 @@ export function ClientProgramEditorHeader({
   const isDirty = useMyProgramsStore((state) => !!state.dirty[programId]);
   const isSaving = useMyProgramsStore((state) => !!state.saving[programId]);
   const saveProgram = useMyProgramsStore((state) => state.saveProgram);
-  const { isConfirmOpen, requestLeave, cancel, confirmLeave } = useLeaveConfirmation(isDirty);
+  const discardIfUnsaved = useMyProgramsStore((state) => state.discardIfUnsaved);
+  const { isConfirmOpen, requestLeave, cancel, confirmLeave } = useLeaveConfirmation(isDirty, async () => {
+    await discardIfUnsaved(programId);
+  });
   const backHref = `/clients/${clientId}`;
 
   useUnsavedChangesWarning(isDirty);

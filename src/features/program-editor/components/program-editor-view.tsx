@@ -53,7 +53,7 @@ export function ProgramEditorView({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pb-8">
       <ProgramEditorHeader programId={resolvedProgram.id} clients={clients} />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">

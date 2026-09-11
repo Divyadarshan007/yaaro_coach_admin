@@ -59,7 +59,7 @@ export function ClientProgramEditorView({
   const basePath = `/clients/${clientId}/program`;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pb-8">
       <ClientProgramEditorHeader clientId={clientId} clientName={clientName} programId={resolvedProgram.id} />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">

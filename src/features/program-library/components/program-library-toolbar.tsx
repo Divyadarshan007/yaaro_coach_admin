@@ -6,16 +6,17 @@ import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createBlankProgramAction } from "@/features/program-editor/actions";
+import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
 
 export function ProgramLibraryToolbar() {
   const router = useRouter();
+  const createProgram = useMyProgramsStore((state) => state.createProgram);
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
 
   function handleCreateProgram() {
     startTransition(async () => {
-      const id = await createBlankProgramAction();
+      const id = await createProgram();
       router.push(`/program/${id}`);
     });
   }

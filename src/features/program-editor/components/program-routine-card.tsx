@@ -2,8 +2,10 @@
 
 import { MoreVertical, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { ProgramExerciseRow } from "@/features/program-editor/components/program-exercise-row";
@@ -23,6 +25,12 @@ export function ProgramRoutineCard({
   const router = useRouter();
   const updateRoutineDetails = useMyRoutinesStore((state) => state.updateRoutineDetails);
   const removeRoutineFromProgram = useMyProgramsStore((state) => state.removeRoutineFromProgram);
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
+
+  function handleConfirmRemove() {
+    removeRoutineFromProgram(programId, routine.id);
+    setConfirmingRemove(false);
+  }
 
   return (
     <div
@@ -50,7 +58,7 @@ export function ProgramRoutineCard({
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               variant="destructive"
-              onClick={() => removeRoutineFromProgram(programId, routine.id)}
+              onClick={() => setConfirmingRemove(true)}
             >
               <X />
               Remove from Program
@@ -66,6 +74,27 @@ export function ProgramRoutineCard({
           ))}
         </div>
       )}
+
+      <Dialog open={confirmingRemove} onOpenChange={setConfirmingRemove}>
+        <DialogContent className="max-w-md" onClick={(event) => event.stopPropagation()}>
+          <DialogHeader>
+            <DialogTitle>Remove {routine.title} from this program?</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            <p className="text-sm text-muted-foreground">
+              This removes the routine from this program. This action cannot be undone.
+            </p>
+          </DialogBody>
+          <DialogFooter className="flex-row justify-end">
+            <Button variant="outline" size="lg" onClick={() => setConfirmingRemove(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" size="lg" onClick={handleConfirmRemove}>
+              Remove from Program
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

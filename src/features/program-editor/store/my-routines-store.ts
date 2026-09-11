@@ -22,12 +22,20 @@ type MyRoutinesState = {
   // successful saveRoutine(). Drives the header's Save button / "All changes saved" state.
   dirty: Record<string, boolean>;
   saving: Record<string, boolean>;
+  // Ids created via createRoutine() that have never had a successful saveRoutine() yet —
+  // "Add Routine" creates the backend row immediately (so it can be navigated to and
+  // edited), but if the coach leaves without ever saving it, discardIfUnsaved() deletes
+  // that empty row rather than leaving an orphan "Untitled Routine" behind.
+  neverSaved: Record<string, boolean>;
   hydrateRoutines: (routines: Routine[]) => void;
   upsertRoutine: (routine: Routine) => void;
   getRoutine: (id: string) => Routine | undefined;
   createRoutine: () => Promise<string>;
   duplicateRoutine: (sourceRoutineId: string) => Promise<string>;
   removeRoutine: (id: string) => Promise<void>;
+  // Returns true if the routine was actually discarded (i.e. it really was never
+  // saved) — callers use that to also drop it from any program that referenced it.
+  discardIfUnsaved: (id: string) => Promise<boolean>;
   updateRoutineDetails: (id: string, patch: Partial<Pick<Routine, "title" | "notes">>) => void;
   addExercise: (routineId: string, exerciseId: string, actions: ExerciseAction[]) => void;
   updateExercise: (routineId: string, exerciseId: string, patch: Partial<Omit<RoutineExercise, "id" | "sets">>) => void;
@@ -59,11 +67,23 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
   routines: [],
   dirty: {},
   saving: {},
+  neverSaved: {},
 
+  // A fresh server list is authoritative for *existence* — drop any local routine the
+  // server no longer has (deleted since the last hydration) instead of leaving it stuck
+  // around forever. Keep dirty (unsaved edits) or neverSaved (freshly created, program-
+  // attached drafts — these are legitimately absent from the "mine" list since program-
+  // attached routines don't show there) entries as-is rather than clobbering them.
   hydrateRoutines: (routines) =>
     set((state) => {
-      const byId = new Map(state.routines.map((routine) => [routine.id, routine]));
-      for (const routine of routines) byId.set(routine.id, routine);
+      const incomingIds = new Set(routines.map((routine) => routine.id));
+      const preserved = state.routines.filter(
+        (routine) => incomingIds.has(routine.id) || state.dirty[routine.id] || state.neverSaved[routine.id]
+      );
+      const byId = new Map(preserved.map((routine) => [routine.id, routine]));
+      for (const routine of routines) {
+        if (!state.dirty[routine.id]) byId.set(routine.id, routine);
+      }
       return { routines: [...byId.values()] };
     }),
 
@@ -82,6 +102,7 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
   createRoutine: async () => {
     const routine = await createRoutineAction({ title: "Untitled Routine" });
     get().upsertRoutine(routine);
+    set((state) => ({ neverSaved: { ...state.neverSaved, [routine.id]: true } }));
     return routine.id;
   },
 
@@ -94,6 +115,21 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
   removeRoutine: async (id) => {
     set((state) => ({ routines: state.routines.filter((routine) => routine.id !== id) }));
     await deleteRoutineAction(id);
+  },
+
+  discardIfUnsaved: async (id) => {
+    if (!get().neverSaved[id]) return false;
+    set((state) => ({
+      routines: state.routines.filter((routine) => routine.id !== id),
+      dirty: { ...state.dirty, [id]: false },
+      neverSaved: { ...state.neverSaved, [id]: false },
+    }));
+    try {
+      await deleteRoutineAction(id);
+    } catch {
+      // Best-effort cleanup of an empty draft — nothing meaningful to surface if it fails.
+    }
+    return true;
   },
 
   updateRoutineDetails: (id, patch) => {
@@ -206,6 +242,7 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
       set((state) => ({
         routines: updateRoutine(state.routines, id, () => updated),
         dirty: { ...state.dirty, [id]: false },
+        neverSaved: { ...state.neverSaved, [id]: false },
       }));
     } finally {
       set((state) => ({ saving: { ...state.saving, [id]: false } }));

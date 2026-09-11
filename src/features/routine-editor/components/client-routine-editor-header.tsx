@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { SaveStatus } from "@/components/ui/save-status";
 import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
+import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
 import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
 import { useLeaveConfirmation } from "@/lib/use-leave-confirmation";
 import { useUnsavedChangesWarning } from "@/lib/use-unsaved-changes-warning";
@@ -13,11 +14,13 @@ import { useUnsavedChangesWarning } from "@/lib/use-unsaved-changes-warning";
 export function ClientRoutineEditorHeader({
   clientId,
   clientName,
+  programId,
   programTitle,
   routineId,
 }: {
   clientId: string;
   clientName: string;
+  programId?: string;
   programTitle: string;
   routineId: string;
 }) {
@@ -25,7 +28,12 @@ export function ClientRoutineEditorHeader({
   const isDirty = useMyRoutinesStore((state) => !!state.dirty[routineId]);
   const isSaving = useMyRoutinesStore((state) => !!state.saving[routineId]);
   const saveRoutine = useMyRoutinesStore((state) => state.saveRoutine);
-  const { isConfirmOpen, requestLeave, cancel, confirmLeave } = useLeaveConfirmation(isDirty);
+  const discardIfUnsaved = useMyRoutinesStore((state) => state.discardIfUnsaved);
+  const removeRoutineFromProgram = useMyProgramsStore((state) => state.removeRoutineFromProgram);
+  const { isConfirmOpen, requestLeave, cancel, confirmLeave } = useLeaveConfirmation(isDirty, async () => {
+    const wasDiscarded = await discardIfUnsaved(routineId);
+    if (wasDiscarded && programId) removeRoutineFromProgram(programId, routineId);
+  });
   const backHref = `/clients/${clientId}/program`;
 
   useUnsavedChangesWarning(isDirty);

@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { SaveStatus } from "@/components/ui/save-status";
 import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
+import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
 import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
 import { useLeaveConfirmation } from "@/lib/use-leave-confirmation";
 import { useUnsavedChangesWarning } from "@/lib/use-unsaved-changes-warning";
@@ -26,7 +27,15 @@ export function RoutineEditorHeader({
   const isDirty = useMyRoutinesStore((state) => !!state.dirty[routineId]);
   const isSaving = useMyRoutinesStore((state) => !!state.saving[routineId]);
   const saveRoutine = useMyRoutinesStore((state) => state.saveRoutine);
-  const { isConfirmOpen, requestLeave, cancel, confirmLeave } = useLeaveConfirmation(isDirty);
+  const discardIfUnsaved = useMyRoutinesStore((state) => state.discardIfUnsaved);
+  const removeRoutineFromProgram = useMyProgramsStore((state) => state.removeRoutineFromProgram);
+  const { isConfirmOpen, requestLeave, cancel, confirmLeave } = useLeaveConfirmation(isDirty, async () => {
+    const wasDiscarded = await discardIfUnsaved(routineId);
+    // A never-saved routine that just got deleted might still be sitting in the
+    // program's own local routines list (added there when it was created) — drop it
+    // there too so a "ghost" card doesn't linger on the program page.
+    if (wasDiscarded && programId) removeRoutineFromProgram(programId, routineId);
+  });
 
   useUnsavedChangesWarning(isDirty);
 

@@ -68,6 +68,9 @@ export async function deleteRoutineAction(id: string): Promise<void> {
     method: "DELETE",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) throw await routineError(`delete routine ${id}`, res);
+  // A 404 here means it's already gone (e.g. deleted from another tab, or a stale local
+  // list entry) — the end state the caller wanted is already true, so treat it as a
+  // no-op success rather than crashing the page over something that isn't an error.
+  if (!res.ok && res.status !== 404) throw await routineError(`delete routine ${id}`, res);
   revalidatePath("/program-library");
 }

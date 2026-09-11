@@ -14,12 +14,14 @@ import type { ExerciseCatalogEntry } from "@/lib/api/exercises";
 export function ClientRoutineEditorView({
   clientId,
   clientName,
+  programId,
   programTitle,
   initialRoutine,
   exerciseCatalog,
 }: {
   clientId: string;
   clientName: string;
+  programId?: string;
   programTitle: string;
   initialRoutine: Routine | null;
   exerciseCatalog: ExerciseCatalogEntry[];
@@ -52,6 +54,7 @@ export function ClientRoutineEditorView({
       <ClientRoutineEditorHeader
         clientId={clientId}
         clientName={clientName}
+        programId={programId}
         programTitle={programTitle}
         routineId={resolvedRoutine.id}
       />

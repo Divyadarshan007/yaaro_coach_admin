@@ -26,6 +26,7 @@ export default async function ClientRoutineEditorPage({
     <ClientRoutineEditorView
       clientId={id}
       clientName={client.name}
+      programId={program?.id}
       programTitle={program?.title ?? ""}
       initialRoutine={routine}
       exerciseCatalog={exerciseCatalog}
