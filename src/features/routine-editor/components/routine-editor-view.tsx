@@ -30,9 +30,9 @@ export function RoutineEditorView({
   useEffect(() => {
     if (hasHydrated.current || !initialRoutine) return;
     hasHydrated.current = true;
-    // If this routine is already in the store (e.g. it was just created client-side and
-    // we navigated here before its debounced backend save landed), skip re-hydrating —
-    // doing so would overwrite that not-yet-persisted content with the stale server fetch.
+    // If this routine is already in the store (e.g. it has local edits not yet saved),
+    // skip re-hydrating — doing so would overwrite those unsaved edits with the stale
+    // server fetch.
     if (!useMyRoutinesStore.getState().getRoutine(initialRoutine.id)) {
       upsertRoutine(initialRoutine);
     }
@@ -50,7 +50,7 @@ export function RoutineEditorView({
 
   return (
     <div className="flex flex-col gap-6 lg:h-full lg:min-h-0">
-      <RoutineEditorHeader programId={programId} programTitle={programTitle} />
+      <RoutineEditorHeader programId={programId} programTitle={programTitle} routineId={resolvedRoutine.id} />
 
       <div className="flex flex-col gap-6 lg:min-h-0 lg:flex-1 lg:flex-row lg:items-stretch">
         <div className="flex min-w-0 flex-1 flex-col gap-4 lg:min-h-0 lg:overflow-y-auto lg:pr-1">

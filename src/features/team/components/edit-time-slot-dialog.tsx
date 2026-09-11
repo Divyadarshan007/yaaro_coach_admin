@@ -1,7 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +10,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -21,14 +19,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DAYS_OF_WEEK, DAY_LABELS, type DayOfWeek, type TimeSlot } from "@/features/team/types/team";
-import { TimeField, to24h, type Period } from "@/features/team/components/time-slot-fields";
+import { TimeField, from24h, to24h, type Period } from "@/features/team/components/time-slot-fields";
 
-type AddTimeSlotDialogProps = {
-  onAdd: (slot: TimeSlot) => Promise<void>;
+type EditTimeSlotDialogProps = {
+  slot: TimeSlot | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSave: (slot: TimeSlot) => Promise<void>;
 };
 
-export function AddTimeSlotDialog({ onAdd }: AddTimeSlotDialogProps) {
-  const [open, setOpen] = useState(false);
+export function EditTimeSlotDialog({ slot, open, onOpenChange, onSave }: EditTimeSlotDialogProps) {
   const [day, setDay] = useState<DayOfWeek>("monday");
   const [startHour, setStartHour] = useState(6);
   const [startMinute, setStartMinute] = useState("00");
@@ -39,25 +39,27 @@ export function AddTimeSlotDialog({ onAdd }: AddTimeSlotDialogProps) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  // Reset the form fields from the slot being edited each time the dialog opens.
+  useEffect(() => {
+    if (!open || !slot) return;
+    setDay(slot.day);
+    const start = from24h(slot.startTime);
+    setStartHour(start.hour);
+    setStartMinute(start.minute);
+    setStartPeriod(start.period);
+    const end = from24h(slot.endTime);
+    setEndHour(end.hour);
+    setEndMinute(end.minute);
+    setEndPeriod(end.period);
+    setError(null);
+  }, [open, slot]);
+
   const startTime = to24h(startHour, startMinute, startPeriod);
   const endTime = to24h(endHour, endMinute, endPeriod);
   const isValid = endTime > startTime;
 
-  function handleOpenChange(next: boolean) {
-    setOpen(next);
-    if (!next) {
-      setDay("monday");
-      setStartHour(6);
-      setStartMinute("00");
-      setStartPeriod("AM");
-      setEndHour(10);
-      setEndMinute("00");
-      setEndPeriod("PM");
-      setError(null);
-    }
-  }
-
   function handleSave() {
+    if (!slot) return;
     setError(null);
     if (!isValid) {
       setError("End time must be after start time.");
@@ -65,23 +67,19 @@ export function AddTimeSlotDialog({ onAdd }: AddTimeSlotDialogProps) {
     }
     startTransition(async () => {
       try {
-        await onAdd({ day, startTime, endTime });
-        handleOpenChange(false);
+        await onSave({ ...slot, day, startTime, endTime });
+        onOpenChange(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to add time slot");
+        setError(err instanceof Error ? err.message : "Failed to update time slot");
       }
     });
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger render={<Button type="button" variant="outline" size="sm" />}>
-        <Plus />
-        Add slot
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Add time slot</DialogTitle>
+          <DialogTitle>Edit time slot</DialogTitle>
         </DialogHeader>
 
         <DialogBody>
@@ -124,6 +122,9 @@ export function AddTimeSlotDialog({ onAdd }: AddTimeSlotDialogProps) {
         </DialogBody>
 
         <DialogFooter className="flex-row justify-end">
+          <Button variant="outline" size="lg" onClick={() => onOpenChange(false)} disabled={isPending}>
+            Cancel
+          </Button>
           <Button size="lg" disabled={!isValid || isPending} onClick={handleSave}>
             {isPending ? "Saving..." : "Save"}
           </Button>

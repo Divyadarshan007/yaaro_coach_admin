@@ -1,17 +1,12 @@
 import { create } from "zustand";
 
 import { deleteProgramAction, duplicateProgramAction, updateProgramAction } from "@/features/program-editor/actions";
+import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
 import type { Program, ProgramPatch } from "@/features/program-editor/types/program-editor";
 
 function updateProgram(programs: Program[], programId: string, updater: (program: Program) => Program) {
   return programs.map((program) => (program.id === programId ? updater(program) : program));
 }
-
-// Local edits apply to the zustand store instantly (snappy editor UX); this debounces
-// pushing the current program state to the backend so rapid edits (e.g. typing) don't
-// each trigger a round trip.
-const PERSIST_DEBOUNCE_MS = 600;
-const persistTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
 type PersistAction = (id: string, patch: ProgramPatch) => Promise<Program>;
 
@@ -23,37 +18,16 @@ function getPersistAction(programId: string): PersistAction {
   return persistActions.get(programId) ?? updateProgramAction;
 }
 
-function schedulePersist(programId: string, getProgram: () => Program | undefined) {
-  const existing = persistTimers.get(programId);
-  if (existing) clearTimeout(existing);
-  persistTimers.set(
-    programId,
-    setTimeout(() => {
-      persistTimers.delete(programId);
-      const program = getProgram();
-      if (!program) return;
-      void getPersistAction(programId)(programId, {
-        title: program.title,
-        notes: program.notes,
-        image: program.image,
-        duration: program.duration,
-        level: program.level,
-        goal: program.goal,
-        equipment: program.equipment,
-        visibility: program.visibility,
-        routineIds: program.routineIds,
-        isFeatured: program.isFeatured,
-      });
-    }, PERSIST_DEBOUNCE_MS)
-  );
-}
-
 type ProgramDetailsPatch = Partial<
   Pick<Program, "title" | "notes" | "image" | "duration" | "level" | "goal" | "equipment" | "visibility" | "isFeatured">
 >;
 
 type MyProgramsState = {
   programs: Program[];
+  // Ids of programs with local edits not yet pushed to the backend — cleared on a
+  // successful saveProgram(). Drives the header's Save button / "All changes saved" state.
+  dirty: Record<string, boolean>;
+  saving: Record<string, boolean>;
   hydratePrograms: (programs: Program[]) => void;
   upsertProgram: (program: Program) => void;
   registerPersistAction: (programId: string, action: PersistAction) => void;
@@ -63,10 +37,13 @@ type MyProgramsState = {
   updateProgramDetails: (id: string, patch: ProgramDetailsPatch) => void;
   addRoutineToProgram: (programId: string, routineId: string) => void;
   removeRoutineFromProgram: (programId: string, routineId: string) => void;
+  saveProgram: (id: string) => Promise<void>;
 };
 
 export const useMyProgramsStore = create<MyProgramsState>((set, get) => ({
   programs: [],
+  dirty: {},
+  saving: {},
 
   hydratePrograms: (programs) =>
     set((state) => {
@@ -101,18 +78,25 @@ export const useMyProgramsStore = create<MyProgramsState>((set, get) => ({
   },
 
   updateProgramDetails: (id, patch) => {
-    set((state) => ({ programs: updateProgram(state.programs, id, (program) => ({ ...program, ...patch })) }));
-    schedulePersist(id, () => get().getProgram(id));
+    set((state) => ({
+      programs: updateProgram(state.programs, id, (program) => ({ ...program, ...patch })),
+      dirty: { ...state.dirty, [id]: true },
+    }));
   },
 
   addRoutineToProgram: (programId, routineId) => {
+    // Program.routines is the backend-populated list the editor renders from — keep it
+    // in sync with routineIds here, since the routine's full data already lives in the
+    // "My Routines" store (either picked from the library or just created).
+    const routine = useMyRoutinesStore.getState().getRoutine(routineId);
     set((state) => ({
       programs: updateProgram(state.programs, programId, (program) => ({
         ...program,
         routineIds: [...program.routineIds, routineId],
+        routines: routine ? [...(program.routines ?? []), routine] : program.routines,
       })),
+      dirty: { ...state.dirty, [programId]: true },
     }));
-    schedulePersist(programId, () => get().getProgram(programId));
   },
 
   removeRoutineFromProgram: (programId, routineId) => {
@@ -120,8 +104,35 @@ export const useMyProgramsStore = create<MyProgramsState>((set, get) => ({
       programs: updateProgram(state.programs, programId, (program) => ({
         ...program,
         routineIds: program.routineIds.filter((id) => id !== routineId),
+        routines: program.routines?.filter((routine) => routine.id !== routineId),
       })),
+      dirty: { ...state.dirty, [programId]: true },
     }));
-    schedulePersist(programId, () => get().getProgram(programId));
+  },
+
+  saveProgram: async (id) => {
+    const program = get().getProgram(id);
+    if (!program) return;
+    set((state) => ({ saving: { ...state.saving, [id]: true } }));
+    try {
+      const updated = await getPersistAction(id)(id, {
+        title: program.title,
+        notes: program.notes,
+        image: program.image,
+        duration: program.duration,
+        level: program.level,
+        goal: program.goal,
+        equipment: program.equipment,
+        visibility: program.visibility,
+        routineIds: program.routineIds,
+        isFeatured: program.isFeatured,
+      });
+      set((state) => ({
+        programs: updateProgram(state.programs, id, () => updated),
+        dirty: { ...state.dirty, [id]: false },
+      }));
+    } finally {
+      set((state) => ({ saving: { ...state.saving, [id]: false } }));
+    }
   },
 }));

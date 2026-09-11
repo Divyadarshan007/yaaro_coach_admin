@@ -6,7 +6,6 @@ import { useMemo, useState } from "react";
 import { MuscleDistributionChart } from "@/features/program-editor/components/muscle-distribution-chart";
 import { MuscleSetCountTable } from "@/features/program-editor/components/muscle-set-count-table";
 import { computeProgramSummary } from "@/features/program-editor/lib/program-summary";
-import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
 import type { Program } from "@/features/program-editor/types/program-editor";
 import { useExerciseCatalogStore } from "@/lib/exercise-catalog-store";
 import type { MuscleCatalogEntry } from "@/lib/muscle-groups";
@@ -22,11 +21,8 @@ export function ProgramSummaryPanel({
   muscleCatalog: MuscleCatalogEntry[];
 }) {
   const [distributionView, setDistributionView] = useState<DistributionView>("chart");
-  const routines = useMyRoutinesStore((state) => state.routines);
   const exerciseCatalogById = useExerciseCatalogStore((state) => state.byId);
-  const programRoutines = program.routineIds
-    .map((id) => routines.find((routine) => routine.id === id))
-    .filter((routine) => routine !== undefined);
+  const programRoutines = program.routines ?? [];
   const summary = useMemo(
     () => computeProgramSummary(programRoutines, exerciseCatalogById, muscleCatalog),
     [programRoutines, exerciseCatalogById, muscleCatalog]

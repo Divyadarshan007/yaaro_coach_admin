@@ -6,7 +6,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AddRoutineDialog } from "@/features/program-editor/components/add-routine-dialog";
 import { ProgramRoutineCard } from "@/features/program-editor/components/program-routine-card";
-import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
 import type { Program } from "@/features/program-editor/types/program-editor";
 
 export function ProgramRoutinesSection({
@@ -17,10 +16,7 @@ export function ProgramRoutinesSection({
   basePath?: string;
 }) {
   const [addRoutineOpen, setAddRoutineOpen] = useState(false);
-  const routines = useMyRoutinesStore((state) => state.routines);
-  const programRoutines = program.routineIds
-    .map((id) => routines.find((routine) => routine.id === id))
-    .filter((routine) => routine !== undefined);
+  const programRoutines = program.routines ?? [];
 
   return (
     <div className="flex flex-col gap-4">

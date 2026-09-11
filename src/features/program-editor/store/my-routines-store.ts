@@ -16,36 +16,12 @@ function updateRoutine(routines: Routine[], routineId: string, updater: (routine
   return routines.map((routine) => (routine.id === routineId ? updater(routine) : routine));
 }
 
-// Same instant-local-edit + debounced-backend-PATCH pattern as my-programs-store — a
-// routine is now edited independently of any program that references it, since it's a
-// first-class collection of its own.
-const PERSIST_DEBOUNCE_MS = 600;
-const persistTimers = new Map<string, ReturnType<typeof setTimeout>>();
-
-function schedulePersist(routineId: string, getRoutine: () => Routine | undefined) {
-  const existing = persistTimers.get(routineId);
-  if (existing) clearTimeout(existing);
-  persistTimers.set(
-    routineId,
-    setTimeout(() => {
-      persistTimers.delete(routineId);
-      const routine = getRoutine();
-      if (!routine) return;
-      // A routine's title is required backend-side, so never PATCH a blank one — while the
-      // coach has the title field cleared mid-edit we still persist notes/exercises and
-      // just hold the title until it's non-empty again.
-      const trimmedTitle = routine.title.trim();
-      void updateRoutineAction(routineId, {
-        ...(trimmedTitle ? { title: routine.title } : {}),
-        notes: routine.notes,
-        exercises: routine.exercises,
-      });
-    }, PERSIST_DEBOUNCE_MS)
-  );
-}
-
 type MyRoutinesState = {
   routines: Routine[];
+  // Ids of routines with local edits not yet pushed to the backend — cleared on a
+  // successful saveRoutine(). Drives the header's Save button / "All changes saved" state.
+  dirty: Record<string, boolean>;
+  saving: Record<string, boolean>;
   hydrateRoutines: (routines: Routine[]) => void;
   upsertRoutine: (routine: Routine) => void;
   getRoutine: (id: string) => Routine | undefined;
@@ -65,6 +41,7 @@ type MyRoutinesState = {
     metricType: string,
     value: number | null
   ) => void;
+  saveRoutine: (id: string) => Promise<void>;
 };
 
 function updateSetMetric(set: ExerciseSetEntry, metricType: string, value: number | null): ExerciseSetEntry {
@@ -80,6 +57,8 @@ function updateSetMetric(set: ExerciseSetEntry, metricType: string, value: numbe
 
 export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
   routines: [],
+  dirty: {},
+  saving: {},
 
   hydrateRoutines: (routines) =>
     set((state) => {
@@ -118,8 +97,10 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
   },
 
   updateRoutineDetails: (id, patch) => {
-    set((state) => ({ routines: updateRoutine(state.routines, id, (routine) => ({ ...routine, ...patch })) }));
-    schedulePersist(id, () => get().getRoutine(id));
+    set((state) => ({
+      routines: updateRoutine(state.routines, id, (routine) => ({ ...routine, ...patch })),
+      dirty: { ...state.dirty, [id]: true },
+    }));
   },
 
   addExercise: (routineId, exerciseId, actions) => {
@@ -138,8 +119,8 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
           },
         ],
       })),
+      dirty: { ...state.dirty, [routineId]: true },
     }));
-    schedulePersist(routineId, () => get().getRoutine(routineId));
   },
 
   updateExercise: (routineId, exerciseId, patch) => {
@@ -150,8 +131,8 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
           exercise.id === exerciseId ? { ...exercise, ...patch } : exercise
         ),
       })),
+      dirty: { ...state.dirty, [routineId]: true },
     }));
-    schedulePersist(routineId, () => get().getRoutine(routineId));
   },
 
   removeExercise: (routineId, exerciseId) => {
@@ -160,8 +141,8 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
         ...routine,
         exercises: routine.exercises.filter((exercise) => exercise.id !== exerciseId),
       })),
+      dirty: { ...state.dirty, [routineId]: true },
     }));
-    schedulePersist(routineId, () => get().getRoutine(routineId));
   },
 
   addExerciseSet: (routineId, exerciseId) => {
@@ -172,8 +153,8 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
           exercise.id === exerciseId ? { ...exercise, sets: [...exercise.sets, { metrics: [] }] } : exercise
         ),
       })),
+      dirty: { ...state.dirty, [routineId]: true },
     }));
-    schedulePersist(routineId, () => get().getRoutine(routineId));
   },
 
   removeExerciseSet: (routineId, exerciseId, setIndex) => {
@@ -186,8 +167,8 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
             : exercise
         ),
       })),
+      dirty: { ...state.dirty, [routineId]: true },
     }));
-    schedulePersist(routineId, () => get().getRoutine(routineId));
   },
 
   updateExerciseSetMetric: (routineId, exerciseId, setIndex, metricType, value) => {
@@ -205,7 +186,29 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
             : exercise
         ),
       })),
+      dirty: { ...state.dirty, [routineId]: true },
     }));
-    schedulePersist(routineId, () => get().getRoutine(routineId));
+  },
+
+  saveRoutine: async (id) => {
+    const routine = get().getRoutine(id);
+    if (!routine) return;
+    set((state) => ({ saving: { ...state.saving, [id]: true } }));
+    try {
+      // A routine's title is required backend-side — never PATCH a blank one. If the
+      // title field is cleared, still save notes/exercises and just hold the title.
+      const trimmedTitle = routine.title.trim();
+      const updated = await updateRoutineAction(id, {
+        ...(trimmedTitle ? { title: routine.title } : {}),
+        notes: routine.notes,
+        exercises: routine.exercises,
+      });
+      set((state) => ({
+        routines: updateRoutine(state.routines, id, () => updated),
+        dirty: { ...state.dirty, [id]: false },
+      }));
+    } finally {
+      set((state) => ({ saving: { ...state.saving, [id]: false } }));
+    }
   },
 }));

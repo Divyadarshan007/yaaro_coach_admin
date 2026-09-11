@@ -33,7 +33,12 @@ export function ProgramEditorView({
   useEffect(() => {
     if (hasHydrated.current || !initialProgram) return;
     hasHydrated.current = true;
-    upsertProgram(initialProgram);
+    // If this program is already in the store (e.g. it has local edits not yet saved
+    // and we navigated away and back), skip re-hydrating — doing so would overwrite
+    // those unsaved edits with the stale server fetch.
+    if (!useMyProgramsStore.getState().getProgram(initialProgram.id)) {
+      upsertProgram(initialProgram);
+    }
     hydrateRoutines(initialRoutines);
   }, [initialProgram, upsertProgram, initialRoutines, hydrateRoutines]);
 

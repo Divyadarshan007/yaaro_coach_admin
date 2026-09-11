@@ -37,7 +37,12 @@ export function ClientProgramEditorView({
     if (hasHydrated.current || !initialProgram) return;
     hasHydrated.current = true;
     registerPersistAction(initialProgram.id, (_id, patch) => updateClientProgramAction(clientId, patch));
-    upsertProgram(initialProgram);
+    // If this program is already in the store (e.g. it has local edits not yet saved
+    // and we navigated away and back), skip re-hydrating — doing so would overwrite
+    // those unsaved edits with the stale server fetch.
+    if (!useMyProgramsStore.getState().getProgram(initialProgram.id)) {
+      upsertProgram(initialProgram);
+    }
     hydrateRoutines(routineLibrary);
   }, [initialProgram, clientId, upsertProgram, registerPersistAction, hydrateRoutines, routineLibrary]);
 
@@ -55,7 +60,7 @@ export function ClientProgramEditorView({
 
   return (
     <div className="flex flex-col gap-6">
-      <ClientProgramEditorHeader clientId={clientId} clientName={clientName} />
+      <ClientProgramEditorHeader clientId={clientId} clientName={clientName} programId={resolvedProgram.id} />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className="flex min-w-0 flex-1 flex-col gap-6">

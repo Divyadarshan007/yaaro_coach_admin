@@ -49,7 +49,12 @@ export function ClientRoutineEditorView({
 
   return (
     <div className="flex flex-col gap-6 lg:h-full lg:min-h-0">
-      <ClientRoutineEditorHeader clientId={clientId} clientName={clientName} programTitle={programTitle} />
+      <ClientRoutineEditorHeader
+        clientId={clientId}
+        clientName={clientName}
+        programTitle={programTitle}
+        routineId={resolvedRoutine.id}
+      />
 
       <div className="flex flex-col gap-6 lg:min-h-0 lg:flex-1 lg:flex-row lg:items-stretch">
         <div className="flex min-w-0 flex-1 flex-col gap-4 lg:min-h-0 lg:overflow-y-auto lg:pr-1">

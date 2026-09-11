@@ -1,16 +1,25 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { CurrentSubscriptionCard } from "@/features/studio-subscription/components/current-subscription-card";
 import type { StudioSubscriptionTransaction } from "@/features/studio-subscription/types/studio-subscription";
 import { avatarFromName } from "@/features/clients/lib/avatar";
 import { updateTeamAction } from "@/features/team/actions";
 import { AddTimeSlotDialog } from "@/features/team/components/add-time-slot-dialog";
 import { EditStudioDialog } from "@/features/team/components/edit-studio-dialog";
+import { EditTimeSlotDialog } from "@/features/team/components/edit-time-slot-dialog";
 import {
   DAYS_OF_WEEK,
   DAY_LABELS,
@@ -35,6 +44,25 @@ function sortSlots(slots: TimeSlot[]): TimeSlot[] {
   );
 }
 
+type SlotEntry = { slot: TimeSlot; index: number };
+type SlotDayGroup = { day: TimeSlot["day"]; entries: SlotEntry[] };
+
+// Groups consecutive same-day entries so a day with a break (e.g. 5 AM–12 PM,
+// then 5 PM–10 PM) renders as one "Monday" card with two shifts, not two
+// unrelated-looking cards. Assumes `slots` is already day-sorted (sortSlots).
+function groupSlotsByDay(slots: TimeSlot[]): SlotDayGroup[] {
+  const groups: SlotDayGroup[] = [];
+  slots.forEach((slot, index) => {
+    const last = groups[groups.length - 1];
+    if (last && last.day === slot.day) {
+      last.entries.push({ slot, index });
+    } else {
+      groups.push({ day: slot.day, entries: [{ slot, index }] });
+    }
+  });
+  return groups;
+}
+
 export function StudioSettings({
   team: initialTeam,
   subscription,
@@ -48,6 +76,8 @@ export function StudioSettings({
   );
   const [slotError, setSlotError] = useState<string | null>(null);
   const [slotPending, startSlotTransition] = useTransition();
+  const [deleteSlotIndex, setDeleteSlotIndex] = useState<number | null>(null);
+  const [editSlotIndex, setEditSlotIndex] = useState<number | null>(null);
 
   const isOwner = team.myRole === "owner";
   const teamAvatar = avatarFromName(team.name, team.id);
@@ -82,6 +112,7 @@ export function StudioSettings({
     startSlotTransition(async () => {
       try {
         await persistSlots(slots.filter((_, i) => i !== index));
+        setDeleteSlotIndex(null);
       } catch (err) {
         setSlotError(
           err instanceof Error ? err.message : "Failed to remove time slot",
@@ -89,6 +120,15 @@ export function StudioSettings({
       }
     });
   }
+
+  async function handleEditSlot(index: number, updatedSlot: TimeSlot) {
+    setSlotError(null);
+    await persistSlots(slots.map((s, i) => (i === index ? updatedSlot : s)));
+  }
+
+  const slotToDelete =
+    deleteSlotIndex !== null ? (slots[deleteSlotIndex] ?? null) : null;
+  const slotToEdit = editSlotIndex !== null ? (slots[editSlotIndex] ?? null) : null;
 
   return (
     <div className="flex flex-col gap-8">
@@ -137,38 +177,134 @@ export function StudioSettings({
             No time slots added yet.
           </p>
         ) : (
-          <ul className="flex flex-col gap-1.5">
-            {slots.map((slot, index) => (
-              <li
-                key={slot.id ?? `${slot.day}-${slot.startTime}-${index}`}
-                className="flex items-center justify-between rounded-lg border border-input px-3 py-2 text-sm"
-              >
-                <span className="text-foreground">
-                  <span className="font-medium">{DAY_LABELS[slot.day]}</span>
-                  <span className="text-muted-foreground">
-                    {" · "}
-                    {formatTime12(slot.startTime)} –{" "}
-                    {formatTime12(slot.endTime)}
-                  </span>
-                </span>
-                {isOwner && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    disabled={slotPending}
-                    onClick={() => handleDeleteSlot(index)}
-                    aria-label={`Remove ${DAY_LABELS[slot.day]} ${formatTime12(slot.startTime)}–${formatTime12(slot.endTime)} slot`}
+          <div className="flex flex-col gap-1.5">
+            {groupSlotsByDay(slots).map((group) => {
+              const actions = (slot: TimeSlot, index: number) =>
+                isOwner && (
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      disabled={slotPending}
+                      onClick={() => setEditSlotIndex(index)}
+                      aria-label={`Edit ${DAY_LABELS[slot.day]} ${formatTime12(slot.startTime)}–${formatTime12(slot.endTime)} slot`}
+                    >
+                      <Pencil />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      disabled={slotPending}
+                      onClick={() => setDeleteSlotIndex(index)}
+                      aria-label={`Remove ${DAY_LABELS[slot.day]} ${formatTime12(slot.startTime)}–${formatTime12(slot.endTime)} slot`}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </div>
+                );
+
+              if (group.entries.length === 1) {
+                const { slot, index } = group.entries[0];
+                return (
+                  <div
+                    key={group.day}
+                    className="flex items-center justify-between rounded-lg border border-input px-3 py-2 text-sm"
                   >
-                    <Trash2 />
-                  </Button>
-                )}
-              </li>
-            ))}
-          </ul>
+                    <span className="text-foreground">
+                      <span className="font-medium">{DAY_LABELS[slot.day]}</span>
+                      <span className="text-muted-foreground">
+                        {" · "}
+                        {formatTime12(slot.startTime)} –{" "}
+                        {formatTime12(slot.endTime)}
+                      </span>
+                    </span>
+                    {actions(slot, index)}
+                  </div>
+                );
+              }
+
+              return (
+                <div
+                  key={group.day}
+                  className="rounded-lg border border-input"
+                >
+                  <p className="px-3 pt-2 text-sm font-medium text-foreground">
+                    {DAY_LABELS[group.day]}
+                  </p>
+                  <ul className="flex flex-col">
+                    {group.entries.map(({ slot, index }) => (
+                      <li
+                        key={slot.id ?? `${slot.day}-${slot.startTime}-${index}`}
+                        className="flex items-center justify-between px-3 py-1.5 text-sm"
+                      >
+                        <span className="text-muted-foreground">
+                          {formatTime12(slot.startTime)} –{" "}
+                          {formatTime12(slot.endTime)}
+                        </span>
+                        {actions(slot, index)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
         )}
         {slotError && <p className="text-sm text-destructive">{slotError}</p>}
       </div>
+
+      <Dialog
+        open={deleteSlotIndex !== null}
+        onOpenChange={(next) => !slotPending && !next && setDeleteSlotIndex(null)}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {slotToDelete
+                ? `Remove ${DAY_LABELS[slotToDelete.day]} ${formatTime12(slotToDelete.startTime)}–${formatTime12(slotToDelete.endTime)} slot?`
+                : "Remove time slot?"}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            <p className="text-sm text-muted-foreground">
+              This will remove this time slot. This action cannot be undone.
+            </p>
+          </DialogBody>
+          <DialogFooter className="flex-row justify-end">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setDeleteSlotIndex(null)}
+              disabled={slotPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="lg"
+              onClick={() =>
+                deleteSlotIndex !== null && handleDeleteSlot(deleteSlotIndex)
+              }
+              disabled={slotPending}
+            >
+              {slotPending ? "Removing..." : "Remove slot"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <EditTimeSlotDialog
+        slot={slotToEdit}
+        open={editSlotIndex !== null}
+        onOpenChange={(next) => !next && setEditSlotIndex(null)}
+        onSave={(updatedSlot) =>
+          editSlotIndex !== null
+            ? handleEditSlot(editSlotIndex, updatedSlot)
+            : Promise.resolve()
+        }
+      />
 
       {!isOwner && (
         <p className="text-sm text-muted-foreground">
