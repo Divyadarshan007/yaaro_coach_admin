@@ -1,6 +1,7 @@
 "use client";
 
-import { MoreVertical, X } from "lucide-react";
+import { GripVertical, MoreVertical, X } from "lucide-react";
+import type { DragControls } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -17,10 +18,12 @@ export function ProgramRoutineCard({
   programId,
   routine,
   basePath = `/program/${programId}`,
+  dragControls,
 }: {
   programId: string;
   routine: Routine;
   basePath?: string;
+  dragControls?: DragControls;
 }) {
   const router = useRouter();
   const updateRoutineDetails = useMyRoutinesStore((state) => state.updateRoutineDetails);
@@ -43,12 +46,24 @@ export function ProgramRoutineCard({
       className="flex cursor-pointer flex-col gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10"
     >
       <div className="flex items-center justify-between gap-2" onClick={(event) => event.stopPropagation()}>
-        <Input
-          value={routine.title}
-          onChange={(event) => updateRoutineDetails(routine.id, { title: event.target.value })}
-          className="h-8 max-w-72 border-transparent bg-transparent px-0 text-base font-semibold text-foreground focus-visible:border-ring focus-visible:bg-background focus-visible:px-2.5"
-          aria-label="Routine title"
-        />
+        <div className="flex min-w-0 flex-1 items-center gap-1">
+          {dragControls && (
+            <button
+              type="button"
+              aria-label="Drag to reorder"
+              className="flex size-8 shrink-0 cursor-grab items-center justify-center rounded-lg text-muted-foreground touch-none hover:bg-muted hover:text-foreground active:cursor-grabbing"
+              onPointerDown={(event) => dragControls.start(event)}
+            >
+              <GripVertical className="size-4" />
+            </button>
+          )}
+          <Input
+            value={routine.title}
+            onChange={(event) => updateRoutineDetails(routine.id, { title: event.target.value })}
+            className="h-8 max-w-72 border-transparent bg-transparent px-0 text-base font-semibold text-foreground focus-visible:border-ring focus-visible:bg-background focus-visible:px-2.5"
+            aria-label="Routine title"
+          />
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger
             render={<Button variant="ghost" size="icon-sm" aria-label="Routine options" />}

@@ -51,6 +51,7 @@ type MyProgramsState = {
   updateProgramDetails: (id: string, patch: ProgramDetailsPatch) => void;
   addRoutineToProgram: (programId: string, routineId: string) => void;
   removeRoutineFromProgram: (programId: string, routineId: string) => void;
+  reorderProgramRoutines: (programId: string, orderedRoutineIds: string[]) => void;
   saveProgram: (id: string) => Promise<void>;
 };
 
@@ -153,6 +154,20 @@ export const useMyProgramsStore = create<MyProgramsState>((set, get) => ({
         routineIds: program.routineIds.filter((id) => id !== routineId),
         routines: program.routines?.filter((routine) => routine.id !== routineId),
       })),
+      dirty: { ...state.dirty, [programId]: true },
+    }));
+  },
+
+  reorderProgramRoutines: (programId, orderedRoutineIds) => {
+    set((state) => ({
+      programs: updateProgram(state.programs, programId, (program) => {
+        const byId = new Map((program.routines ?? []).map((routine) => [routine.id, routine]));
+        return {
+          ...program,
+          routineIds: orderedRoutineIds,
+          routines: orderedRoutineIds.map((id) => byId.get(id)).filter((routine) => routine !== undefined),
+        };
+      }),
       dirty: { ...state.dirty, [programId]: true },
     }));
   },

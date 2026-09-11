@@ -30,7 +30,11 @@ type MyRoutinesState = {
   hydrateRoutines: (routines: Routine[]) => void;
   upsertRoutine: (routine: Routine) => void;
   getRoutine: (id: string) => Routine | undefined;
-  createRoutine: () => Promise<string>;
+  // `programId` attaches the routine to that program immediately at creation, instead
+  // of leaving it standalone until the program itself gets saved — used by "Create New
+  // Routine" from inside a program's Add Routine dialog, so it never shows up in "My
+  // Routines" even transiently. Omit it for the standalone My Routines "Add Routine".
+  createRoutine: (programId?: string) => Promise<string>;
   duplicateRoutine: (sourceRoutineId: string) => Promise<string>;
   removeRoutine: (id: string) => Promise<void>;
   // Returns true if the routine was actually discarded (i.e. it really was never
@@ -99,8 +103,8 @@ export const useMyRoutinesStore = create<MyRoutinesState>((set, get) => ({
 
   getRoutine: (id) => get().routines.find((routine) => routine.id === id),
 
-  createRoutine: async () => {
-    const routine = await createRoutineAction({ title: "Untitled Routine" });
+  createRoutine: async (programId) => {
+    const routine = await createRoutineAction({ title: "Untitled Routine", programId });
     get().upsertRoutine(routine);
     set((state) => ({ neverSaved: { ...state.neverSaved, [routine.id]: true } }));
     return routine.id;

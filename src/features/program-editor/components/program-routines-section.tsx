@@ -1,12 +1,36 @@
 "use client";
 
 import { Dumbbell, Plus } from "lucide-react";
+import { Reorder, useDragControls } from "motion/react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { AddRoutineDialog } from "@/features/program-editor/components/add-routine-dialog";
 import { ProgramRoutineCard } from "@/features/program-editor/components/program-routine-card";
-import type { Program } from "@/features/program-editor/types/program-editor";
+import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
+import type { Program, Routine } from "@/features/program-editor/types/program-editor";
+
+// Drag is triggered only from the card's own grip handle (dragListener={false} +
+// dragControls), not from anywhere else on the card — the card also has a click-to-
+// navigate area, an inline-editable title, and a menu, so free-dragging the whole
+// surface would fight with those.
+function DraggableRoutineCard({
+  programId,
+  routine,
+  basePath,
+}: {
+  programId: string;
+  routine: Routine;
+  basePath: string;
+}) {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item value={routine} dragListener={false} dragControls={dragControls} className="list-none">
+      <ProgramRoutineCard programId={programId} routine={routine} basePath={basePath} dragControls={dragControls} />
+    </Reorder.Item>
+  );
+}
 
 export function ProgramRoutinesSection({
   program,
@@ -16,7 +40,12 @@ export function ProgramRoutinesSection({
   basePath?: string;
 }) {
   const [addRoutineOpen, setAddRoutineOpen] = useState(false);
+  const reorderProgramRoutines = useMyProgramsStore((state) => state.reorderProgramRoutines);
   const programRoutines = program.routines ?? [];
+
+  function handleReorder(next: Routine[]) {
+    reorderProgramRoutines(program.id, next.map((routine) => routine.id));
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -48,11 +77,16 @@ export function ProgramRoutinesSection({
           </Button>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <Reorder.Group
+          axis="y"
+          values={programRoutines}
+          onReorder={handleReorder}
+          className="flex flex-col gap-4"
+        >
           {programRoutines.map((routine) => (
-            <ProgramRoutineCard key={routine.id} programId={program.id} routine={routine} basePath={basePath} />
+            <DraggableRoutineCard key={routine.id} programId={program.id} routine={routine} basePath={basePath} />
           ))}
-        </div>
+        </Reorder.Group>
       )}
 
       <AddRoutineDialog

@@ -60,7 +60,7 @@ export function AddRoutineDialog({
 
   function handleCreateNew() {
     startCreateTransition(async () => {
-      const routineId = await createRoutine();
+      const routineId = await createRoutine(programId);
       addRoutineToProgram(programId, routineId);
       reset();
       onOpenChange(false);

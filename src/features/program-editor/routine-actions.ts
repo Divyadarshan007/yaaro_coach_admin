@@ -19,7 +19,7 @@ async function routineError(action: string, res: Response): Promise<Error> {
   return new Error(`Failed to ${action} (${res.status})${detail}`);
 }
 
-export async function createRoutineAction(body: { title: string; notes?: string }): Promise<Routine> {
+export async function createRoutineAction(body: { title: string; notes?: string; programId?: string }): Promise<Routine> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/routines`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
