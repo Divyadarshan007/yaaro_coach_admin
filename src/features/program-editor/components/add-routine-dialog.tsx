@@ -25,8 +25,10 @@ export function AddRoutineDialog({
   const program = useMyProgramsStore((state) => state.getProgram(programId));
   const routines = useMyRoutinesStore((state) => state.routines);
   const createRoutine = useMyRoutinesStore((state) => state.createRoutine);
+  const duplicateRoutine = useMyRoutinesStore((state) => state.duplicateRoutine);
   const addRoutineToProgram = useMyProgramsStore((state) => state.addRoutineToProgram);
   const [isCreating, startCreateTransition] = useTransition();
+  const [isAdding, startAddTransition] = useTransition();
 
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -67,9 +69,16 @@ export function AddRoutineDialog({
   }
 
   function handleAdd() {
-    for (const id of selectedIds) addRoutineToProgram(programId, id);
-    reset();
-    onOpenChange(false);
+    startAddTransition(async () => {
+      // Adding an existing routine to a program clones it — the original stays
+      // untouched in "My Routines" instead of moving/disappearing from there.
+      for (const id of selectedIds) {
+        const cloneId = await duplicateRoutine(id);
+        addRoutineToProgram(programId, cloneId);
+      }
+      reset();
+      onOpenChange(false);
+    });
   }
 
   return (
@@ -133,8 +142,8 @@ export function AddRoutineDialog({
         </DialogBody>
 
         <DialogFooter className="flex-row justify-end">
-          <Button size="lg" disabled={selectedIds.size === 0} onClick={handleAdd}>
-            Add to Program
+          <Button size="lg" disabled={selectedIds.size === 0 || isAdding} onClick={handleAdd}>
+            {isAdding ? "Adding..." : "Add to Program"}
           </Button>
         </DialogFooter>
       </DialogContent>
