@@ -89,9 +89,13 @@ export type TeamPatch = {
 
 // Payload for "Add Management" (POST /coach/v1/studio/members). No account is required
 // up front — this creates a pending, unlinked studio_team row that the actual person
-// claims later via that row's own "Link now" QR on the Team page.
+// claims later via that row's own "Link now" QR on the Team page. `email`/`password`
+// are a separate, optional pair ("Login details") that let this member log into the
+// yaaro_coach website directly — send both or neither.
 export type AddStudioMemberInput = {
   name: string;
   role: TeamMemberRole;
   phone?: string;
+  email?: string;
+  password?: string;
 };

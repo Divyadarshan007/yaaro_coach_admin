@@ -2,6 +2,7 @@ import type { MeasurementFieldKey } from "@/features/clients/lib/measurement-fie
 import type { ClientMeasurement } from "@/features/clients/types/measurement";
 
 export type MeasurementPoint = {
+  id: string;
   date: string;
   label: string;
   value: number;
@@ -48,6 +49,7 @@ export function getMeasurementSeries(
   return measurements
     .filter((measurement) => measurement[key].trim() !== "")
     .map((measurement) => ({
+      id: measurement.id,
       date: measurement.date,
       label: formatDateLabel(measurement.date),
       value: Number(measurement[key]),

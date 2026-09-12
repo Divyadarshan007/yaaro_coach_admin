@@ -3,14 +3,16 @@
 import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { CustomExerciseDialog } from "@/features/routine-editor/components/custom-exercise-dialog";
 import {
   filterExerciseCatalog,
   getDistinctEquipment,
   getDistinctExerciseMuscles,
 } from "@/features/routine-editor/lib/exercise-filters";
+import { useExerciseCatalogStore } from "@/lib/exercise-catalog-store";
 import type { ExerciseCatalogEntry } from "@/lib/api/exercises";
 
 const ALL_VALUE = "all";
@@ -25,20 +27,28 @@ export function ExercisePickerPanel({
   const [search, setSearch] = useState("");
   const [equipmentId, setEquipmentId] = useState<string | null>(null);
   const [muscleId, setMuscleId] = useState<string | null>(null);
+  // Exercises created via the "Custom Exercise" dialog during this session — merged
+  // ahead of the server-fetched catalog so they show up immediately without a refetch.
+  const [customCreated, setCustomCreated] = useState<ExerciseCatalogEntry[]>([]);
+  const addToCatalogStore = useExerciseCatalogStore((state) => state.addEntry);
 
-  const equipmentOptions = useMemo(() => getDistinctEquipment(catalog), [catalog]);
-  const muscleOptions = useMemo(() => getDistinctExerciseMuscles(catalog), [catalog]);
+  const fullCatalog = useMemo(() => [...customCreated, ...catalog], [customCreated, catalog]);
+  const equipmentOptions = useMemo(() => getDistinctEquipment(fullCatalog), [fullCatalog]);
+  const muscleOptions = useMemo(() => getDistinctExerciseMuscles(fullCatalog), [fullCatalog]);
   const filtered = useMemo(
-    () => filterExerciseCatalog(catalog, { search, equipmentId, muscleId }),
-    [catalog, search, equipmentId, muscleId]
+    () => filterExerciseCatalog(fullCatalog, { search, equipmentId, muscleId }),
+    [fullCatalog, search, equipmentId, muscleId]
   );
+
+  function handleCustomExerciseCreated(exercise: ExerciseCatalogEntry) {
+    setCustomCreated((prev) => [exercise, ...prev]);
+    addToCatalogStore(exercise);
+    onAddExercise(exercise);
+  }
 
   return (
     <div className="flex min-h-0 flex-col gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10 lg:h-full">
-      <Button variant="link" size="sm" className="h-auto w-fit gap-1 p-0" disabled title="Coming soon">
-        <Plus className="size-4" />
-        Custom Exercise
-      </Button>
+      <CustomExerciseDialog onCreated={handleCustomExerciseCreated} />
 
       <div className="grid grid-cols-2 gap-2">
         <Select

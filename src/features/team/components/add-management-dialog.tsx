@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { addStudioMemberAction } from "@/features/team/actions";
 import { TEAM_MEMBER_ROLE_OPTIONS, type TeamMemberRole } from "@/features/team/types/team";
 
@@ -26,6 +27,8 @@ export function AddManagementDialog() {
   const [name, setName] = useState("");
   const [role, setRole] = useState<TeamMemberRole>("coach");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, startSave] = useTransition();
 
@@ -33,6 +36,8 @@ export function AddManagementDialog() {
     setName("");
     setRole("coach");
     setPhone("");
+    setEmail("");
+    setPassword("");
     setError(null);
   }
 
@@ -45,12 +50,21 @@ export function AddManagementDialog() {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
+
+    const trimmedEmail = email.trim();
+    if (Boolean(trimmedEmail) !== Boolean(password)) {
+      setError("Enter both email and password to set up a login, or leave both blank");
+      return;
+    }
+
     startSave(async () => {
       try {
         await addStudioMemberAction({
           name: name.trim(),
           role,
           phone: phone.trim() || undefined,
+          email: trimmedEmail || undefined,
+          password: password || undefined,
         });
         setOpen(false);
         reset();
@@ -123,6 +137,43 @@ export function AddManagementDialog() {
                 onChange={(event) => setPhone(event.target.value)}
                 placeholder="Phone number"
               />
+            </div>
+
+            <Separator />
+
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className={labelClassName}>Login details (optional)</p>
+                <p className="text-sm text-muted-foreground">
+                  Let them log into yaaro coach directly with an email and password.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="member-email" className={labelClassName}>
+                  Email
+                </label>
+                <Input
+                  id="member-email"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="Email address"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="member-password" className={labelClassName}>
+                  Password
+                </label>
+                <Input
+                  id="member-password"
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Password"
+                />
+              </div>
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}

@@ -130,7 +130,7 @@ export function ClientBodyMeasurementDetailPanel({
             <CardContent className="flex flex-col gap-1">
               {history.map((point, index) => (
                 <div
-                  key={point.date}
+                  key={point.id}
                   className={
                     index < history.length - 1
                       ? "flex items-center justify-between gap-4 border-b border-border py-2.5"

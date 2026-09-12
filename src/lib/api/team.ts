@@ -53,8 +53,9 @@ export async function updateTeam(patch: TeamPatch): Promise<Team> {
   return { ...team, logo: resolveLogoUrl(team.logo) };
 }
 
-// Add an existing Yaaro user to the studio team by email, with a chosen role. Owner
-// only. The backend creates an active studio_team row immediately (no invite/email).
+// Add a team member by name/role. Owner only. The backend creates a pending,
+// unlinked studio_team row, claimed later via that row's own QR — or, if `email`/
+// `password` are included, also sets up a direct yaaro_coach login for them.
 export async function addStudioMember(input: AddStudioMemberInput): Promise<TeamMember> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio/members`, {
     method: "POST",

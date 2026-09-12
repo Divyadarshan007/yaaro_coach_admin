@@ -43,13 +43,6 @@ export function CreateLeadView({ sources }: { sources: LeadSource[] }) {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <div className="flex flex-col gap-3">
-        <Link
-          href="/leads"
-          className="w-fit text-sm text-muted-foreground hover:text-foreground"
-        >
-          Leads
-        </Link>
-
         <div className="flex items-center gap-3">
           <Link
             href="/leads"
