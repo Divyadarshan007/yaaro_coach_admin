@@ -30,7 +30,7 @@ export function AppSidebar({
   coachProfile: CoachProfile | null;
   badgeCounts?: Partial<Record<string, number>>;
 }) {
-  const { state, isMobile, toggleSidebar } = useSidebar();
+  const { state, isMobile, toggleSidebar, setOpenMobile } = useSidebar();
   const pathname = usePathname();
   const collapsed = state === "collapsed" && !isMobile;
 
@@ -56,7 +56,9 @@ export function AppSidebar({
       <SidebarContent className="px-2">
         <SidebarMenu>
           {sidebarNavItems.map((item) => {
-            const isActive = !item.disabled && pathname === item.href;
+            const isActive =
+              !item.disabled &&
+              (pathname === item.href || pathname.startsWith(`${item.href}/`));
             const Icon = item.icon;
             const badgeCount = badgeCounts?.[item.id];
 
@@ -73,6 +75,7 @@ export function AppSidebar({
                       tabIndex={item.disabled ? -1 : undefined}
                       onClick={(event) => {
                         if (item.disabled) event.preventDefault();
+                        else if (isMobile) setOpenMobile(false);
                       }}
                     />
                   }

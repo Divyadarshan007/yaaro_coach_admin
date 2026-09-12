@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, MoreVertical, RefreshCw, Trash2 } from "lucide-react";
+import { MoreVertical, RefreshCw, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -68,10 +68,6 @@ export function ProgramActionsMenu({
           <DropdownMenuItem onClick={() => setIsReplaceOpen(true)}>
             <RefreshCw />
             Replace Program
-          </DropdownMenuItem>
-          <DropdownMenuItem disabled>
-            <Copy />
-            Copy to My Programs
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

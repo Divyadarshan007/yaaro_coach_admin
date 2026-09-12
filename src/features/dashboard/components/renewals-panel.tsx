@@ -1,7 +1,7 @@
 import { CalendarClock } from "lucide-react";
 import Link from "next/link";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { avatarFromName } from "@/features/clients/lib/avatar";
@@ -26,6 +26,7 @@ export function RenewalsPanel({ renewals }: { renewals: Renewal[] }) {
     <Card>
       <CardHeader>
         <CardTitle>Renewals ({renewals.length})</CardTitle>
+        <CardDescription>Memberships expiring in the next 30 days</CardDescription>
       </CardHeader>
       <CardContent className="min-h-80">
         {renewals.length > 0 ? (
@@ -61,7 +62,7 @@ export function RenewalsPanel({ renewals }: { renewals: Renewal[] }) {
           <EmptyState
             icon={CalendarClock}
             title="No upcoming renewals"
-            description="No memberships expire in the next 30 days"
+            description="Renewals will appear here as they come up"
             className="h-80 justify-center py-0"
           />
         )}
