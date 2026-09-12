@@ -52,6 +52,7 @@ export function ClientsView({
         clients={filteredClients}
         libraryPrograms={libraryPrograms}
         teamMembers={teamMembers}
+        studioName={studioName}
       />
     </div>
   );

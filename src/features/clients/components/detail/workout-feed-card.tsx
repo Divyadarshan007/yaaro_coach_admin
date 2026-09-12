@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import type { AvatarInfo } from "@/features/clients/types/client";
@@ -107,19 +108,20 @@ export function WorkoutFeedCard({
               </p>
             ))}
             {hiddenCount > 0 && (
-              <button
-                type="button"
-                className="self-start text-sm text-primary hover:underline"
+              <Button
+                variant="outline"
+                size="sm"
+                className="self-start"
                 onClick={() => setShowAllExercises(true)}
               >
                 See {hiddenCount} more exercises
-              </button>
+              </Button>
             )}
           </div>
         )}
 
         {feed.media.length > 0 && (
-          <div className="flex flex-col gap-1 overflow-hidden rounded-lg">
+          <div className="flex flex-wrap gap-1.5">
             {feed.media.map((item, index) =>
               item.type === "image" ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -127,7 +129,7 @@ export function WorkoutFeedCard({
                   key={index}
                   src={item.url}
                   alt=""
-                  className="w-full object-cover"
+                  className="aspect-square w-24 rounded-lg object-cover"
                 />
               ) : null,
             )}

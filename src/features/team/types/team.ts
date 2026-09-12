@@ -26,8 +26,9 @@ export type TeamMember = {
   status: TeamMemberStatus;
   clientCount: number;
   isMe: boolean;
-  // Value encoded in this member's own "Link now" QR ("<id>,studioTeam"). Scanning it in
-  // the Yaaro app claims this row via POST /mobile/v1/studio/team/:id/joinTeam.
+  // Value encoded in this member's own "Link now" QR ("<id>,linkTeam"). Scanning it in
+  // the Yaaro app claims this row via POST /mobile/v1/studios/teams/:id/linkTeam.
+  // Only meaningful while userId is null — once linked, this QR should no longer be shown.
   joinTeamQrValue: string;
 };
 
@@ -70,10 +71,10 @@ export type Team = {
   timeSlots: TimeSlot[];
   myRole: TeamMemberRole;
   members: TeamMember[];
-  // Value encoded in the studio's "add client" QR ("https://yaaro.fit/j/<studioId>").
+  // Value encoded in the studio's "add client" QR ("<studioId>,joinClient").
   // A person scans it in the Yaaro app to request joining as a client.
   joinQrValue: string;
-  // Value encoded in the studio's "Add Coach" QR ("https://yaaro.fit/jc/<studioId>").
+  // Value encoded in the studio's "Add Coach" QR ("<studioId>,joinCoach").
   // A Yaaro user scans it in the app and is added to the team as an active coach.
   joinCoachQrValue: string;
 };

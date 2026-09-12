@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { ClientRowActionsMenu } from "@/features/clients/components/client-row-actions-menu";
-import { ClientWeekActivity } from "@/features/clients/components/client-week-activity";
 import { LinkClientQrDialog } from "@/features/clients/components/link-client-qr-dialog";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { cn } from "@/lib/utils";
@@ -34,10 +33,12 @@ export function ClientRow({
   client,
   libraryPrograms,
   teamMembers,
+  studioName,
 }: {
   client: Client;
   libraryPrograms: Program[];
   teamMembers: TeamMember[];
+  studioName: string;
 }) {
   const router = useRouter();
   const [linkQrOpen, setLinkQrOpen] = useState(false);
@@ -99,10 +100,6 @@ export function ClientRow({
       </TableCell>
 
       <TableCell className="px-4 py-3">
-        <ClientWeekActivity days={client.weeklyActivity} />
-      </TableCell>
-
-      <TableCell className="px-4 py-3">
         <div className="flex items-center gap-2">
           <PersonAvatar avatar={client.coach} size="sm" />
           <span className="max-w-30 truncate text-sm text-foreground">
@@ -148,6 +145,7 @@ export function ClientRow({
             <LinkClientQrDialog
               clientName={client.avatar.name}
               linkQrValue={client.linkQrValue}
+              studioName={studioName}
               open={linkQrOpen}
               onOpenChange={setLinkQrOpen}
             />

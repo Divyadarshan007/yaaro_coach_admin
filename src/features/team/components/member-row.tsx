@@ -23,9 +23,11 @@ const STATUS_LABEL: Record<TeamMember["status"], string> = {
 export function MemberRow({
   member,
   myRole,
+  studioName,
 }: {
   member: TeamMember;
   myRole: Team["myRole"];
+  studioName: string;
 }) {
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isRemoving, startRemoveTransition] = useTransition();
@@ -69,13 +71,33 @@ export function MemberRow({
       </TableCell>
 
       <TableCell className="px-4 py-3">
-        <div className="flex items-center justify-end gap-2">
-          <Button variant="outline" size="sm" onClick={() => setIsLinkOpen(true)}>
-            <QrCode />
-            Link now
-          </Button>
+        {member.userId ? (
+          <Badge
+            variant="secondary"
+            className="h-auto whitespace-normal rounded-md bg-blue-500/10 px-3 py-1.5 text-center leading-tight text-blue-600 dark:bg-blue-500/15 dark:text-blue-400"
+          >
+            Linked
+          </Badge>
+        ) : (
+          <>
+            <Button variant="outline" size="sm" onClick={() => setIsLinkOpen(true)}>
+              <QrCode />
+              Link now
+            </Button>
+            <LinkCoachQrDialog
+              memberName={member.name}
+              joinTeamQrValue={member.joinTeamQrValue}
+              studioName={studioName}
+              open={isLinkOpen}
+              onOpenChange={setIsLinkOpen}
+            />
+          </>
+        )}
+      </TableCell>
 
-          {canRemove && (
+      <TableCell className="px-4 py-3">
+        {canRemove && (
+          <>
             <DropdownMenu>
               <DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label="Member actions" />}>
                 <MoreVertical />
@@ -87,37 +109,28 @@ export function MemberRow({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
-        </div>
 
-        <LinkCoachQrDialog
-          memberName={member.name}
-          joinTeamQrValue={member.joinTeamQrValue}
-          open={isLinkOpen}
-          onOpenChange={setIsLinkOpen}
-        />
-
-        {canRemove && (
-          <Dialog open={isRemoveOpen} onOpenChange={(next) => !isRemoving && setIsRemoveOpen(next)}>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Remove {member.name}?</DialogTitle>
-              </DialogHeader>
-              <DialogBody>
-                <p className="text-sm text-muted-foreground">
-                  This will remove {member.name} from your team. This action cannot be undone from here.
-                </p>
-              </DialogBody>
-              <DialogFooter className="flex-row justify-end">
-                <Button variant="outline" size="lg" onClick={() => setIsRemoveOpen(false)} disabled={isRemoving}>
-                  Cancel
-                </Button>
-                <Button variant="destructive" size="lg" onClick={handleRemove} disabled={isRemoving}>
-                  {isRemoving ? "Removing..." : "Remove member"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+            <Dialog open={isRemoveOpen} onOpenChange={(next) => !isRemoving && setIsRemoveOpen(next)}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Remove {member.name}?</DialogTitle>
+                </DialogHeader>
+                <DialogBody>
+                  <p className="text-sm text-muted-foreground">
+                    This will remove {member.name} from your team. This action cannot be undone from here.
+                  </p>
+                </DialogBody>
+                <DialogFooter className="flex-row justify-end">
+                  <Button variant="outline" size="lg" onClick={() => setIsRemoveOpen(false)} disabled={isRemoving}>
+                    Cancel
+                  </Button>
+                  <Button variant="destructive" size="lg" onClick={handleRemove} disabled={isRemoving}>
+                    {isRemoving ? "Removing..." : "Remove member"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </>
         )}
       </TableCell>
     </TableRow>

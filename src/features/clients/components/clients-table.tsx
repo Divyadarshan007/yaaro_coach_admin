@@ -20,10 +20,12 @@ export function ClientsTable({
   clients,
   libraryPrograms,
   teamMembers,
+  studioName,
 }: {
   clients: Client[];
   libraryPrograms: Program[];
   teamMembers: TeamMember[];
+  studioName: string;
 }) {
   if (clients.length === 0) {
     return (
@@ -46,7 +48,6 @@ export function ClientsTable({
             <TableHead className={headerCellClassName}>Program</TableHead>
             <TableHead className={headerCellClassName}>Batch</TableHead>
             <TableHead className={headerCellClassName}>Membership</TableHead>
-            <TableHead className={headerCellClassName}>Last 7 Days</TableHead>
             <TableHead className={headerCellClassName}>Coach</TableHead>
             <TableHead className={headerCellClassName}>Status</TableHead>
             <TableHead className={headerCellClassName}>Linked</TableHead>
@@ -60,6 +61,7 @@ export function ClientsTable({
               client={client}
               libraryPrograms={libraryPrograms}
               teamMembers={teamMembers}
+              studioName={studioName}
             />
           ))}
         </TableBody>

@@ -27,7 +27,7 @@ export function MembersTab({ team }: { team: Team }) {
         <MembersToolbar team={team} search={search} onSearchChange={setSearch} />
       </div>
 
-      <MembersTable members={filteredMembers} myRole={team.myRole} />
+      <MembersTable members={filteredMembers} myRole={team.myRole} studioName={team.name} />
     </div>
   );
 }

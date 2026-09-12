@@ -7,7 +7,15 @@ import type { Team, TeamMember } from "@/features/team/types/team";
 
 const headerCellClassName = "px-4 py-3 text-xs font-medium tracking-wide text-muted-foreground uppercase";
 
-export function MembersTable({ members, myRole }: { members: TeamMember[]; myRole: Team["myRole"] }) {
+export function MembersTable({
+  members,
+  myRole,
+  studioName,
+}: {
+  members: TeamMember[];
+  myRole: Team["myRole"];
+  studioName: string;
+}) {
   if (members.length === 0) {
     return (
       <div className="rounded-xl ring-1 ring-foreground/10">
@@ -25,12 +33,13 @@ export function MembersTable({ members, myRole }: { members: TeamMember[]; myRol
             <TableHead className={headerCellClassName}>Role</TableHead>
             <TableHead className={headerCellClassName}>Clients</TableHead>
             <TableHead className={headerCellClassName}>Status</TableHead>
+            <TableHead className={headerCellClassName}>Linked</TableHead>
             <TableHead className={headerCellClassName} />
           </TableRow>
         </TableHeader>
         <TableBody>
           {members.map((member) => (
-            <MemberRow key={member.id} member={member} myRole={myRole} />
+            <MemberRow key={member.id} member={member} myRole={myRole} studioName={studioName} />
           ))}
         </TableBody>
       </Table>
