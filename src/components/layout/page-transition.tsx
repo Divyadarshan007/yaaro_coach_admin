@@ -23,6 +23,10 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
       className="flex h-full min-h-0 flex-col"
     >
       {children}
+      {/* Real element, not padding — a scroll container's own bottom padding is ignored
+          by some browsers when its direct child is a flex column (this one), so trailing
+          breathing room below the last bit of page content has to be actual content. */}
+      <div aria-hidden className="h-16 shrink-0 sm:h-20 lg:h-24" />
     </motion.div>
   );
 }

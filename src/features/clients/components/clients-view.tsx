@@ -2,10 +2,6 @@
 
 import { useMemo, useState } from "react";
 
-import {
-  ALL_COACHES,
-  ClientsScopeBar,
-} from "@/features/clients/components/clients-scope-bar";
 import { ClientsTable } from "@/features/clients/components/clients-table";
 import { ClientsToolbar } from "@/features/clients/components/clients-toolbar";
 import type { Client } from "@/features/clients/types/client";
@@ -26,23 +22,14 @@ export function ClientsView({
   studioName: string;
 }) {
   const [search, setSearch] = useState("");
-  const [coachFilter, setCoachFilter] = useState(ALL_COACHES);
-
-  const coachNames = useMemo(
-    () => Array.from(new Set(clients.map((client) => client.coach.name))),
-    [clients],
-  );
 
   const filteredClients = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return clients.filter((client) => {
-      const matchesSearch =
-        !query || client.avatar.name.toLowerCase().includes(query);
-      const matchesCoach =
-        coachFilter === ALL_COACHES || client.coach.name === coachFilter;
-      return matchesSearch && matchesCoach;
-    });
-  }, [clients, search, coachFilter]);
+    if (!query) return clients;
+    return clients.filter((client) =>
+      client.avatar.name.toLowerCase().includes(query),
+    );
+  }, [clients, search]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -60,12 +47,6 @@ export function ClientsView({
           studioName={studioName}
         />
       </div>
-
-      <ClientsScopeBar
-        coachFilter={coachFilter}
-        onCoachFilterChange={setCoachFilter}
-        coachNames={coachNames}
-      />
 
       <ClientsTable
         clients={filteredClients}

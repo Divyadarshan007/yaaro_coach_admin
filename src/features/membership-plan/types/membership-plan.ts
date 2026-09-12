@@ -16,6 +16,9 @@ export type MembershipPlan = {
   validity: number;
   validityType: ValidityType;
   price: number;
+  // Clients currently on this plan whose membership hasn't expired yet — computed by
+  // the backend on read, not stored.
+  activeMemberCount: number;
   createdAt?: string;
   updatedAt?: string;
 };

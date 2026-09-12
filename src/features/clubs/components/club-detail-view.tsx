@@ -25,6 +25,9 @@ export function ClubDetailView({
   joinRequests: ClubJoinRequest[];
 }) {
   const [activeTab, setActiveTab] = useState("members");
+  // Join requests only apply to private clubs — a public club can be joined directly,
+  // so there's nothing to approve.
+  const showRequestsTab = club.isOwner && club.visibility === "private";
 
   return (
     <div className="flex flex-col gap-6">
@@ -65,7 +68,7 @@ export function ClubDetailView({
           <Tabs.Tab value="members" className={tabClassName}>
             Members ({members.length})
           </Tabs.Tab>
-          {club.isOwner && (
+          {showRequestsTab && (
             <Tabs.Tab value="requests" className={tabClassName}>
               Requests ({joinRequests.length})
             </Tabs.Tab>
@@ -81,7 +84,7 @@ export function ClubDetailView({
         <Tabs.Panel value="members" className="pt-6">
           <ClubMembersTab members={members} />
         </Tabs.Panel>
-        {club.isOwner && (
+        {showRequestsTab && (
           <Tabs.Panel value="requests" className="pt-6">
             <ClubJoinRequestsTab clubId={club.id} requests={joinRequests} />
           </Tabs.Panel>

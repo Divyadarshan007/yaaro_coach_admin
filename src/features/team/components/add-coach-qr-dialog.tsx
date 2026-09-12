@@ -1,7 +1,7 @@
 "use client";
 
 import { QRCodeSVG } from "qrcode.react";
-import { Plus } from "lucide-react";
+import { QrCode } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,9 +23,12 @@ export function AddCoachQrDialog({
 }) {
   return (
     <Dialog>
-      <DialogTrigger render={<Button size="lg" />}>
-        <Plus />
-        Add Coach
+      <DialogTrigger
+        render={
+          <Button variant="outline" size="icon-lg" aria-label="Add Coach" />
+        }
+      >
+        <QrCode />
       </DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>

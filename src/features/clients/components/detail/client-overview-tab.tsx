@@ -1,5 +1,7 @@
+import { BatchCard } from "@/features/clients/components/detail/batch-card";
 import { CoachedCard } from "@/features/clients/components/detail/coached-card";
 // import { LatestActivitiesCard } from "@/features/clients/components/detail/latest-activities-card";
+import { MembershipPlanCard } from "@/features/clients/components/detail/membership-plan-card";
 import { NotesCard } from "@/features/clients/components/detail/notes-card";
 import { StatisticsSection } from "@/features/clients/components/detail/statistics-section";
 import { WorkoutProgramCard } from "@/features/clients/components/detail/workout-program-card";
@@ -21,6 +23,10 @@ export function ClientOverviewTab({
       <div className="grid grid-cols-1 gap-4">
         <CoachedCard client={client} teamMembers={teamMembers} />
         <WorkoutProgramCard client={client} libraryPrograms={libraryPrograms} />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <BatchCard client={client} />
+          <MembershipPlanCard client={client} />
+        </div>
         <NotesCard />
         {/* <LatestActivitiesCard activities={client.activities} /> — hidden for now, no real activity-feed data source yet */}
       </div>

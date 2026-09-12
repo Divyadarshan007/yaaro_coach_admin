@@ -8,13 +8,12 @@ export const TEAM_MEMBER_ROLE_LABEL: Record<TeamMemberRole, string> = {
   staff: "Staff",
 };
 
-// Roles the owner can assign from the "Add Management" form. Same set as the backend
-// STUDIO_TEAM_ROLE enum.
+// Roles the owner can assign from the "Add Management" form — never "owner" (a studio
+// has exactly one, created at signup).
 export const TEAM_MEMBER_ROLE_OPTIONS: { value: TeamMemberRole; label: string }[] = [
-  { value: "admin", label: TEAM_MEMBER_ROLE_LABEL.admin },
   { value: "coach", label: TEAM_MEMBER_ROLE_LABEL.coach },
+  { value: "admin", label: TEAM_MEMBER_ROLE_LABEL.admin },
   { value: "staff", label: TEAM_MEMBER_ROLE_LABEL.staff },
-  { value: "owner", label: TEAM_MEMBER_ROLE_LABEL.owner },
 ];
 
 export type TeamMember = {
@@ -27,6 +26,9 @@ export type TeamMember = {
   status: TeamMemberStatus;
   clientCount: number;
   isMe: boolean;
+  // Value encoded in this member's own "Link now" QR ("<id>,studioTeam"). Scanning it in
+  // the Yaaro app claims this row via POST /mobile/v1/studio/team/:id/joinTeam.
+  joinTeamQrValue: string;
 };
 
 export const DAYS_OF_WEEK = [
@@ -84,12 +86,11 @@ export type TeamPatch = {
   timeSlots?: TimeSlot[];
 };
 
-// Payload for "Add Management" (POST /coach/v1/studio/members). The person must already
-// have a Yaaro account; `password` (optional) sets their coach web-panel login.
+// Payload for "Add Management" (POST /coach/v1/studio/members). No account is required
+// up front — this creates a pending, unlinked studio_team row that the actual person
+// claims later via that row's own "Link now" QR on the Team page.
 export type AddStudioMemberInput = {
-  email: string;
+  name: string;
   role: TeamMemberRole;
-  name?: string;
   phone?: string;
-  password?: string;
 };

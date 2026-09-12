@@ -1,4 +1,8 @@
-import type { AvatarInfo } from "@/features/clients/types/client";
+import type {
+  AvatarInfo,
+  ClientBatch,
+  ClientMembership,
+} from "@/features/clients/types/client";
 
 export type ActivitySegment = {
   text: string;
@@ -60,6 +64,8 @@ export type ClientDetail = {
   coachedSince: string;
   notes: string;
   workoutProgram: WorkoutProgramSummary | null;
+  batch: ClientBatch | null;
+  membership: ClientMembership | null;
   activities: ActivityItem[];
   duration: StatSummary;
   volume: StatSummary;

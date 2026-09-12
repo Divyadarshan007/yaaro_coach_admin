@@ -4,6 +4,7 @@ import { ClientDetailView } from "@/features/clients/components/detail/client-de
 import { getClientDetailMockStats } from "@/features/clients/data/client-detail-mock-data";
 import { avatarFromName } from "@/features/clients/lib/avatar";
 import { buildBodyweightSummary, buildOverviewStats, buildProgressPictures } from "@/features/clients/lib/overview-stats-format";
+import { toClientBatch, toClientMembership } from "@/features/clients/lib/to-client";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
 import { getClient, getClientAdvancedStats, getClientFeeds, getClientMeasurements, getClientProgram } from "@/lib/api/clients";
 import { getCoachProfile } from "@/lib/api/coach";
@@ -61,6 +62,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           programStartDate: summary.programStartDate,
         }
       : null,
+    batch: toClientBatch(summary),
+    membership: toClientMembership(summary),
     activities,
     ...buildOverviewStats(advancedStats),
     bodyweight: buildBodyweightSummary(initialMeasurements),

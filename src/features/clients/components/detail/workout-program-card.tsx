@@ -3,6 +3,7 @@
 import { CalendarRange } from "lucide-react";
 import Link from "next/link";
 
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProgramActionsMenu } from "@/features/clients/components/detail/program-actions-menu";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
@@ -43,7 +44,7 @@ export function WorkoutProgramCard({
         <div className="flex items-center gap-3">
           <Link
             href={`/clients/${client.id}/program`}
-            className="text-sm text-primary hover:underline"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
           >
             Edit program
           </Link>

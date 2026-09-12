@@ -29,6 +29,7 @@ export function MembershipPlansTable({ plans }: { plans: MembershipPlan[] }) {
             <TableHead className={headerCellClassName}>Title</TableHead>
             <TableHead className={headerCellClassName}>Validity</TableHead>
             <TableHead className={headerCellClassName}>Price</TableHead>
+            <TableHead className={headerCellClassName}>Active Members</TableHead>
             <TableHead className={headerCellClassName}>Actions</TableHead>
           </TableRow>
         </TableHeader>

@@ -26,8 +26,6 @@ export function AddManagementDialog() {
   const [name, setName] = useState("");
   const [role, setRole] = useState<TeamMemberRole>("coach");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, startSave] = useTransition();
 
@@ -35,8 +33,6 @@ export function AddManagementDialog() {
     setName("");
     setRole("coach");
     setPhone("");
-    setEmail("");
-    setPassword("");
     setError(null);
   }
 
@@ -52,11 +48,9 @@ export function AddManagementDialog() {
     startSave(async () => {
       try {
         await addStudioMemberAction({
-          email: email.trim().toLowerCase(),
+          name: name.trim(),
           role,
-          name: name.trim() || undefined,
           phone: phone.trim() || undefined,
-          password: password.trim() ? password : undefined,
         });
         setOpen(false);
         reset();
@@ -66,11 +60,11 @@ export function AddManagementDialog() {
     });
   }
 
-  const canSubmit = email.trim().length > 0 && !isSaving;
+  const canSubmit = name.trim().length > 0 && !isSaving;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger render={<Button size="lg" variant="outline" />}>
+      <DialogTrigger render={<Button size="lg" />}>
         <Plus />
         Add Management
       </DialogTrigger>
@@ -78,7 +72,8 @@ export function AddManagementDialog() {
         <DialogHeader>
           <DialogTitle>Add a team member</DialogTitle>
           <DialogDescription>
-            The person must already have a Yaaro account. Enter their account email and pick a role.
+            Add them by name and pick a role. They&apos;ll claim this row later by
+            scanning its &quot;Link now&quot; QR from the Yaaro app.
           </DialogDescription>
         </DialogHeader>
 
@@ -93,6 +88,7 @@ export function AddManagementDialog() {
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="Full name"
+                required
               />
             </div>
 
@@ -118,7 +114,7 @@ export function AddManagementDialog() {
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor="member-phone" className={labelClassName}>
-                Phone
+                Phone <span className="text-muted-foreground">(optional)</span>
               </label>
               <Input
                 id="member-phone"
@@ -126,34 +122,6 @@ export function AddManagementDialog() {
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
                 placeholder="Phone number"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="member-email" className={labelClassName}>
-                Email
-              </label>
-              <Input
-                id="member-email"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="account@email.com"
-                required
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="member-password" className={labelClassName}>
-                Password <span className="text-muted-foreground">(optional)</span>
-              </label>
-              <Input
-                id="member-password"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Set a coach panel login password"
-                autoComplete="new-password"
               />
             </div>
 

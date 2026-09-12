@@ -40,6 +40,7 @@ export function MembershipPlanRow({ plan }: { plan: MembershipPlan }) {
       <TableCell className="px-4 py-3 text-sm font-medium text-foreground">{plan.title}</TableCell>
       <TableCell className="px-4 py-3 text-sm text-foreground">{planValidity(plan)}</TableCell>
       <TableCell className="px-4 py-3 text-sm text-foreground">{formatPrice(plan.price)}</TableCell>
+      <TableCell className="px-4 py-3 text-sm text-foreground">{plan.activeMemberCount}</TableCell>
       <TableCell className="px-4 py-3">
         <div className="flex items-center gap-2">
           <Button

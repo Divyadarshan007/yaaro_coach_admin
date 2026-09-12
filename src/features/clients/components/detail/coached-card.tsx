@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChangeCoachDialog } from "@/features/clients/components/detail/change-coach-dialog";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
@@ -21,13 +22,14 @@ export function CoachedCard({
     <Card>
       <CardHeader className="flex items-center justify-between">
         <CardTitle>Coached</CardTitle>
-        <button
+        <Button
           type="button"
-          className="text-sm text-primary hover:underline"
+          variant="outline"
+          size="sm"
           onClick={() => setIsChangeCoachOpen(true)}
         >
           Change Coach
-        </button>
+        </Button>
       </CardHeader>
       <CardContent className="flex items-center gap-3">
         <PersonAvatar avatar={client.coach} size="lg" />
