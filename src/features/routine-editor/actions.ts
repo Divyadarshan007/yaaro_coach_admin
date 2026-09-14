@@ -45,7 +45,7 @@ export async function createCustomExerciseAction(input: {
 export type CustomExerciseFormOptions = {
   muscles: { id: string; name: string }[];
   equipment: { id: string; name: string }[];
-  exerciseTypes: { id: string; name: string; action: string[] }[];
+  exerciseTypes: { id: string; key: string; name: string; description: string; action: string[] }[];
 };
 
 // Full canonical option lists for the create-custom-exercise form (as opposed to the
@@ -70,12 +70,18 @@ export async function getCustomExerciseFormOptionsAction(): Promise<CustomExerci
   ])) as [
     { id: string; name: string }[],
     { id: string; name: string }[],
-    { id: string; name: string; action: string[] }[],
+    { id: string; key: string; name: string; description: string; action: string[] }[],
   ];
 
   return {
     muscles: muscles.map((m) => ({ id: m.id, name: m.name })),
     equipment: equipment.map((e) => ({ id: e.id, name: e.name })),
-    exerciseTypes: exerciseTypes.map((t) => ({ id: t.id, name: t.name, action: t.action })),
+    exerciseTypes: exerciseTypes.map((t) => ({
+      id: t.id,
+      key: t.key,
+      name: t.name,
+      description: t.description,
+      action: t.action,
+    })),
   };
 }

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CustomExerciseDialog } from "@/features/routine-editor/components/custom-exercise-dialog";
 import {
   filterExerciseCatalog,
   getDistinctEquipment,
@@ -19,10 +20,12 @@ export function ExerciseListPanel({
   catalog,
   selectedId,
   onSelectExercise,
+  onExerciseCreated,
 }: {
   catalog: ExerciseCatalogEntry[];
   selectedId: string | null;
   onSelectExercise: (id: string) => void;
+  onExerciseCreated: (exercise: ExerciseCatalogEntry) => void;
 }) {
   const [search, setSearch] = useState("");
   const [equipmentId, setEquipmentId] = useState<string | null>(null);
@@ -37,6 +40,8 @@ export function ExerciseListPanel({
 
   return (
     <div className="flex h-full flex-col gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10">
+      <CustomExerciseDialog onCreated={onExerciseCreated} />
+
       <div className="grid grid-cols-2 gap-2">
         <Select
           items={[{ value: ALL_VALUE, label: "Equipment" }, ...equipmentOptions.map((o) => ({ value: o.id, label: o.label }))]}

@@ -91,8 +91,8 @@ export function AddManagementDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit}>
-          <DialogBody>
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <DialogBody className="min-h-0 flex-1">
             <div className="flex flex-col gap-1.5">
               <label htmlFor="member-name" className={labelClassName}>
                 Name

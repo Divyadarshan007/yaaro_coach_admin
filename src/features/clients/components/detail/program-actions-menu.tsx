@@ -27,10 +27,15 @@ export function ProgramActionsMenu({
   client,
   libraryPrograms,
   programName,
+  hideReplace,
 }: {
   client: ClientDetail;
   libraryPrograms: Program[];
   programName: string;
+  // Set when the caller already renders its own direct "Replace Program" button
+  // (see WorkoutProgramCard) — keeps this menu to just Remove instead of offering
+  // the same replace action two ways.
+  hideReplace?: boolean;
 }) {
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isReplaceOpen, setIsReplaceOpen] = useState(false);
@@ -65,10 +70,12 @@ export function ProgramActionsMenu({
             <Trash2 />
             Remove Program
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsReplaceOpen(true)}>
-            <RefreshCw />
-            Replace Program
-          </DropdownMenuItem>
+          {!hideReplace && (
+            <DropdownMenuItem onClick={() => setIsReplaceOpen(true)}>
+              <RefreshCw />
+              Replace Program
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -107,13 +114,15 @@ export function ProgramActionsMenu({
         </DialogContent>
       </Dialog>
 
-      <ReplaceProgramDialog
-        clientId={client.id}
-        currentProgramName={programName}
-        programs={libraryPrograms}
-        open={isReplaceOpen}
-        onOpenChange={setIsReplaceOpen}
-      />
+      {!hideReplace && (
+        <ReplaceProgramDialog
+          clientId={client.id}
+          currentProgramName={programName}
+          programs={libraryPrograms}
+          open={isReplaceOpen}
+          onOpenChange={setIsReplaceOpen}
+        />
+      )}
     </>
   );
 }

@@ -13,6 +13,7 @@ import {
   PROGRAM_LEVEL_OPTIONS,
 } from "@/features/program-editor/data/program-editor-data";
 import { AddToMyLibraryButton } from "@/features/program-library/components/add-to-my-library-button";
+import { CopyRoutineButton } from "@/features/program-library/components/copy-routine-button";
 import { RoutineExerciseList } from "@/features/program-library/components/routine-exercise-list";
 import type { Program } from "@/features/program-editor/types/program-editor";
 
@@ -106,7 +107,11 @@ export function ProgramDetailDialog({
               ) : (
                 routines.map((routine) => (
                   <div key={routine.id} className="flex flex-col gap-2">
-                    <h3 className="text-sm font-semibold text-foreground">{routine.title}</h3>
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="text-sm font-semibold text-foreground">{routine.title}</h3>
+                      <CopyRoutineButton routineId={routine.id} />
+                    </div>
+                    {routine.notes && <p className="text-sm text-muted-foreground">{routine.notes}</p>}
                     <RoutineExerciseList
                       exercises={routine.exercises}
                       emptyMessage="This routine doesn't have any exercises yet."

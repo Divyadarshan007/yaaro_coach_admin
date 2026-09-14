@@ -25,6 +25,43 @@ import type { ExerciseCatalogEntry } from "@/lib/api/exercises";
 
 const UNSET = "unset";
 
+// A Tracking Type option rendered as a card (name, "Example: ..." description, and a
+// pill per unit it logs, e.g. KG/REPS) — matches the mobile app's "Create exercise" >
+// "Tracking type" sheet instead of the plain single-line list every other Select in
+// this form uses.
+function TrackingTypeOption({
+  value,
+  name,
+  description,
+  units,
+}: {
+  value: string;
+  name: string;
+  description: string;
+  units: string[];
+}) {
+  return (
+    <SelectItem value={value} className="items-start gap-2 rounded-lg px-3 py-2.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <span className="text-sm font-medium text-foreground">{name}</span>
+        {description && <span className="text-xs text-muted-foreground">{description}</span>}
+        {units.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 pt-0.5">
+            {units.map((unit) => (
+              <span
+                key={unit}
+                className="rounded-md bg-muted px-2 py-0.5 text-[11px] font-semibold text-foreground"
+              >
+                {unit}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    </SelectItem>
+  );
+}
+
 export function CustomExerciseDialog({
   onCreated,
 }: {
@@ -271,7 +308,9 @@ export function CustomExerciseDialog({
             <Select
               items={[
                 { value: UNSET, label: "Weight & Reps (default)" },
-                ...(formOptions?.exerciseTypes.map((o) => ({ value: o.id, label: o.name })) ?? []),
+                ...(formOptions?.exerciseTypes
+                  .filter((o) => o.key !== "weight_reps")
+                  .map((o) => ({ value: o.id, label: o.name })) ?? []),
               ]}
               value={exerciseTypeId}
               onValueChange={(value) => setExerciseTypeId(value as string)}
@@ -280,14 +319,26 @@ export function CustomExerciseDialog({
               <SelectTrigger className="h-10">
                 <SelectValue placeholder={isLoadingOptions ? "Loading..." : undefined} />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={UNSET}>Weight & Reps (default)</SelectItem>
-                {formOptions?.exerciseTypes.map((option) => (
-                  <SelectItem key={option.id} value={option.id}>
-                    {option.name}
-                    {option.action.length > 0 ? ` (${option.action.join(" + ")})` : ""}
-                  </SelectItem>
-                ))}
+              <SelectContent className="w-(--anchor-width) p-1.5">
+                <TrackingTypeOption
+                  value={UNSET}
+                  name="Weight & Reps (default)"
+                  description="Example: Bench Press, Dumbbell Curls"
+                  units={["KG", "REPS"]}
+                />
+                {formOptions?.exerciseTypes
+                  // Already shown above as the default option — the sentinel "unset"
+                  // value maps to the same server-side default (see handleSave).
+                  .filter((option) => option.key !== "weight_reps")
+                  .map((option) => (
+                    <TrackingTypeOption
+                      key={option.id}
+                      value={option.id}
+                      name={option.name}
+                      description={option.description}
+                      units={option.action}
+                    />
+                  ))}
               </SelectContent>
             </Select>
           </div>

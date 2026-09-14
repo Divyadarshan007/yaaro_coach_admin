@@ -25,7 +25,10 @@ export function ReplaceProgramDialog({
   onOpenChange,
 }: {
   clientId: string;
-  currentProgramName: string;
+  // null when the client has no program yet — this same dialog handles the first
+  // assignment (assignProgramToClient / replaceClientProgramAction are the same call
+  // either way, the backend just sets currentProgramId whether or not one existed).
+  currentProgramName: string | null;
   programs: Program[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -73,7 +76,9 @@ export function ReplaceProgramDialog({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
-            Replace &quot;{currentProgramName}&quot; with...
+            {currentProgramName
+              ? `Replace "${currentProgramName}" with...`
+              : "Assign a Program"}
           </DialogTitle>
         </DialogHeader>
 
@@ -166,7 +171,13 @@ export function ReplaceProgramDialog({
             disabled={!selectedProgramId || isPending}
             onClick={handleReplace}
           >
-            {isPending ? "Replacing..." : "Copy Program to Client"}
+            {isPending
+              ? currentProgramName
+                ? "Replacing..."
+                : "Assigning..."
+              : currentProgramName
+                ? "Copy Program to Client"
+                : "Assign Program"}
           </Button>
         </DialogFooter>
       </DialogContent>

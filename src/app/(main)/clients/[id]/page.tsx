@@ -18,7 +18,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     await Promise.all([
       getClient(id),
       getCoachProfile(),
-      getPrograms(),
+      getPrograms("mine"),
       getClientProgram(id),
       getClientFeeds(id, 1),
       getExerciseCatalog(),

@@ -13,6 +13,7 @@ import { RoutineLibraryToolbar } from "@/features/program-library/components/rou
 import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
 import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
 import type { Program, Routine } from "@/features/program-editor/types/program-editor";
+import { YaaroLinkProvider } from "@/features/program-library/lib/yaaro-link-context";
 
 type LibraryTab = "my-library" | "my-routines" | "explore";
 
@@ -23,10 +24,12 @@ export function ProgramLibraryView({
   initialPrograms,
   initialRoutines,
   explorePrograms,
+  isLinkedToYaaro,
 }: {
   initialPrograms: Program[];
   initialRoutines: Routine[];
   explorePrograms: Program[];
+  isLinkedToYaaro: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<LibraryTab>("my-library");
   const hydratePrograms = useMyProgramsStore((state) => state.hydratePrograms);
@@ -43,41 +46,43 @@ export function ProgramLibraryView({
   }, [hydratePrograms, initialPrograms, hydrateRoutines, initialRoutines]);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold text-foreground">Program Library</h1>
-        <p className="text-sm text-muted-foreground">Organize all your programs and routines</p>
-      </div>
-
-      <Tabs.Root value={activeTab} onValueChange={(value) => setActiveTab(value as LibraryTab)}>
-        <div className="relative">
-          <Tabs.List className="flex gap-6 border-b border-border">
-            <Tabs.Tab value="my-library" className={tabClassName}>
-              My Library
-            </Tabs.Tab>
-            <Tabs.Tab value="my-routines" className={tabClassName}>
-              My Routines
-            </Tabs.Tab>
-            <Tabs.Tab value="explore" className={tabClassName}>
-              Explore
-            </Tabs.Tab>
-          </Tabs.List>
-          {activeTab === "my-routines" && <RoutineLibraryToolbar className="absolute right-0 -bottom-0.5" />}
+    <YaaroLinkProvider isLinked={isLinkedToYaaro}>
+      <div className="flex flex-col gap-6">
+        <div>
+          <h1 className="text-xl font-semibold text-foreground">Program Library</h1>
+          <p className="text-sm text-muted-foreground">Organize all your programs and routines</p>
         </div>
 
-        <Tabs.Panel value="my-library" className="flex flex-col gap-4 pt-6">
-          <ProgramLibraryToolbar />
-          {hasPrograms ? <MyLibraryProgramList /> : <ProgramLibraryEmptyState />}
-        </Tabs.Panel>
+        <Tabs.Root value={activeTab} onValueChange={(value) => setActiveTab(value as LibraryTab)}>
+          <div className="relative">
+            <Tabs.List className="flex gap-6 border-b border-border">
+              <Tabs.Tab value="my-library" className={tabClassName}>
+                My Library
+              </Tabs.Tab>
+              <Tabs.Tab value="my-routines" className={tabClassName}>
+                My Routines
+              </Tabs.Tab>
+              <Tabs.Tab value="explore" className={tabClassName}>
+                Explore
+              </Tabs.Tab>
+            </Tabs.List>
+            {activeTab === "my-routines" && <RoutineLibraryToolbar className="absolute right-0 -bottom-0.5" />}
+          </div>
 
-        <Tabs.Panel value="my-routines" className="flex flex-col gap-4 pt-6">
-          {hasRoutines ? <MyRoutinesList /> : <RoutineLibraryEmptyState />}
-        </Tabs.Panel>
+          <Tabs.Panel value="my-library" className="flex flex-col gap-4 pt-6">
+            <ProgramLibraryToolbar />
+            {hasPrograms ? <MyLibraryProgramList /> : <ProgramLibraryEmptyState />}
+          </Tabs.Panel>
 
-        <Tabs.Panel value="explore" className="flex flex-col gap-4 pt-6">
-          <ExplorePanel initialPrograms={explorePrograms} />
-        </Tabs.Panel>
-      </Tabs.Root>
-    </div>
+          <Tabs.Panel value="my-routines" className="flex flex-col gap-4 pt-6">
+            {hasRoutines ? <MyRoutinesList /> : <RoutineLibraryEmptyState />}
+          </Tabs.Panel>
+
+          <Tabs.Panel value="explore" className="flex flex-col gap-4 pt-6">
+            <ExplorePanel initialPrograms={explorePrograms} />
+          </Tabs.Panel>
+        </Tabs.Root>
+      </div>
+    </YaaroLinkProvider>
   );
 }

@@ -3,6 +3,9 @@ import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 
 export type CoachProfile = {
   id: string;
+  // The calling coach's own linked Yaaro app account, if any — null until they scan
+  // their own "Link now" QR on the Team page. Programs can only be created once linked.
+  userId: string | null;
   name: string;
   email: string;
   avatar: string;

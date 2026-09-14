@@ -2,10 +2,12 @@
 
 import { CalendarRange } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProgramActionsMenu } from "@/features/clients/components/detail/program-actions-menu";
+import { ReplaceProgramDialog } from "@/features/clients/components/detail/replace-program-dialog";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
 import type { Program } from "@/features/program-editor/types/program-editor";
 
@@ -17,18 +19,30 @@ export function WorkoutProgramCard({
   libraryPrograms: Program[];
 }) {
   const { workoutProgram } = client;
+  const [isAssignOpen, setIsAssignOpen] = useState(false);
+  const [isReplaceOpen, setIsReplaceOpen] = useState(false);
 
   if (!workoutProgram) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="flex items-center justify-between">
           <CardTitle>Workout Program</CardTitle>
+          <Button variant="outline" size="sm" onClick={() => setIsAssignOpen(true)}>
+            Assign Program
+          </Button>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
             No program assigned yet.
           </p>
         </CardContent>
+        <ReplaceProgramDialog
+          clientId={client.id}
+          currentProgramName={null}
+          programs={libraryPrograms}
+          open={isAssignOpen}
+          onOpenChange={setIsAssignOpen}
+        />
       </Card>
     );
   }
@@ -48,10 +62,18 @@ export function WorkoutProgramCard({
           >
             Edit program
           </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsReplaceOpen(true)}
+          >
+            Replace Program
+          </Button>
           <ProgramActionsMenu
             client={client}
             libraryPrograms={libraryPrograms}
             programName={workoutProgram.name}
+            hideReplace
           />
         </div>
       </CardHeader>
@@ -76,6 +98,13 @@ export function WorkoutProgramCard({
           </p>
         </div>
       </CardContent>
+      <ReplaceProgramDialog
+        clientId={client.id}
+        currentProgramName={workoutProgram.name}
+        programs={libraryPrograms}
+        open={isReplaceOpen}
+        onOpenChange={setIsReplaceOpen}
+      />
     </Card>
   );
 }

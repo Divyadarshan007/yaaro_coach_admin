@@ -10,7 +10,7 @@ export default async function ClientsPage() {
   const [summaries, coachProfile, libraryPrograms, team] = await Promise.all([
     getClients(),
     getCoachProfile(),
-    getPrograms(),
+    getPrograms("mine"),
     getTeam(),
   ]);
   const coachAvatar = avatarFromName(coachProfile?.name || coachProfile?.email || "Coach", coachProfile?.id ?? "coach");
