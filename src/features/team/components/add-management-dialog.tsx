@@ -169,10 +169,15 @@ export function AddManagementDialog() {
                 <Input
                   id="member-password"
                   type="password"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="Password"
                 />
+                <p className="text-xs text-muted-foreground">
+                  At least 8 characters, with an uppercase letter, a lowercase letter, a number,
+                  and a special character.
+                </p>
               </div>
             </div>
 

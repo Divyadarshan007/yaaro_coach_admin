@@ -14,6 +14,18 @@ function resolveLogoUrl(logo: string): string {
   return logo && logo.startsWith("/") ? `${COACH_BACKEND_URL}${logo}` : logo;
 }
 
+// A Joi validation failure (see middlewares/validator.js) always sends the generic
+// `message: "Validation failed"` plus the actual per-field reason(s) in `errors`
+// (e.g. `{ password: ["Password must be at least 8 characters and include..."] }`) —
+// prefer that specific text so the real problem is visible instead of a generic error.
+async function parseError(res: Response, fallback: string): Promise<never> {
+  const body = await res.json().catch(() => null);
+  const fieldMessages = body?.errors
+    ? Object.values(body.errors as Record<string, string[]>).flat()
+    : [];
+  throw new Error(fieldMessages.join(" ") || body?.message || `${fallback} (${res.status})`);
+}
+
 export async function getTeam(): Promise<Team> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio`, {
     cache: "no-store",
@@ -45,10 +57,7 @@ export async function updateTeam(patch: TeamPatch): Promise<Team> {
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(patch),
   });
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(body?.message || `Failed to update studio (${res.status})`);
-  }
+  if (!res.ok) return parseError(res, "Failed to update studio");
   const team: Team = await res.json();
   return { ...team, logo: resolveLogoUrl(team.logo) };
 }
@@ -62,10 +71,7 @@ export async function addStudioMember(input: AddStudioMemberInput): Promise<Team
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(input),
   });
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(body?.message || `Failed to add member (${res.status})`);
-  }
+  if (!res.ok) return parseError(res, "Failed to add member");
   return res.json();
 }
 
