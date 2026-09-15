@@ -16,3 +16,9 @@ export function formatDate(iso: string): string {
     year: "numeric",
   });
 }
+
+// Whole days from now until `iso` (negative once it's in the past).
+export function daysUntil(iso: string): number {
+  const MS_PER_DAY = 24 * 60 * 60 * 1000;
+  return Math.ceil((new Date(iso).getTime() - Date.now()) / MS_PER_DAY);
+}

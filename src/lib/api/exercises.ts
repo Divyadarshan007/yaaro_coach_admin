@@ -13,6 +13,14 @@ export type ExerciseCatalogEntry = {
   mediaType: string;
 };
 
+// Global catalog thumbnails/videos are absolute (CDN) URLs already, but custom
+// exercises store the disk-relative path the backend moved the upload to
+// (e.g. "/uploads/custom-exercise-thumbnails/xxx.jpg") — resolve those against the
+// backend origin or they 404 against the coach app's own origin instead.
+function resolveMediaUrl(url: string): string {
+  return url && url.startsWith("/") ? `${COACH_BACKEND_URL}${url}` : url;
+}
+
 // Merges the global catalog with the studio's own custom exercises when a coach
 // session is present; falls back to the public mobile catalog otherwise.
 export async function getExerciseCatalog(): Promise<ExerciseCatalogEntry[]> {
@@ -20,5 +28,10 @@ export async function getExerciseCatalog(): Promise<ExerciseCatalogEntry[]> {
   const endpoint = authHeaders.Authorization ? "coach/v1/exercises" : "mobile/v1/exercises";
   const res = await fetch(`${COACH_BACKEND_URL}/${endpoint}`, { headers: authHeaders, cache: "no-store" });
   if (!res.ok) throw new Error(`Failed to fetch exercise catalog (${res.status})`);
-  return res.json();
+  const catalog = (await res.json()) as ExerciseCatalogEntry[];
+  return catalog.map((exercise) => ({
+    ...exercise,
+    thumbnailUrl: resolveMediaUrl(exercise.thumbnailUrl),
+    url: resolveMediaUrl(exercise.url),
+  }));
 }

@@ -54,20 +54,17 @@ export function ProgramLibraryView({
         </div>
 
         <Tabs.Root value={activeTab} onValueChange={(value) => setActiveTab(value as LibraryTab)}>
-          <div className="relative">
-            <Tabs.List className="flex gap-6 border-b border-border">
-              <Tabs.Tab value="my-library" className={tabClassName}>
-                My Library
-              </Tabs.Tab>
-              <Tabs.Tab value="my-routines" className={tabClassName}>
-                My Routines
-              </Tabs.Tab>
-              <Tabs.Tab value="explore" className={tabClassName}>
-                Explore
-              </Tabs.Tab>
-            </Tabs.List>
-            {activeTab === "my-routines" && <RoutineLibraryToolbar className="absolute right-0 -bottom-0.5" />}
-          </div>
+          <Tabs.List className="flex gap-6 border-b border-border">
+            <Tabs.Tab value="my-library" className={tabClassName}>
+              My Library
+            </Tabs.Tab>
+            <Tabs.Tab value="my-routines" className={tabClassName}>
+              My Routines
+            </Tabs.Tab>
+            <Tabs.Tab value="explore" className={tabClassName}>
+              Explore
+            </Tabs.Tab>
+          </Tabs.List>
 
           <Tabs.Panel value="my-library" className="flex flex-col gap-4 pt-6">
             <ProgramLibraryToolbar />
@@ -75,6 +72,7 @@ export function ProgramLibraryView({
           </Tabs.Panel>
 
           <Tabs.Panel value="my-routines" className="flex flex-col gap-4 pt-6">
+            <RoutineLibraryToolbar />
             {hasRoutines ? <MyRoutinesList /> : <RoutineLibraryEmptyState />}
           </Tabs.Panel>
 

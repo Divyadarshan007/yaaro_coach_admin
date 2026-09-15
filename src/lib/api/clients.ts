@@ -19,13 +19,25 @@ import type {
   ProgramPatch,
 } from "@/features/program-editor/types/program-editor";
 
+// Photos (client avatars, feed media) come back as paths relative to the backend
+// (e.g. "/uploads/profile/x.jpg") rather than full URLs. Resolved here — server-side,
+// where COACH_BACKEND_URL is allowed — so client components can just use the url as-is.
+function resolveMediaUrl(url: string): string {
+  return url.startsWith("/") ? `${COACH_BACKEND_URL}${url}` : url;
+}
+
+function withResolvedAvatar(summary: ClientSummary): ClientSummary {
+  return summary.avatar ? { ...summary, avatar: resolveMediaUrl(summary.avatar) } : summary;
+}
+
 export async function getClients(): Promise<ClientSummary[]> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/clients`, {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
   if (!res.ok) throw new Error(`Failed to fetch clients (${res.status})`);
-  return res.json();
+  const clients: ClientSummary[] = await res.json();
+  return clients.map(withResolvedAvatar);
 }
 
 // Manually add a client who doesn't have (or hasn't linked) a Yaaro account yet.
@@ -54,7 +66,8 @@ export async function getClient(id: string): Promise<ClientSummary | null> {
   });
   if (res.status === 404 || res.status === 400) return null;
   if (!res.ok) throw new Error(`Failed to fetch client ${id} (${res.status})`);
-  return res.json();
+  const client: ClientSummary = await res.json();
+  return withResolvedAvatar(client);
 }
 
 export async function updateClientNotes(
@@ -235,13 +248,6 @@ export async function updateClientProgram(
       `Failed to update client ${clientId}'s program (${res.status})`,
     );
   return res.json();
-}
-
-// Feed media (photos) come back as paths relative to the backend (e.g. "/uploads/feed/x.jpg")
-// rather than full URLs. Resolved here — server-side, where COACH_BACKEND_URL is allowed —
-// so the client-rendered feed cards can just use media.url as-is.
-function resolveMediaUrl(url: string): string {
-  return url.startsWith("/") ? `${COACH_BACKEND_URL}${url}` : url;
 }
 
 export async function getClientFeeds(

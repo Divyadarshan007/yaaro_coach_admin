@@ -11,6 +11,8 @@ export type AvatarInfo = {
   name: string;
   initials: string;
   colorClassName: string;
+  // Real uploaded photo, when there is one — falls back to initials when absent.
+  imageUrl?: string;
 };
 
 // Optional group training slot / membership plan a client is on. Both come straight

@@ -13,7 +13,11 @@ export default async function ClientsPage() {
     getPrograms("mine"),
     getTeam(),
   ]);
-  const coachAvatar = avatarFromName(coachProfile?.name || coachProfile?.email || "Coach", coachProfile?.id ?? "coach");
+  const coachAvatar = avatarFromName(
+    coachProfile?.name || coachProfile?.email || "Coach",
+    coachProfile?.id ?? "coach",
+    coachProfile?.avatar || undefined,
+  );
   const clients = summaries.map((summary) => toClient(summary, coachAvatar));
   // Only other active teammates can be reassigned to — see clients/[id]/page.tsx for the same rule.
   const reassignableTeamMembers = team.members.filter((member) => member.status === "active" && !member.isMe);

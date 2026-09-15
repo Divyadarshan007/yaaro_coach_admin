@@ -107,7 +107,10 @@ export function AssignProgramDialog({
                   onChange={() => toggleClient(client.id)}
                   className="size-4 shrink-0 accent-primary"
                 />
-                <PersonAvatar avatar={avatarFromName(client.name || client.email, client.id)} size="sm" />
+                <PersonAvatar
+                  avatar={avatarFromName(client.name || client.email, client.id, client.avatar || undefined)}
+                  size="sm"
+                />
                 <div className="flex min-w-0 flex-col gap-0.5">
                   <span className="text-sm font-semibold text-foreground">{client.name}</span>
                   {client.currentProgram && (

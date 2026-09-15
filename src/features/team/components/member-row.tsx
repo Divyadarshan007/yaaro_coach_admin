@@ -46,7 +46,7 @@ export function MemberRow({
     <TableRow>
       <TableCell className="px-4 py-3">
         <div className="flex items-center gap-3">
-          <PersonAvatar avatar={avatarFromName(member.name, member.id)} />
+          <PersonAvatar avatar={avatarFromName(member.name, member.id)} imageUrl={member.avatar} />
           <span className="max-w-48 truncate text-sm font-medium text-foreground">
             {member.name}
             {member.isMe && <span className="text-muted-foreground"> (You)</span>}

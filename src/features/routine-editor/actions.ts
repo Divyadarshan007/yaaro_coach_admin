@@ -39,7 +39,16 @@ export async function createCustomExerciseAction(input: {
     body: JSON.stringify(input),
   });
   if (!res.ok) throw new Error(`Failed to create exercise (${res.status})`);
-  return res.json();
+  const exercise = (await res.json()) as ExerciseCatalogEntry;
+  // Backend returns the disk-relative path it moved the upload to (e.g.
+  // "/uploads/custom-exercise-thumbnails/xxx.jpg") — resolve it against the backend
+  // origin, same as uploadCustomExerciseImageAction above, or it 404s against the
+  // coach app's own origin when rendered.
+  return {
+    ...exercise,
+    thumbnailUrl: exercise.thumbnailUrl?.startsWith("/") ? `${COACH_BACKEND_URL}${exercise.thumbnailUrl}` : exercise.thumbnailUrl,
+    url: exercise.url?.startsWith("/") ? `${COACH_BACKEND_URL}${exercise.url}` : exercise.url,
+  };
 }
 
 export type CustomExerciseFormOptions = {

@@ -39,6 +39,7 @@ export default async function DashboardPage() {
       upcomingBirthdays={stats.upcomingBirthdays}
       absentMembers={stats.absentMembers}
       renewals={stats.renewals}
+      currentSubscription={stats.currentSubscription}
     />
   );
 }

@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/dialog";
 
 // Shown instead of letting the create/add-to-library actions run when the coach hasn't
-// linked a Yaaro app account yet — see coach/controllers/program_ctrl.js create() and
-// YaaroLinkProvider. `message` lets a caller pass the backend's own error text (e.g. if
-// this fires as a fallback after an API call rather than proactively); otherwise a
-// default explanation is shown.
+// linked a Yaaro app account yet — see coach/controllers/program_ctrl.js create(),
+// coach/controllers/routine_ctrl.js create(), and YaaroLinkProvider. `message` lets a
+// caller pass the backend's own error text (e.g. if this fires as a fallback after an
+// API call rather than proactively); otherwise a default explanation is shown.
 export function YaaroLinkRequiredDialog({
   open,
   onOpenChange,
@@ -40,8 +40,8 @@ export function YaaroLinkRequiredDialog({
         </DialogHeader>
         <DialogBody>
           <p className="text-sm text-muted-foreground">
-            Link your account to the Yaaro app to create or add programs. Go to the Team page and scan
-            your own &quot;Link now&quot; QR code with the Yaaro app.
+            Link your account to the Yaaro app to create or add programs and routines. Go to the Team page
+            and scan your own &quot;Link now&quot; QR code with the Yaaro app.
           </p>
         </DialogBody>
         <DialogFooter className="flex-row justify-end gap-2">

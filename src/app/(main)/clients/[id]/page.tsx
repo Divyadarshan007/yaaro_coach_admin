@@ -35,7 +35,11 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     notFound();
   }
 
-  const coachAvatar = avatarFromName(coachProfile?.name || coachProfile?.email || "Coach", coachProfile?.id ?? "coach");
+  const coachAvatar = avatarFromName(
+    coachProfile?.name || coachProfile?.email || "Coach",
+    coachProfile?.id ?? "coach",
+    coachProfile?.avatar || undefined,
+  );
   // Real workout-log/measurement data (weekly duration+volume+sets, bodyweight, progress
   // pictures) — only "activities" still falls back to the mock, which is empty for real
   // clients anyway since no activity-feed model exists yet.
@@ -43,7 +47,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
 
   const client: ClientDetail = {
     id: summary.id,
-    avatar: avatarFromName(summary.name || summary.email || "Client", summary.id),
+    avatar: avatarFromName(summary.name || summary.email || "Client", summary.id, summary.avatar || undefined),
     name: summary.name,
     email: summary.email,
     coach: coachAvatar,

@@ -25,8 +25,9 @@ function initialsFromName(name: string): string {
 }
 
 // Deterministic (not random) so the same client/coach always renders the same color
-// across requests without needing to persist a color choice anywhere.
-export function avatarFromName(name: string, seed: string): AvatarInfo {
+// across requests without needing to persist a color choice anywhere. `imageUrl`, when
+// given, is shown instead of the initials (see PersonAvatar).
+export function avatarFromName(name: string, seed: string, imageUrl?: string): AvatarInfo {
   const colorClassName = PALETTE[hashString(seed) % PALETTE.length];
-  return { name, initials: initialsFromName(name), colorClassName };
+  return { name, initials: initialsFromName(name), colorClassName, imageUrl };
 }

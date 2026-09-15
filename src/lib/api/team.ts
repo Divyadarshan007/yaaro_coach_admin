@@ -7,11 +7,19 @@ import type {
   TeamPatch,
 } from "@/features/team/types/team";
 
-// Logos come back as backend-relative paths (e.g. "/uploads/studio/x.jpg"), which the
-// browser can't load directly — resolve them against COACH_BACKEND_URL here, server-side,
-// same as getCoachProfile does for coach avatars.
-function resolveLogoUrl(logo: string): string {
-  return logo && logo.startsWith("/") ? `${COACH_BACKEND_URL}${logo}` : logo;
+// Logos and member avatars come back as backend-relative paths (e.g. "/uploads/studio/x.jpg"),
+// which the browser can't load directly — resolve them against COACH_BACKEND_URL here,
+// server-side, same as getCoachProfile does for coach avatars.
+function resolveUploadUrl(url: string): string {
+  return url && url.startsWith("/") ? `${COACH_BACKEND_URL}${url}` : url;
+}
+
+function resolveTeam(team: Team): Team {
+  return {
+    ...team,
+    logo: resolveUploadUrl(team.logo),
+    members: team.members.map((member) => ({ ...member, avatar: resolveUploadUrl(member.avatar) })),
+  };
 }
 
 // A Joi validation failure (see middlewares/validator.js) always sends the generic
@@ -33,7 +41,7 @@ export async function getTeam(): Promise<Team> {
   });
   if (!res.ok) throw new Error(`Failed to fetch studio (${res.status})`);
   const team: Team = await res.json();
-  return { ...team, logo: resolveLogoUrl(team.logo) };
+  return resolveTeam(team);
 }
 
 // Uploads a studio logo to temp storage, returning its unresolved path — submit this
@@ -59,7 +67,7 @@ export async function updateTeam(patch: TeamPatch): Promise<Team> {
   });
   if (!res.ok) return parseError(res, "Failed to update studio");
   const team: Team = await res.json();
-  return { ...team, logo: resolveLogoUrl(team.logo) };
+  return resolveTeam(team);
 }
 
 // Add a team member by name/role. Owner only. The backend creates a pending,

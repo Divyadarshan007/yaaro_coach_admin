@@ -47,6 +47,7 @@ export function toClient(summary: ClientSummary, coach: AvatarInfo): Client {
     avatar: avatarFromName(
       summary.name || summary.email || "Client",
       summary.id,
+      summary.avatar || undefined,
     ),
     programName: summary.currentProgram?.title ?? "No program assigned",
     programWeekLabel: undefined,

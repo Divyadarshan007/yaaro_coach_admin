@@ -49,6 +49,15 @@ export type Renewal = {
   daysUntilExpiry: number;
 };
 
+// The studio's own current platform subscription — null if it has none, or its last
+// one has lapsed.
+export type CurrentSubscription = {
+  planTitle: string;
+  startDate: string; // ISO
+  expiryDate: string; // ISO
+  daysRemaining: number;
+};
+
 export type DashboardStats = {
   totalClients: number;
   activeClients: number;
@@ -57,4 +66,5 @@ export type DashboardStats = {
   upcomingBirthdays: UpcomingBirthday[];
   absentMembers: AbsentMember[];
   renewals: Renewal[];
+  currentSubscription: CurrentSubscription | null;
 };
