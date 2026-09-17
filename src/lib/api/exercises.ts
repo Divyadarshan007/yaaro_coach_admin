@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 
@@ -27,6 +29,13 @@ export async function getExerciseCatalog(): Promise<ExerciseCatalogEntry[]> {
   const authHeaders = await getCoachAuthHeaders();
   const endpoint = authHeaders.Authorization ? "coach/v1/exercises" : "mobile/v1/exercises";
   const res = await fetch(`${COACH_BACKEND_URL}/${endpoint}`, { headers: authHeaders, cache: "no-store" });
+  // A coach token whose studio no longer exists comes back as 401 (see
+  // middlewares/authenticator.js). This runs inside MainLayout's own Promise.all alongside
+  // getCoachProfile() — don't throw a raw error here, it would stop that Promise.all from
+  // ever reaching the `if (!coachProfile) redirect("/login")` check right after it.
+  if (endpoint === "coach/v1/exercises" && res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch exercise catalog (${res.status})`);
   const catalog = (await res.json()) as ExerciseCatalogEntry[];
   return catalog.map((exercise) => ({

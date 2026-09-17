@@ -22,6 +22,7 @@ import { assignClientMembershipPlanAction } from "@/features/clients/actions";
 import { getMembershipPlansAction } from "@/features/membership-plan/actions";
 import { formatValidity } from "@/features/membership-plan/lib/format";
 import type { MembershipPlan } from "@/features/membership-plan/types/membership-plan";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const NO_PLAN = "__none__";
 
@@ -78,11 +79,7 @@ export function AssignMembershipPlanDialog({
         setDraft(null);
         onOpenChange(false);
       } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Failed to assign membership plan",
-        );
+        handleMutationError(err, setError);
       }
     });
   }

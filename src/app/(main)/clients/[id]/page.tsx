@@ -4,20 +4,18 @@ import { ClientDetailView } from "@/features/clients/components/detail/client-de
 import { getClientDetailMockStats } from "@/features/clients/data/client-detail-mock-data";
 import { avatarFromName } from "@/features/clients/lib/avatar";
 import { buildBodyweightSummary, buildOverviewStats, buildProgressPictures } from "@/features/clients/lib/overview-stats-format";
-import { toClientBatch, toClientMembership } from "@/features/clients/lib/to-client";
+import { toClientBatch, toClientCoach, toClientMembership } from "@/features/clients/lib/to-client";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
 import { getClient, getClientAdvancedStats, getClientFeeds, getClientMeasurements, getClientProgram } from "@/lib/api/clients";
-import { getCoachProfile } from "@/lib/api/coach";
 import { getExerciseCatalog } from "@/lib/api/exercises";
 import { getPrograms } from "@/lib/api/programs";
 import { getTeam } from "@/lib/api/team";
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [summary, coachProfile, libraryPrograms, activeProgram, initialFeeds, exerciseCatalog, initialMeasurements, advancedStats, team] =
+  const [summary, libraryPrograms, activeProgram, initialFeeds, exerciseCatalog, initialMeasurements, advancedStats, team] =
     await Promise.all([
       getClient(id),
-      getCoachProfile(),
       getPrograms("mine"),
       getClientProgram(id),
       getClientFeeds(id, 1),
@@ -35,11 +33,6 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     notFound();
   }
 
-  const coachAvatar = avatarFromName(
-    coachProfile?.name || coachProfile?.email || "Coach",
-    coachProfile?.id ?? "coach",
-    coachProfile?.avatar || undefined,
-  );
   // Real workout-log/measurement data (weekly duration+volume+sets, bodyweight, progress
   // pictures) — only "activities" still falls back to the mock, which is empty for real
   // clients anyway since no activity-feed model exists yet.
@@ -50,7 +43,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     avatar: avatarFromName(summary.name || summary.email || "Client", summary.id, summary.avatar || undefined),
     name: summary.name,
     email: summary.email,
-    coach: coachAvatar,
+    coach: toClientCoach(summary),
     coachedSinceLabel: `Coached since ${new Date(summary.createdAt).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",

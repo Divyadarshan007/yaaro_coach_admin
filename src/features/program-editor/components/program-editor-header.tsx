@@ -12,6 +12,7 @@ import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-
 import { useLeaveConfirmation } from "@/lib/use-leave-confirmation";
 import { useUnsavedChangesWarning } from "@/lib/use-unsaved-changes-warning";
 import type { ClientSummary } from "@/features/clients/types/client";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function ProgramEditorHeader({ programId, clients }: { programId: string; clients: ClientSummary[] }) {
   const [assignOpen, setAssignOpen] = useState(false);
@@ -29,7 +30,7 @@ export function ProgramEditorHeader({ programId, clients }: { programId: string;
   function handleSave() {
     setError(null);
     saveProgram(programId).catch((err) => {
-      setError(err instanceof Error ? err.message : "Failed to save program");
+      handleMutationError(err, setError);
     });
   }
 

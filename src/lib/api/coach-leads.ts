@@ -1,5 +1,8 @@
+import { redirect } from "next/navigation";
+
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
+import { parseApiError } from "@/lib/api/errors";
 import { LEAD_STATUSES } from "@/features/leads/types/lead";
 import type {
   CoachLead,
@@ -12,11 +15,6 @@ import type {
 } from "@/features/leads/types/lead";
 
 type RawId = { _id?: string; id?: string };
-
-async function parseError(res: Response, fallback: string): Promise<never> {
-  const body = await res.json().catch(() => null);
-  throw new Error(body?.message || `${fallback} (${res.status})`);
-}
 
 function normalizeSource(
   raw: (LeadSource & RawId) | null | undefined,
@@ -66,6 +64,11 @@ export async function getLeadSources(): Promise<LeadSource[]> {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  // A coach token whose studio no longer exists comes back as 401 (see
+  // middlewares/authenticator.js) — redirect to login instead of throwing into the page render.
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch lead sources (${res.status})`);
   const sources: (LeadSource & RawId)[] = await res.json();
   return sources.map((s) => normalizeSource(s)!).filter(Boolean);
@@ -82,7 +85,7 @@ export async function createLeadSource(
     },
     body: JSON.stringify(input),
   });
-  if (!res.ok) return parseError(res, "Failed to create lead source");
+  if (!res.ok) return parseApiError(res, "Failed to create lead source");
   return normalizeSource(await res.json())!;
 }
 
@@ -98,7 +101,7 @@ export async function updateLeadSource(
     },
     body: JSON.stringify(patch),
   });
-  if (!res.ok) return parseError(res, "Failed to update lead source");
+  if (!res.ok) return parseApiError(res, "Failed to update lead source");
   return normalizeSource(await res.json())!;
 }
 
@@ -107,7 +110,7 @@ export async function deleteLeadSource(id: string): Promise<void> {
     method: "DELETE",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) await parseError(res, "Failed to delete lead source");
+  if (!res.ok) await parseApiError(res, "Failed to delete lead source");
 }
 
 /* ---------------------------------- Leads --------------------------------- */
@@ -117,6 +120,11 @@ export async function getCoachLeads(): Promise<CoachLead[]> {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  // A coach token whose studio no longer exists comes back as 401 (see
+  // middlewares/authenticator.js) — redirect to login instead of throwing into the page render.
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch leads (${res.status})`);
   const leads: (CoachLead & RawId)[] = await res.json();
   return leads.map(normalizeLead);
@@ -133,7 +141,7 @@ export async function createCoachLead(
     },
     body: JSON.stringify(input),
   });
-  if (!res.ok) return parseError(res, "Failed to create lead");
+  if (!res.ok) return parseApiError(res, "Failed to create lead");
   return normalizeLead(await res.json());
 }
 
@@ -149,7 +157,7 @@ export async function updateCoachLead(
     },
     body: JSON.stringify(patch),
   });
-  if (!res.ok) return parseError(res, "Failed to update lead");
+  if (!res.ok) return parseApiError(res, "Failed to update lead");
   return normalizeLead(await res.json());
 }
 
@@ -158,5 +166,5 @@ export async function deleteCoachLead(id: string): Promise<void> {
     method: "DELETE",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) await parseError(res, "Failed to delete lead");
+  if (!res.ok) await parseApiError(res, "Failed to delete lead");
 }

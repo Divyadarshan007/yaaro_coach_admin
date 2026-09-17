@@ -16,8 +16,8 @@ export function ClientWorkoutProgramTab({
   initialFeeds: FeedItem[];
 }) {
   return (
-    <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
-      <div className="lg:col-span-2">
+    <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
+      <div className="flex h-full flex-col lg:col-span-2">
         <WorkoutHistoryColumn
           clientId={client.id}
           clientName={client.name}

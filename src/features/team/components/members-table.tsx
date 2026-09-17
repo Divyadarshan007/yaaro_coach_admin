@@ -9,10 +9,12 @@ const headerCellClassName = "px-4 py-3 text-xs font-medium tracking-wide text-mu
 
 export function MembersTable({
   members,
+  allMembers,
   myRole,
   studioName,
 }: {
   members: TeamMember[];
+  allMembers: TeamMember[];
   myRole: Team["myRole"];
   studioName: string;
 }) {
@@ -39,7 +41,13 @@ export function MembersTable({
         </TableHeader>
         <TableBody>
           {members.map((member) => (
-            <MemberRow key={member.id} member={member} myRole={myRole} studioName={studioName} />
+            <MemberRow
+              key={member.id}
+              member={member}
+              allMembers={allMembers}
+              myRole={myRole}
+              studioName={studioName}
+            />
           ))}
         </TableBody>
       </Table>

@@ -1,5 +1,8 @@
+import { redirect } from "next/navigation";
+
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
+import { parseApiError } from "@/lib/api/errors";
 import type {
   Batch,
   CreateBatchInput,
@@ -18,16 +21,16 @@ function normalizeBatch(raw: Batch & RawId): Batch {
   };
 }
 
-async function parseError(res: Response, fallback: string): Promise<never> {
-  const body = await res.json().catch(() => null);
-  throw new Error(body?.message || `${fallback} (${res.status})`);
-}
-
 export async function getBatches(): Promise<Batch[]> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/batches`, {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  // A coach token whose studio no longer exists comes back as 401 (see
+  // middlewares/authenticator.js) — redirect to login instead of throwing into the page render.
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch batches (${res.status})`);
   const batches: (Batch & RawId)[] = await res.json();
   return batches.map(normalizeBatch);
@@ -42,7 +45,7 @@ export async function createBatch(input: CreateBatchInput): Promise<Batch> {
     },
     body: JSON.stringify(input),
   });
-  if (!res.ok) return parseError(res, "Failed to create batch");
+  if (!res.ok) return parseApiError(res, "Failed to create batch");
   return normalizeBatch(await res.json());
 }
 
@@ -58,7 +61,7 @@ export async function updateBatch(
     },
     body: JSON.stringify(patch),
   });
-  if (!res.ok) return parseError(res, "Failed to update batch");
+  if (!res.ok) return parseApiError(res, "Failed to update batch");
   return normalizeBatch(await res.json());
 }
 
@@ -67,5 +70,5 @@ export async function deleteBatch(id: string): Promise<void> {
     method: "DELETE",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) await parseError(res, "Failed to delete batch");
+  if (!res.ok) await parseApiError(res, "Failed to delete batch");
 }

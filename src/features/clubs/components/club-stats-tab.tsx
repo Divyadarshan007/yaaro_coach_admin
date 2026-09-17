@@ -17,6 +17,7 @@ import type {
   ClubStatPeriod,
 } from "@/features/clubs/types/club";
 import { cn } from "@/lib/utils";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 function formatValue(n: number): string {
   return new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(n);
@@ -42,7 +43,7 @@ export function ClubStatsTab({ clubId }: { clubId: string }) {
         setLoaded(true);
       } catch (err) {
         if (cancelled) return;
-        setError(err instanceof Error ? err.message : "Failed to load stats");
+        handleMutationError(err, setError);
       }
     });
     return () => {

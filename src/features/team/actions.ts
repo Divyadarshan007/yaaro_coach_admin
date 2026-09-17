@@ -7,6 +7,7 @@ import {
   removeTeamMember,
   updateTeam,
   uploadTeamLogoImage,
+  type RemoveTeamMemberResult,
 } from "@/lib/api/team";
 import type { AddStudioMemberInput, Team, TeamMember, TeamPatch } from "@/features/team/types/team";
 
@@ -16,9 +17,15 @@ export async function addStudioMemberAction(input: AddStudioMemberInput): Promis
   return member;
 }
 
-export async function removeTeamMemberAction(memberId: string): Promise<void> {
-  await removeTeamMember(memberId);
-  revalidatePath("/team");
+export async function removeTeamMemberAction(
+  memberId: string,
+  replacementCoachId?: string,
+): Promise<RemoveTeamMemberResult> {
+  const result = await removeTeamMember(memberId, replacementCoachId);
+  if (result.ok) {
+    revalidatePath("/team");
+  }
+  return result;
 }
 
 export async function updateTeamAction(patch: TeamPatch): Promise<Team> {

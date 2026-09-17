@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { addStudioMemberAction } from "@/features/team/actions";
 import { TEAM_MEMBER_ROLE_OPTIONS, type TeamMemberRole } from "@/features/team/types/team";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const labelClassName = "text-sm font-medium text-foreground";
 
@@ -69,7 +70,7 @@ export function AddManagementDialog() {
         setOpen(false);
         reset();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to add member");
+        handleMutationError(err, setError);
       }
     });
   }

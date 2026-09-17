@@ -59,7 +59,8 @@ export type ClientDetail = {
   avatar: AvatarInfo;
   name: string;
   email: string;
-  coach: AvatarInfo;
+  // Null until explicitly assigned — never defaults to the studio owner.
+  coach: AvatarInfo | null;
   coachedSinceLabel: string;
   coachedSince: string;
   notes: string;

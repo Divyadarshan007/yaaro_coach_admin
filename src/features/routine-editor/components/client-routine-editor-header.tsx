@@ -10,6 +10,7 @@ import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-
 import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
 import { useLeaveConfirmation } from "@/lib/use-leave-confirmation";
 import { useUnsavedChangesWarning } from "@/lib/use-unsaved-changes-warning";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function ClientRoutineEditorHeader({
   clientId,
@@ -41,7 +42,7 @@ export function ClientRoutineEditorHeader({
   function handleSave() {
     setError(null);
     saveRoutine(routineId).catch((err) => {
-      setError(err instanceof Error ? err.message : "Failed to save routine");
+      handleMutationError(err, setError);
     });
   }
 

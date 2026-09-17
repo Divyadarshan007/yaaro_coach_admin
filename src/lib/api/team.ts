@@ -1,5 +1,9 @@
+import { redirect } from "next/navigation";
+
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
+import { parseApiError } from "@/lib/api/errors";
+import { SUBSCRIPTION_REQUIRED_PREFIX } from "@/lib/subscription-required";
 import type {
   AddStudioMemberInput,
   Team,
@@ -22,23 +26,18 @@ function resolveTeam(team: Team): Team {
   };
 }
 
-// A Joi validation failure (see middlewares/validator.js) always sends the generic
-// `message: "Validation failed"` plus the actual per-field reason(s) in `errors`
-// (e.g. `{ password: ["Password must be at least 8 characters and include..."] }`) —
-// prefer that specific text so the real problem is visible instead of a generic error.
-async function parseError(res: Response, fallback: string): Promise<never> {
-  const body = await res.json().catch(() => null);
-  const fieldMessages = body?.errors
-    ? Object.values(body.errors as Record<string, string[]>).flat()
-    : [];
-  throw new Error(fieldMessages.join(" ") || body?.message || `${fallback} (${res.status})`);
-}
-
 export async function getTeam(): Promise<Team> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio`, {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  // A coach token whose studio no longer exists comes back as 401 (see
+  // middlewares/authenticator.js). getTeam() is called directly at the top of several pages
+  // (team, studio, clients) that don't independently check the session — redirect straight
+  // to login instead of throwing a raw error into the page render.
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch studio (${res.status})`);
   const team: Team = await res.json();
   return resolveTeam(team);
@@ -54,7 +53,7 @@ export async function uploadTeamLogoImage(file: File): Promise<string> {
     headers: await getCoachAuthHeaders(),
     body: formData,
   });
-  if (!res.ok) throw new Error(`Failed to upload image (${res.status})`);
+  if (!res.ok) return parseApiError(res, "Failed to upload image");
   const { images } = (await res.json()) as { images: { url: string }[] };
   return images[0].url;
 }
@@ -65,7 +64,7 @@ export async function updateTeam(patch: TeamPatch): Promise<Team> {
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(patch),
   });
-  if (!res.ok) return parseError(res, "Failed to update studio");
+  if (!res.ok) return parseApiError(res, "Failed to update studio");
   const team: Team = await res.json();
   return resolveTeam(team);
 }
@@ -79,14 +78,36 @@ export async function addStudioMember(input: AddStudioMemberInput): Promise<Team
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(input),
   });
-  if (!res.ok) return parseError(res, "Failed to add member");
+  if (!res.ok) return parseApiError(res, "Failed to add member");
   return res.json();
 }
 
-export async function removeTeamMember(memberId: string): Promise<void> {
+export type RemoveTeamMemberResult =
+  | { ok: true }
+  | { ok: false; requiresReplacement: true; message: string };
+
+// Removing a member who still has clients assigned fails with a 400 carrying
+// errors.replacementCoachId instead of throwing — the caller (member-row.tsx) uses that
+// to prompt for a replacement coach and retry with `replacementCoachId` set, rather than
+// leaving those clients' coachId pointing at a now-deleted member.
+export async function removeTeamMember(
+  memberId: string,
+  replacementCoachId?: string,
+): Promise<RemoveTeamMemberResult> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio/members/${memberId}`, {
     method: "DELETE",
-    headers: await getCoachAuthHeaders(),
+    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    body: JSON.stringify(replacementCoachId ? { replacementCoachId } : {}),
   });
-  if (!res.ok) throw new Error(`Failed to remove member ${memberId} (${res.status})`);
+  if (res.ok) return { ok: true };
+
+  const body = await res.json().catch(() => null);
+  if (res.status === 400 && body?.errors?.replacementCoachId) {
+    return { ok: false, requiresReplacement: true, message: body.message };
+  }
+  if (body?.code === "SUBSCRIPTION_REQUIRED") {
+    throw new Error(SUBSCRIPTION_REQUIRED_PREFIX + body.message);
+  }
+  const fieldMessages = body?.errors ? Object.values(body.errors as Record<string, string[]>).flat() : [];
+  throw new Error(fieldMessages.join(" ") || body?.message || `Failed to remove member ${memberId} (${res.status})`);
 }

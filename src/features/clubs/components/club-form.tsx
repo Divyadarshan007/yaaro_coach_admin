@@ -23,6 +23,7 @@ import type {
   ClubSportType,
   CreateClubInput,
 } from "@/features/clubs/types/club";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const MAX_PURPOSE_TAGS = 3;
 
@@ -121,7 +122,7 @@ function ImageField({ label, value, onChange, disabled, aspect }: ImageFieldProp
       const url = await uploadClubImageAction(formData);
       onChange(url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
+      handleMutationError(err, setError);
       setPreview("");
     } finally {
       setUploading(false);

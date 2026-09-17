@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { DAYS_OF_WEEK, DAY_LABELS, type DayOfWeek, type TimeSlot } from "@/features/team/types/team";
 import { TimeField, to24h, type Period } from "@/features/team/components/time-slot-fields";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 type AddTimeSlotDialogProps = {
   onAdd: (slot: TimeSlot) => Promise<void>;
@@ -68,7 +69,7 @@ export function AddTimeSlotDialog({ onAdd }: AddTimeSlotDialogProps) {
         await onAdd({ day, startTime, endTime });
         handleOpenChange(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to add time slot");
+        handleMutationError(err, setError);
       }
     });
   }

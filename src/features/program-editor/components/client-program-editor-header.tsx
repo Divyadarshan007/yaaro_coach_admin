@@ -9,6 +9,7 @@ import { UnsavedChangesDialog } from "@/components/ui/unsaved-changes-dialog";
 import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
 import { useLeaveConfirmation } from "@/lib/use-leave-confirmation";
 import { useUnsavedChangesWarning } from "@/lib/use-unsaved-changes-warning";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function ClientProgramEditorHeader({
   clientId,
@@ -34,7 +35,7 @@ export function ClientProgramEditorHeader({
   function handleSave() {
     setError(null);
     saveProgram(programId).catch((err) => {
-      setError(err instanceof Error ? err.message : "Failed to save program");
+      handleMutationError(err, setError);
     });
   }
 

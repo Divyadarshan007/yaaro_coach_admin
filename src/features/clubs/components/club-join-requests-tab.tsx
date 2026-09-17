@@ -13,6 +13,7 @@ import {
 } from "@/features/clubs/actions";
 import { avatarFromName } from "@/features/clients/lib/avatar";
 import type { ClubJoinRequest } from "@/features/clubs/types/club";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function ClubJoinRequestsTab({
   clubId,
@@ -34,7 +35,7 @@ export function ClubJoinRequestsTab({
         await action();
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
+        handleMutationError(err, setError);
       } finally {
         setPendingId(null);
       }

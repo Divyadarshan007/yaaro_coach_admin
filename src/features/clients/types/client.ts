@@ -40,7 +40,9 @@ export type Client = {
   programWeekLabel?: string;
   weeklyActivity: WeekDayActivity[];
   status: ClientStatus;
-  coach: AvatarInfo;
+  // Null until explicitly assigned (reassignCoach on the backend) — never defaults to
+  // the studio owner just because they're the one logged in.
+  coach: AvatarInfo | null;
   // Whether this client has linked a Yaaro app account yet (userId set on the backend
   // row) — false for a client the coach added by hand who hasn't scanned their QR yet.
   linked: boolean;
@@ -54,6 +56,11 @@ export type Client = {
 // A studio_clients row's own "who is this" fields — the source of truth for display,
 // whether the client is linked to an app account or was added by hand.
 export type ClientSource = { id: string; name: string };
+
+// The active team member this client is personally assigned to — null until explicitly
+// reassigned (PATCH /clients/:id/coach). `id` is their own account userId (same value
+// team.ts's TeamMember.id uses), never the studio owner just because they're logged in.
+export type ClientCoach = { id: string; name: string; avatar: string };
 
 // Shape returned by GET /coach/v1/clients (and the client-list piece of /clients/:id).
 export type ClientSummary = {
@@ -69,6 +76,7 @@ export type ClientSummary = {
   source: ClientSource | null;
   linked: boolean;
   linkQrValue: string;
+  coach: ClientCoach | null;
   currentProgram: { id: string; title: string; routineCount?: number } | null;
   programStartDate: string | null;
   // null when the client isn't in a batch / on a plan.

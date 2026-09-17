@@ -40,11 +40,11 @@ export function WorkoutHistoryColumn({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex h-full flex-col gap-4">
       <h2 className="text-base font-medium text-foreground">Workout History</h2>
 
       {feeds.length === 0 ? (
-        <Card>
+        <Card className="h-full">
           <CardContent>
             <EmptyState
               icon={Activity}

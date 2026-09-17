@@ -17,6 +17,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { deleteBatchAction } from "@/features/batch/actions";
 import { formatTime } from "@/features/batch/lib/format";
 import type { Batch } from "@/features/batch/types/batch";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function BatchRow({ batch }: { batch: Batch }) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -30,7 +31,7 @@ export function BatchRow({ batch }: { batch: Batch }) {
         await deleteBatchAction(batch.id);
         setIsDeleteOpen(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to delete batch");
+        handleMutationError(err, setError);
       }
     });
   }

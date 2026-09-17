@@ -29,6 +29,7 @@ import {
   CLUB_SPORT_TYPE_LABELS,
 } from "@/features/clubs/types/club";
 import type { Club, ClubFormValues, ClubPurposeTag, ClubSportType } from "@/features/clubs/types/club";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 function ReadOnlyRow({ label, value }: { label: string; value: string }) {
   return (
@@ -56,7 +57,7 @@ function MemberView({ club }: { club: Club }) {
         await action();
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
+        handleMutationError(err, setError);
       }
     });
   }
@@ -126,7 +127,7 @@ function OwnerView({ club }: { club: Club }) {
         setSaved(true);
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to save changes");
+        handleMutationError(err, setError);
       }
     });
   }
@@ -137,7 +138,7 @@ function OwnerView({ club }: { club: Club }) {
         await deleteClubAction(club.id);
         router.push("/clubs");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to delete club");
+        handleMutationError(err, setError);
         setConfirmDelete(false);
       }
     });

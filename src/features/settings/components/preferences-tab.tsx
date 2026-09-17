@@ -16,6 +16,7 @@ import type {
   WeightUnit,
 } from "@/features/settings/types/settings";
 import type { CoachProfile } from "@/lib/api/coach";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const REST_TIMER_LABELS: Record<RestTimerOption, string> = {
   off: "Off",
@@ -69,7 +70,7 @@ export function PreferencesTab({ coachProfile }: { coachProfile: CoachProfile | 
       setInitialValues(nextValues);
       setValues(nextValues);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save changes");
+      handleMutationError(err, setError);
     } finally {
       setIsSaving(false);
     }

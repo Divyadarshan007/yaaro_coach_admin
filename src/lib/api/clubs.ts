@@ -1,5 +1,8 @@
+import { redirect } from "next/navigation";
+
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
+import { parseApiError } from "@/lib/api/errors";
 import type {
   Club,
   ClubJoinRequest,
@@ -71,11 +74,6 @@ function normalizePerson<T extends RawId & { profileImage?: string }>(raw: T) {
   };
 }
 
-async function parseError(res: Response, fallback: string): Promise<never> {
-  const body = await res.json().catch(() => null);
-  throw new Error(body?.message || `${fallback} (${res.status})`);
-}
-
 export async function getClubs(tab: ClubTab, search?: string): Promise<Club[]> {
   const params = new URLSearchParams({ tab });
   if (search?.trim()) params.set("search", search.trim());
@@ -84,6 +82,11 @@ export async function getClubs(tab: ClubTab, search?: string): Promise<Club[]> {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  // A coach token whose studio no longer exists comes back as 401 (see
+  // middlewares/authenticator.js) — redirect to login instead of throwing into the page render.
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch clubs (${res.status})`);
   const clubs: (Club & RawId)[] = await res.json();
   return clubs.map(normalizeClub);
@@ -94,6 +97,9 @@ export async function getClub(id: string): Promise<Club | null> {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (res.status === 404 || res.status === 400) return null;
   if (!res.ok) throw new Error(`Failed to fetch club ${id} (${res.status})`);
   return normalizeClub(await res.json());
@@ -105,7 +111,7 @@ export async function createClub(input: CreateClubInput): Promise<Club> {
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(withUnresolvedImages(input)),
   });
-  if (!res.ok) return parseError(res, "Failed to create club");
+  if (!res.ok) return parseApiError(res, "Failed to create club");
   return normalizeClub(await res.json());
 }
 
@@ -115,7 +121,7 @@ export async function updateClub(id: string, patch: UpdateClubInput): Promise<Cl
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(withUnresolvedImages(patch)),
   });
-  if (!res.ok) return parseError(res, "Failed to update club");
+  if (!res.ok) return parseApiError(res, "Failed to update club");
   return normalizeClub(await res.json());
 }
 
@@ -124,7 +130,7 @@ export async function deleteClub(id: string): Promise<void> {
     method: "DELETE",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) await parseError(res, "Failed to delete club");
+  if (!res.ok) await parseApiError(res, "Failed to delete club");
 }
 
 export async function getClubMembers(id: string): Promise<ClubMember[]> {
@@ -132,6 +138,9 @@ export async function getClubMembers(id: string): Promise<ClubMember[]> {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch club members (${res.status})`);
   const members: (ClubMember & RawId)[] = await res.json();
   return members.map(normalizePerson);
@@ -142,6 +151,9 @@ export async function getClubJoinRequests(id: string): Promise<ClubJoinRequest[]
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch join requests (${res.status})`);
   const requests: (ClubJoinRequest & RawId)[] = await res.json();
   return requests.map(normalizePerson);
@@ -175,7 +187,7 @@ export async function approveClubJoinRequest(id: string, userId: string): Promis
     `${COACH_BACKEND_URL}/coach/v1/clubs/${id}/joinRequests/${userId}/approve`,
     { method: "POST", headers: await getCoachAuthHeaders() }
   );
-  if (!res.ok) await parseError(res, "Failed to approve request");
+  if (!res.ok) await parseApiError(res, "Failed to approve request");
 }
 
 export async function rejectClubJoinRequest(id: string, userId: string): Promise<void> {
@@ -183,7 +195,7 @@ export async function rejectClubJoinRequest(id: string, userId: string): Promise
     `${COACH_BACKEND_URL}/coach/v1/clubs/${id}/joinRequests/${userId}/reject`,
     { method: "POST", headers: await getCoachAuthHeaders() }
   );
-  if (!res.ok) await parseError(res, "Failed to reject request");
+  if (!res.ok) await parseApiError(res, "Failed to reject request");
 }
 
 export async function joinClub(id: string): Promise<void> {
@@ -191,7 +203,7 @@ export async function joinClub(id: string): Promise<void> {
     method: "POST",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) await parseError(res, "Failed to join club");
+  if (!res.ok) await parseApiError(res, "Failed to join club");
 }
 
 export async function leaveClub(id: string): Promise<void> {
@@ -199,7 +211,7 @@ export async function leaveClub(id: string): Promise<void> {
     method: "POST",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok) await parseError(res, "Failed to leave club");
+  if (!res.ok) await parseApiError(res, "Failed to leave club");
 }
 
 // Uploads a club image/cover to temp storage, returning its unresolved "/uploads/temp/..."
@@ -213,7 +225,7 @@ export async function uploadClubImage(file: File): Promise<string> {
     headers: await getCoachAuthHeaders(),
     body: formData,
   });
-  if (!res.ok) throw new Error(`Failed to upload image (${res.status})`);
+  if (!res.ok) return parseApiError(res, "Failed to upload image");
   const { images } = (await res.json()) as { images: { url: string }[] };
   return images[0].url;
 }

@@ -37,11 +37,19 @@ export function toClientMembership(
     : null;
 }
 
+// Null until the client has been explicitly assigned a coach (reassignCoach on the
+// backend) — never defaults to whoever's logged in.
+export function toClientCoach(summary: ClientSummary): AvatarInfo | null {
+  return summary.coach
+    ? avatarFromName(summary.coach.name || "Coach", summary.coach.id, summary.coach.avatar || undefined)
+    : null;
+}
+
 // Maps the real ClientSummary (from GET /coach/v1/clients) into the Client shape the
 // existing list UI (ClientsTable/etc.) already renders. weeklyActivity and status have
 // no backing data yet (no activity-tracking model exists) — these are deliberate
 // placeholders, not real per-client data.
-export function toClient(summary: ClientSummary, coach: AvatarInfo): Client {
+export function toClient(summary: ClientSummary): Client {
   return {
     id: summary.id,
     avatar: avatarFromName(
@@ -53,7 +61,7 @@ export function toClient(summary: ClientSummary, coach: AvatarInfo): Client {
     programWeekLabel: undefined,
     weeklyActivity: getLastSevenDaysActivity(new Date(), []),
     status: "active",
-    coach,
+    coach: toClientCoach(summary),
     linked: summary.linked,
     linkQrValue: summary.linkQrValue,
     batch: toClientBatch(summary),

@@ -1,5 +1,6 @@
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
+import { parseApiError } from "@/lib/api/errors";
 
 export type CoachProfile = {
   id: string;
@@ -74,7 +75,7 @@ export async function uploadCoachAvatarImage(file: File): Promise<string> {
     headers: await getCoachAuthHeaders(),
     body: formData,
   });
-  if (!res.ok) throw new Error(`Failed to upload image (${res.status})`);
+  if (!res.ok) return parseApiError(res, "Failed to upload image");
   const { images } = (await res.json()) as { images: { url: string }[] };
   return images[0].url;
 }

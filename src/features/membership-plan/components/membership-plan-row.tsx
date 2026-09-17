@@ -17,6 +17,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { deleteMembershipPlanAction } from "@/features/membership-plan/actions";
 import { formatPrice, planValidity } from "@/features/membership-plan/lib/format";
 import type { MembershipPlan } from "@/features/membership-plan/types/membership-plan";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function MembershipPlanRow({ plan }: { plan: MembershipPlan }) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -30,7 +31,7 @@ export function MembershipPlanRow({ plan }: { plan: MembershipPlan }) {
         await deleteMembershipPlanAction(plan.id);
         setIsDeleteOpen(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to delete membership plan");
+        handleMutationError(err, setError);
       }
     });
   }

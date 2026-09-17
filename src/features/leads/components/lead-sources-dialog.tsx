@@ -19,6 +19,7 @@ import {
   updateLeadSourceAction,
 } from "@/features/leads/actions";
 import type { LeadSource } from "@/features/leads/types/lead";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function LeadSourcesDialog({
   open,
@@ -43,7 +44,7 @@ export function LeadSourcesDialog({
         await fn();
         after?.();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
+        handleMutationError(err, setError);
       }
     });
   }

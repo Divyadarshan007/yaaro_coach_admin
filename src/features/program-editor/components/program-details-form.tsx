@@ -23,6 +23,7 @@ import type {
   ProgramLevel,
   Visibility,
 } from "@/features/program-editor/types/program-editor";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const VISIBILITY_OPTIONS: { value: Visibility; label: string }[] = [
   { value: "private", label: "Private (only you)" },
@@ -58,7 +59,7 @@ export function ProgramDetailsForm({ program }: { program: Program }) {
       const url = await uploadProgramImageAction(formData);
       updateProgramDetails(program.id, { image: url });
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Failed to upload image");
+      handleMutationError(err, setUploadError);
       setPreview(null);
     } finally {
       setIsUploading(false);

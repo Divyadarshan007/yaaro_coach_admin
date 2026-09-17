@@ -14,6 +14,7 @@ import {
   isClubFormValid,
 } from "@/features/clubs/components/club-form";
 import type { ClubFormValues } from "@/features/clubs/types/club";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function CreateClubView() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export function CreateClubView() {
         const club = await createClubAction(formToInput(values));
         router.push(`/clubs/${club.id}`);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to create club");
+        handleMutationError(err, setError);
       }
     });
   }

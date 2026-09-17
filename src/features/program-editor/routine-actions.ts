@@ -4,14 +4,21 @@ import { revalidatePath } from "next/cache";
 
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
+import { SUBSCRIPTION_REQUIRED_PREFIX } from "@/lib/subscription-required";
 import type { Routine, RoutinePatch } from "@/features/program-editor/types/program-editor";
 
 // Backend validation failures (400) return `{ message, errors }` — surface that detail
-// instead of an opaque status code so the actual field errors are visible in logs.
+// instead of an opaque status code so the actual field errors are visible in logs. A
+// blocked-by-subscription response (code: "SUBSCRIPTION_REQUIRED") is re-thrown with a
+// sentinel prefix instead, so the caller's catch block can route it to the global
+// "Subscription required" popup via handleMutationError rather than showing it inline.
 async function routineError(action: string, res: Response): Promise<Error> {
   let detail = "";
   try {
     const body = await res.json();
+    if (body?.code === "SUBSCRIPTION_REQUIRED") {
+      return new Error(SUBSCRIPTION_REQUIRED_PREFIX + body.message);
+    }
     detail = body?.errors ? `: ${JSON.stringify(body.errors)}` : body?.message ? `: ${body.message}` : "";
   } catch {
     // non-JSON body — status alone will have to do

@@ -22,6 +22,7 @@ import { getBatchesAction } from "@/features/batch/actions";
 import { formatTime } from "@/features/batch/lib/format";
 import type { Batch } from "@/features/batch/types/batch";
 import { assignClientBatchAction } from "@/features/clients/actions";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const NO_BATCH = "__none__";
 
@@ -78,7 +79,7 @@ export function AssignBatchDialog({
         setDraft(null);
         onOpenChange(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to assign batch");
+        handleMutationError(err, setError);
       }
     });
   }

@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
 import { useIsLinkedToYaaro } from "@/features/program-library/lib/yaaro-link-context";
 import { YaaroLinkRequiredDialog } from "@/features/program-library/components/yaaro-link-required-dialog";
+import { useSubscriptionGateStore } from "@/lib/subscription-gate-store";
+import { SUBSCRIPTION_REQUIRED_PREFIX } from "@/lib/subscription-required";
 
 export function RoutineLibraryToolbar() {
   const router = useRouter();
@@ -33,6 +35,10 @@ export function RoutineLibraryToolbar() {
         const id = await createRoutine();
         router.push(`/routines/${id}`);
       } catch (err) {
+        if (err instanceof Error && err.message.startsWith(SUBSCRIPTION_REQUIRED_PREFIX)) {
+          useSubscriptionGateStore.getState().open(err.message.slice(SUBSCRIPTION_REQUIRED_PREFIX.length));
+          return;
+        }
         // Fallback for a race (e.g. link status changed after this page loaded) —
         // still shown as the same popup, not an inline message or a crashed page.
         setLinkRequiredMessage(err instanceof Error ? err.message : "Failed to create routine");

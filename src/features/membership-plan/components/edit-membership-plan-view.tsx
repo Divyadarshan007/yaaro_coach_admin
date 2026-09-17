@@ -17,6 +17,7 @@ import type {
   MembershipPlan,
   MembershipPlanFormValues,
 } from "@/features/membership-plan/types/membership-plan";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function EditMembershipPlanView({ plan }: { plan: MembershipPlan }) {
   const router = useRouter();
@@ -35,7 +36,7 @@ export function EditMembershipPlanView({ plan }: { plan: MembershipPlan }) {
         await updateMembershipPlanAction(plan.id, formToInput(values));
         router.push("/membership-plan");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to update membership plan");
+        handleMutationError(err, setError);
       }
     });
   }

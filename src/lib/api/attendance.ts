@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 
@@ -22,6 +24,11 @@ export async function getAttendance(): Promise<Attendance> {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  // A coach token whose studio no longer exists comes back as 401 (see
+  // middlewares/authenticator.js) — redirect to login instead of throwing into the page render.
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch attendance (${res.status})`);
   return res.json();
 }

@@ -65,11 +65,11 @@ export function ActiveProgramPanel({
 
   if (!workoutProgram || !activeProgram) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex h-full flex-col gap-4">
         <h2 className="text-base font-medium text-foreground">
           Active Program
         </h2>
-        <Card>
+        <Card className="h-full">
           <CardContent>
             <EmptyState
               icon={CalendarRange}
@@ -88,9 +88,9 @@ export function ActiveProgramPanel({
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex h-full flex-col gap-4">
       <h2 className="text-base font-medium text-foreground">Active Program</h2>
-      <Card>
+      <Card className="h-full">
         <CardHeader className="flex items-center justify-between">
           <div className="min-w-0">
             <CardTitle className="wrap-break-word">

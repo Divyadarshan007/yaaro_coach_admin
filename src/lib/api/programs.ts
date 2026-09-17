@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 import type { Program } from "@/features/program-editor/types/program-editor";
@@ -35,6 +37,11 @@ export async function getPrograms(
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  // A coach token whose studio no longer exists comes back as 401 (see
+  // middlewares/authenticator.js) — redirect to login instead of throwing into the page render.
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch programs (${res.status})`);
   const programs: Program[] = await res.json();
   return programs.map(resolveProgramImageUrl);
@@ -45,6 +52,9 @@ export async function getProgram(id: string): Promise<Program | null> {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  if (res.status === 401) {
+    redirect("/login");
+  }
   // 404 = doesn't exist; 400 = malformed id (e.g. a stale pre-migration local id
   // still sitting in a browser tab/bookmark). Both just mean "show not-found".
   if (res.status === 404 || res.status === 400) return null;

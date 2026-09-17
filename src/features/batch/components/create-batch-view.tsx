@@ -14,6 +14,7 @@ import {
   isBatchFormValid,
 } from "@/features/batch/components/batch-form";
 import type { BatchFormValues } from "@/features/batch/types/batch";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function CreateBatchView() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export function CreateBatchView() {
         await createBatchAction(formToInput(values));
         router.push("/batch");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to create batch");
+        handleMutationError(err, setError);
       }
     });
   }
@@ -40,13 +41,6 @@ export function CreateBatchView() {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <div className="flex flex-col gap-3">
-        <Link
-          href="/batch"
-          className="w-fit text-sm text-muted-foreground hover:text-foreground"
-        >
-          Batch
-        </Link>
-
         <div className="flex items-center gap-3">
           <Link
             href="/batch"

@@ -14,6 +14,7 @@ import {
   isMembershipPlanFormValid,
 } from "@/features/membership-plan/components/membership-plan-form";
 import type { MembershipPlanFormValues } from "@/features/membership-plan/types/membership-plan";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function CreateMembershipPlanView() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export function CreateMembershipPlanView() {
         await createMembershipPlanAction(formToInput(values));
         router.push("/membership-plan");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to create membership plan");
+        handleMutationError(err, setError);
       }
     });
   }
@@ -40,13 +41,6 @@ export function CreateMembershipPlanView() {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
       <div className="flex flex-col gap-3">
-        <Link
-          href="/membership-plan"
-          className="w-fit text-sm text-muted-foreground hover:text-foreground"
-        >
-          Membership Plan
-        </Link>
-
         <div className="flex items-center gap-3">
           <Link
             href="/membership-plan"

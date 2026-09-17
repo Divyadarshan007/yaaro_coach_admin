@@ -14,6 +14,7 @@ import { removeTeamMemberAction } from "@/features/team/actions";
 import { LinkCoachQrDialog } from "@/features/team/components/link-coach-qr-dialog";
 import { cn } from "@/lib/utils";
 import { TEAM_MEMBER_ROLE_LABEL, type Team, type TeamMember } from "@/features/team/types/team";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const STATUS_LABEL: Record<TeamMember["status"], string> = {
   active: "Active",
@@ -22,23 +23,53 @@ const STATUS_LABEL: Record<TeamMember["status"], string> = {
 
 export function MemberRow({
   member,
+  allMembers,
   myRole,
   studioName,
 }: {
   member: TeamMember;
+  allMembers: TeamMember[];
   myRole: Team["myRole"];
   studioName: string;
 }) {
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isRemoving, startRemoveTransition] = useTransition();
   const [isLinkOpen, setIsLinkOpen] = useState(false);
+  const [replacementRequiredMessage, setReplacementRequiredMessage] = useState<string | null>(null);
+  const [selectedReplacementId, setSelectedReplacementId] = useState<string | null>(null);
+  const [removeError, setRemoveError] = useState<string | null>(null);
 
   const canRemove = myRole === "owner" && member.role !== "owner";
 
+  // Other active, linked members this member's clients could be handed off to — only
+  // someone with a userId can be assigned as a client's coachId (see reassignCoach).
+  const replacementCandidates = allMembers.filter(
+    (candidate) => candidate.status === "active" && candidate.userId && candidate.userId !== member.userId
+  );
+
+  function resetRemoveState() {
+    setReplacementRequiredMessage(null);
+    setSelectedReplacementId(null);
+    setRemoveError(null);
+  }
+
   function handleRemove() {
+    setRemoveError(null);
     startRemoveTransition(async () => {
-      await removeTeamMemberAction(member.id);
-      setIsRemoveOpen(false);
+      try {
+        const result = await removeTeamMemberAction(
+          member.id,
+          replacementRequiredMessage ? (selectedReplacementId ?? undefined) : undefined
+        );
+        if (result.ok) {
+          setIsRemoveOpen(false);
+          resetRemoveState();
+          return;
+        }
+        setReplacementRequiredMessage(result.message);
+      } catch (err) {
+        handleMutationError(err, setRemoveError);
+      }
     });
   }
 
@@ -110,21 +141,86 @@ export function MemberRow({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Dialog open={isRemoveOpen} onOpenChange={(next) => !isRemoving && setIsRemoveOpen(next)}>
+            <Dialog
+              open={isRemoveOpen}
+              onOpenChange={(next) => {
+                if (isRemoving) return;
+                setIsRemoveOpen(next);
+                if (!next) resetRemoveState();
+              }}
+            >
               <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>Remove {member.name}?</DialogTitle>
                 </DialogHeader>
                 <DialogBody>
-                  <p className="text-sm text-muted-foreground">
-                    This will remove {member.name} from your team. This action cannot be undone from here.
-                  </p>
+                  {replacementRequiredMessage ? (
+                    <>
+                      <p className="text-sm text-muted-foreground">{replacementRequiredMessage}</p>
+                      {replacementCandidates.length === 0 ? (
+                        <p className="py-6 text-center text-sm text-muted-foreground">
+                          No other active, linked teammates to reassign them to — link a teammate&apos;s
+                          account first.
+                        </p>
+                      ) : (
+                        <div className="flex flex-col gap-2">
+                          {replacementCandidates.map((candidate) => (
+                            <label
+                              key={candidate.id}
+                              className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted/50"
+                            >
+                              <input
+                                type="radio"
+                                name="replacement-coach"
+                                checked={selectedReplacementId === candidate.userId}
+                                onChange={() => setSelectedReplacementId(candidate.userId)}
+                                className="size-4 shrink-0 accent-primary"
+                              />
+                              <PersonAvatar
+                                avatar={avatarFromName(candidate.name, candidate.id)}
+                                imageUrl={candidate.avatar}
+                              />
+                              <div className="flex flex-col">
+                                <span className="text-sm font-semibold text-foreground">{candidate.name}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {TEAM_MEMBER_ROLE_LABEL[candidate.role]}
+                                </span>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      This will remove {member.name} from your team. This action cannot be undone from here.
+                    </p>
+                  )}
+                  {removeError && <p className="text-sm text-destructive">{removeError}</p>}
                 </DialogBody>
                 <DialogFooter className="flex-row justify-end">
-                  <Button variant="outline" size="lg" onClick={() => setIsRemoveOpen(false)} disabled={isRemoving}>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => {
+                      setIsRemoveOpen(false);
+                      resetRemoveState();
+                    }}
+                    disabled={isRemoving}
+                  >
                     Cancel
                   </Button>
-                  <Button variant="destructive" size="lg" onClick={handleRemove} disabled={isRemoving}>
+                  <Button
+                    variant="destructive"
+                    size="lg"
+                    onClick={handleRemove}
+                    disabled={
+                      isRemoving ||
+                      (replacementRequiredMessage
+                        ? !selectedReplacementId || replacementCandidates.length === 0
+                        : false)
+                    }
+                  >
                     {isRemoving ? "Removing..." : "Remove member"}
                   </Button>
                 </DialogFooter>

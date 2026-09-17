@@ -18,6 +18,7 @@ import type {
   CoachLeadFormValues,
   LeadSource,
 } from "@/features/leads/types/lead";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function EditLeadView({
   lead,
@@ -44,7 +45,7 @@ export function EditLeadView({
         await updateLeadAction(lead.id, formToInput(values));
         router.push("/leads");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to update lead");
+        handleMutationError(err, setError);
       }
     });
   }

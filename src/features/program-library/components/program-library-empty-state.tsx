@@ -9,6 +9,8 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
 import { useIsLinkedToYaaro } from "@/features/program-library/lib/yaaro-link-context";
 import { YaaroLinkRequiredDialog } from "@/features/program-library/components/yaaro-link-required-dialog";
+import { useSubscriptionGateStore } from "@/lib/subscription-gate-store";
+import { SUBSCRIPTION_REQUIRED_PREFIX } from "@/lib/subscription-required";
 
 export function ProgramLibraryEmptyState() {
   const router = useRouter();
@@ -30,6 +32,10 @@ export function ProgramLibraryEmptyState() {
         const id = await createProgram();
         router.push(`/program/${id}`);
       } catch (err) {
+        if (err instanceof Error && err.message.startsWith(SUBSCRIPTION_REQUIRED_PREFIX)) {
+          useSubscriptionGateStore.getState().open(err.message.slice(SUBSCRIPTION_REQUIRED_PREFIX.length));
+          return;
+        }
         setLinkRequiredMessage(err instanceof Error ? err.message : "Failed to create program");
         setShowLinkRequired(true);
       }

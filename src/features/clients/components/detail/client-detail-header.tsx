@@ -1,6 +1,3 @@
-import { MoreVertical } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
 
@@ -15,19 +12,19 @@ export function ClientDetailHeader({ client }: { client: ClientDetail }) {
           </h1>
           <p className="text-sm text-muted-foreground">{client.email}</p>
           <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-            <span>Coached by</span>
-            <PersonAvatar avatar={client.coach} size="sm" />
-            <span className="font-medium text-foreground">
-              {client.coach.name}
-            </span>
+            {client.coach ? (
+              <>
+                <span>Coached by</span>
+                <PersonAvatar avatar={client.coach} size="sm" />
+                <span className="font-medium text-foreground">
+                  {client.coach.name}
+                </span>
+              </>
+            ) : (
+              <span>No coach assigned yet</span>
+            )}
           </div>
         </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" aria-label="Client options">
-          <MoreVertical />
-        </Button>
       </div>
     </div>
   );

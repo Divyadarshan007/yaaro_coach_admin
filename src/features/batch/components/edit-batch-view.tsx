@@ -14,6 +14,7 @@ import {
   isBatchFormValid,
 } from "@/features/batch/components/batch-form";
 import type { Batch, BatchFormValues } from "@/features/batch/types/batch";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function EditBatchView({ batch }: { batch: Batch }) {
   const router = useRouter();
@@ -34,7 +35,7 @@ export function EditBatchView({ batch }: { batch: Batch }) {
         await updateBatchAction(batch.id, formToInput(values));
         router.push("/batch");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to update batch");
+        handleMutationError(err, setError);
       }
     });
   }

@@ -17,6 +17,7 @@ import type {
   CoachLeadFormValues,
   LeadSource,
 } from "@/features/leads/types/lead";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function CreateLeadView({ sources }: { sources: LeadSource[] }) {
   const router = useRouter();
@@ -35,7 +36,7 @@ export function CreateLeadView({ sources }: { sources: LeadSource[] }) {
         await createLeadAction(formToInput(values));
         router.push("/leads");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to create lead");
+        handleMutationError(err, setError);
       }
     });
   }

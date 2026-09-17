@@ -100,12 +100,16 @@ export function ClientRow({
       </TableCell>
 
       <TableCell className="px-4 py-3">
-        <div className="flex items-center gap-2">
-          <PersonAvatar avatar={client.coach} size="sm" />
-          <span className="max-w-30 truncate text-sm text-foreground">
-            {client.coach.name}
-          </span>
-        </div>
+        {client.coach ? (
+          <div className="flex items-center gap-2">
+            <PersonAvatar avatar={client.coach} size="sm" />
+            <span className="max-w-30 truncate text-sm text-foreground">
+              {client.coach.name}
+            </span>
+          </div>
+        ) : (
+          <span className="text-sm text-muted-foreground">Unassigned</span>
+        )}
       </TableCell>
 
       <TableCell className="px-4 py-3">

@@ -28,19 +28,27 @@ export function CoachedCard({
           size="sm"
           onClick={() => setIsChangeCoachOpen(true)}
         >
-          Change Coach
+          {client.coach ? "Change Coach" : "Assign Coach"}
         </Button>
       </CardHeader>
       <CardContent className="flex items-center gap-3">
-        <PersonAvatar avatar={client.coach} size="lg" />
-        <div>
-          <p className="text-sm font-medium text-foreground">
-            {client.coach.name}
-          </p>
+        {client.coach ? (
+          <>
+            <PersonAvatar avatar={client.coach} size="lg" />
+            <div>
+              <p className="text-sm font-medium text-foreground">
+                {client.coach.name}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {client.coachedSinceLabel}
+              </p>
+            </div>
+          </>
+        ) : (
           <p className="text-sm text-muted-foreground">
-            {client.coachedSinceLabel}
+            No coach assigned yet
           </p>
-        </div>
+        )}
       </CardContent>
 
       <ChangeCoachDialog

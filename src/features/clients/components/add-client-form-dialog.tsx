@@ -33,6 +33,7 @@ import type { MembershipPlan } from "@/features/membership-plan/types/membership
 import { GENDER_OPTIONS } from "@/lib/gender";
 import { cn } from "@/lib/utils";
 import type { LeadSource } from "@/features/leads/types/lead";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const NO_SOURCE = "__none__";
 const NO_BATCH = "__none__";
@@ -147,7 +148,7 @@ export function AddClientFormDialog({
         await onCreated?.();
         handleOpenChange(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to add client");
+        handleMutationError(err, setError);
       }
     });
   }

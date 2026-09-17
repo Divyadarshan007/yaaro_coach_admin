@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { DAYS_OF_WEEK, DAY_LABELS, type DayOfWeek, type TimeSlot } from "@/features/team/types/team";
 import { TimeField, from24h, to24h, type Period } from "@/features/team/components/time-slot-fields";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 type EditTimeSlotDialogProps = {
   slot: TimeSlot | null;
@@ -70,7 +71,7 @@ export function EditTimeSlotDialog({ slot, open, onOpenChange, onSave }: EditTim
         await onSave({ ...slot, day, startTime, endTime });
         onOpenChange(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to update time slot");
+        handleMutationError(err, setError);
       }
     });
   }

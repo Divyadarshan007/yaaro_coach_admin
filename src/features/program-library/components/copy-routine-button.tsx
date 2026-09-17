@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 // Deep-clones a single routine (own or public, from inside a program's detail view)
 // into a standalone entry in My Routines — separate from "Add to My Library", which
@@ -25,7 +26,7 @@ export function CopyRoutineButton({ routineId }: { routineId: string }) {
         setJustCopied(true);
         setTimeout(() => setJustCopied(false), 2000);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to copy routine");
+        handleMutationError(err, setError);
       }
     });
   }

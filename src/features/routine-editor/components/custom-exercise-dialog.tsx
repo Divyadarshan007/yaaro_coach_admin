@@ -22,6 +22,7 @@ import {
   type CustomExerciseFormOptions,
 } from "@/features/routine-editor/actions";
 import type { ExerciseCatalogEntry } from "@/lib/api/exercises";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const UNSET = "unset";
 
@@ -104,7 +105,7 @@ export function CustomExerciseDialog({
     setIsLoadingOptions(true);
     getCustomExerciseFormOptionsAction()
       .then(setFormOptions)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load form options"))
+      .catch((err) => handleMutationError(err, setError))
       .finally(() => setIsLoadingOptions(false));
   }
 
@@ -122,7 +123,7 @@ export function CustomExerciseDialog({
       const url = await uploadCustomExerciseImageAction(formData);
       setThumbnailUrl(url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to upload image");
+      handleMutationError(err, setError);
       setPreview(null);
     } finally {
       setIsUploading(false);
@@ -149,7 +150,7 @@ export function CustomExerciseDialog({
       setOpen(false);
       reset();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create exercise");
+      handleMutationError(err, setError);
     } finally {
       setIsSaving(false);
     }

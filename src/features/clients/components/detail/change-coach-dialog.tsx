@@ -85,7 +85,10 @@ export function ChangeCoachDialog({
                   onChange={() => setSelectedCoachId(member.userId)}
                   className="size-4 shrink-0 accent-primary"
                 />
-                <PersonAvatar avatar={avatarFromName(member.name, member.id)} />
+                <PersonAvatar
+                  avatar={avatarFromName(member.name, member.id)}
+                  imageUrl={member.avatar}
+                />
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-foreground">
                     {member.name}

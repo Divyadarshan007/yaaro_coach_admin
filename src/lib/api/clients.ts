@@ -1,5 +1,8 @@
+import { redirect } from "next/navigation";
+
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
+import { parseApiError } from "@/lib/api/errors";
 import type {
   AdvancedStatsGranularity,
   AdvancedStatsRange,
@@ -27,7 +30,10 @@ function resolveMediaUrl(url: string): string {
 }
 
 function withResolvedAvatar(summary: ClientSummary): ClientSummary {
-  return summary.avatar ? { ...summary, avatar: resolveMediaUrl(summary.avatar) } : summary;
+  const resolved = summary.avatar ? { ...summary, avatar: resolveMediaUrl(summary.avatar) } : summary;
+  return resolved.coach?.avatar
+    ? { ...resolved, coach: { ...resolved.coach, avatar: resolveMediaUrl(resolved.coach.avatar) } }
+    : resolved;
 }
 
 export async function getClients(): Promise<ClientSummary[]> {
@@ -35,6 +41,11 @@ export async function getClients(): Promise<ClientSummary[]> {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  // A coach token whose studio no longer exists comes back as 401 (see
+  // middlewares/authenticator.js) — redirect to login instead of throwing into the page render.
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch clients (${res.status})`);
   const clients: ClientSummary[] = await res.json();
   return clients.map(withResolvedAvatar);
@@ -52,10 +63,7 @@ export async function createClient(
     },
     body: JSON.stringify(input),
   });
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(body?.message || `Failed to add client (${res.status})`);
-  }
+  if (!res.ok) return parseApiError(res, "Failed to add client");
   return res.json();
 }
 
@@ -64,6 +72,9 @@ export async function getClient(id: string): Promise<ClientSummary | null> {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (res.status === 404 || res.status === 400) return null;
   if (!res.ok) throw new Error(`Failed to fetch client ${id} (${res.status})`);
   const client: ClientSummary = await res.json();
@@ -82,10 +93,7 @@ export async function updateClientNotes(
     },
     body: JSON.stringify({ notes }),
   });
-  if (!res.ok)
-    throw new Error(
-      `Failed to update client ${clientId}'s notes (${res.status})`,
-    );
+  if (!res.ok) return parseApiError(res, `Failed to update client ${clientId}'s notes`);
   return res.json();
 }
 
@@ -94,8 +102,7 @@ export async function removeClient(clientId: string): Promise<void> {
     method: "DELETE",
     headers: await getCoachAuthHeaders(),
   });
-  if (!res.ok)
-    throw new Error(`Failed to remove client ${clientId} (${res.status})`);
+  if (!res.ok) await parseApiError(res, `Failed to remove client ${clientId}`);
 }
 
 // Place the client in a batch, or clear it (batchId: null). A full "limited" batch is
@@ -115,10 +122,7 @@ export async function assignClientBatch(
       body: JSON.stringify({ batchId }),
     },
   );
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(body?.message || `Failed to assign batch (${res.status})`);
-  }
+  if (!res.ok) return parseApiError(res, "Failed to assign batch");
   return res.json();
 }
 
@@ -139,12 +143,7 @@ export async function assignClientMembershipPlan(
       body: JSON.stringify({ membershipPlanId }),
     },
   );
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(
-      body?.message || `Failed to assign membership plan (${res.status})`,
-    );
-  }
+  if (!res.ok) return parseApiError(res, "Failed to assign membership plan");
   return res.json();
 }
 
@@ -163,12 +162,7 @@ export async function reassignClientCoach(
       body: JSON.stringify({ coachId }),
     },
   );
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(
-      body?.message || `Failed to reassign client ${clientId} (${res.status})`,
-    );
-  }
+  if (!res.ok) await parseApiError(res, `Failed to reassign client ${clientId}`);
 }
 
 export async function assignProgramToClient(
@@ -186,10 +180,7 @@ export async function assignProgramToClient(
       body: JSON.stringify(body),
     },
   );
-  if (!res.ok)
-    throw new Error(
-      `Failed to assign program to client ${clientId} (${res.status})`,
-    );
+  if (!res.ok) return parseApiError(res, `Failed to assign program to client ${clientId}`);
   return res.json();
 }
 
@@ -201,10 +192,7 @@ export async function removeClientProgram(clientId: string): Promise<void> {
       headers: await getCoachAuthHeaders(),
     },
   );
-  if (!res.ok)
-    throw new Error(
-      `Failed to remove client ${clientId}'s program (${res.status})`,
-    );
+  if (!res.ok) await parseApiError(res, `Failed to remove client ${clientId}'s program`);
 }
 
 export async function getClientProgram(
@@ -217,6 +205,9 @@ export async function getClientProgram(
       headers: await getCoachAuthHeaders(),
     },
   );
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (res.status === 404 || res.status === 400) return null;
   if (!res.ok)
     throw new Error(
@@ -243,10 +234,7 @@ export async function updateClientProgram(
       body: JSON.stringify(patch),
     },
   );
-  if (!res.ok)
-    throw new Error(
-      `Failed to update client ${clientId}'s program (${res.status})`,
-    );
+  if (!res.ok) return parseApiError(res, `Failed to update client ${clientId}'s program`);
   return res.json();
 }
 
@@ -261,6 +249,9 @@ export async function getClientFeeds(
       headers: await getCoachAuthHeaders(),
     },
   );
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (res.status === 404 || res.status === 400) return [];
   if (!res.ok)
     throw new Error(
@@ -288,7 +279,7 @@ export async function uploadClientMeasurementImage(
     headers: await getCoachAuthHeaders(),
     body: formData,
   });
-  if (!res.ok) throw new Error(`Failed to upload image (${res.status})`);
+  if (!res.ok) return parseApiError(res, "Failed to upload image");
   const { images } = (await res.json()) as { images: { url: string }[] };
   return resolveMediaUrl(images[0].url);
 }
@@ -308,10 +299,7 @@ export async function createClientMeasurement(
       body: JSON.stringify(body),
     },
   );
-  if (!res.ok)
-    throw new Error(
-      `Failed to log measurement for client ${clientId} (${res.status})`,
-    );
+  if (!res.ok) return parseApiError(res, `Failed to log measurement for client ${clientId}`);
   const measurement: ClientMeasurement = await res.json();
   return {
     ...measurement,
@@ -334,6 +322,9 @@ export async function getClientAdvancedStats(
       headers: await getCoachAuthHeaders(),
     },
   );
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (res.status === 404 || res.status === 400) return null;
   if (!res.ok)
     throw new Error(
@@ -352,6 +343,9 @@ export async function getClientMeasurements(
       headers: await getCoachAuthHeaders(),
     },
   );
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (res.status === 404 || res.status === 400) return [];
   if (!res.ok)
     throw new Error(

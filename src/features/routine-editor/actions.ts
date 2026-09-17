@@ -2,6 +2,7 @@
 
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
+import { parseApiError } from "@/lib/api/errors";
 import type { ExerciseCatalogEntry } from "@/lib/api/exercises";
 
 // Uploads a custom exercise's thumbnail to temp storage, returning its resolved
@@ -19,7 +20,7 @@ export async function uploadCustomExerciseImageAction(formData: FormData): Promi
     headers: await getCoachAuthHeaders(),
     body: uploadForm,
   });
-  if (!res.ok) throw new Error(`Failed to upload image (${res.status})`);
+  if (!res.ok) return parseApiError(res, "Failed to upload image");
   const { images } = (await res.json()) as { images: { url: string }[] };
   const url = images[0].url;
   return url.startsWith("/") ? `${COACH_BACKEND_URL}${url}` : url;
@@ -38,7 +39,7 @@ export async function createCustomExerciseAction(input: {
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(input),
   });
-  if (!res.ok) throw new Error(`Failed to create exercise (${res.status})`);
+  if (!res.ok) return parseApiError(res, "Failed to create exercise");
   const exercise = (await res.json()) as ExerciseCatalogEntry;
   // Backend returns the disk-relative path it moved the upload to (e.g.
   // "/uploads/custom-exercise-thumbnails/xxx.jpg") — resolve it against the backend

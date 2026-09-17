@@ -25,6 +25,7 @@ import { deleteLeadAction, updateLeadAction } from "@/features/leads/actions";
 import { LeadStatusBadge } from "@/features/leads/components/lead-status-badge";
 import { formatLeadDate } from "@/features/leads/lib/format";
 import type { CoachLead } from "@/features/leads/types/lead";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function LeadRow({ lead }: { lead: CoachLead }) {
   const router = useRouter();
@@ -42,7 +43,7 @@ export function LeadRow({ lead }: { lead: CoachLead }) {
         await deleteLeadAction(lead.id);
         setIsDeleteOpen(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to delete lead");
+        handleMutationError(err, setError);
       }
     });
   }

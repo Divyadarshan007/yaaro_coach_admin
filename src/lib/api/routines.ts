@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
 import type { Routine } from "@/features/program-editor/types/program-editor";
@@ -8,6 +10,11 @@ export async function getRoutines(visibility?: "mine" | "explore" | "public"): P
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  // A coach token whose studio no longer exists comes back as 401 (see
+  // middlewares/authenticator.js) — redirect to login instead of throwing into the page render.
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (!res.ok) throw new Error(`Failed to fetch routines (${res.status})`);
   return res.json();
 }
@@ -17,6 +24,9 @@ export async function getRoutine(id: string): Promise<Routine | null> {
     cache: "no-store",
     headers: await getCoachAuthHeaders(),
   });
+  if (res.status === 401) {
+    redirect("/login");
+  }
   if (res.status === 404 || res.status === 400) return null;
   if (!res.ok) throw new Error(`Failed to fetch routine ${id} (${res.status})`);
   return res.json();

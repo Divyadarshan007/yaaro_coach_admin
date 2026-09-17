@@ -21,6 +21,7 @@ import { avatarFromName } from "@/features/clients/lib/avatar";
 import { updateCoachProfileAction, uploadCoachAvatarAction } from "@/features/settings/actions";
 import type { ProfileFormValues } from "@/features/settings/types/settings";
 import type { CoachProfile, CoachProfileUpdate } from "@/lib/api/coach";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 function formValuesFromProfile(coachProfile: CoachProfile | null): ProfileFormValues {
   return {
@@ -72,7 +73,7 @@ export function ProfileTab({ coachProfile }: { coachProfile: CoachProfile | null
       setValues(nextValues);
       setAvatarFile(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save changes");
+      handleMutationError(err, setError);
     } finally {
       setIsSaving(false);
     }

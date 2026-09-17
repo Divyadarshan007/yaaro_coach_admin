@@ -4,14 +4,10 @@ import { revalidatePath } from "next/cache";
 
 import { COACH_BACKEND_URL } from "@/lib/api/config";
 import { getCoachAuthHeaders } from "@/lib/api/auth-headers";
+import { parseApiError } from "@/lib/api/errors";
 import { assignProgramToClient, removeClientProgram, updateClientProgram } from "@/lib/api/clients";
 import { getPrograms, type ProgramListFilters } from "@/lib/api/programs";
 import type { Program, ProgramPatch } from "@/features/program-editor/types/program-editor";
-
-async function parseError(res: Response, fallback: string): Promise<never> {
-  const body = await res.json().catch(() => null);
-  throw new Error(body?.message || `${fallback} (${res.status})`);
-}
 
 async function createProgram(body: { sourceProgramId?: string | null }): Promise<Program> {
   const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/programs`, {
@@ -19,7 +15,7 @@ async function createProgram(body: { sourceProgramId?: string | null }): Promise
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(body),
   });
-  if (!res.ok) return parseError(res, "Failed to create program");
+  if (!res.ok) return parseApiError(res, "Failed to create program");
   return res.json();
 }
 
@@ -41,7 +37,7 @@ export async function updateProgramAction(id: string, patch: ProgramPatch): Prom
     headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
     body: JSON.stringify(patch),
   });
-  if (!res.ok) return parseError(res, `Failed to update program ${id}`);
+  if (!res.ok) return parseApiError(res, `Failed to update program ${id}`);
   return res.json();
 }
 
@@ -60,7 +56,7 @@ export async function uploadProgramImageAction(formData: FormData): Promise<stri
     headers: await getCoachAuthHeaders(),
     body: uploadForm,
   });
-  if (!res.ok) return parseError(res, "Failed to upload image");
+  if (!res.ok) return parseApiError(res, "Failed to upload image");
   const { images } = (await res.json()) as { images: { url: string }[] };
   const url = images[0].url;
   return url.startsWith("/") ? `${COACH_BACKEND_URL}${url}` : url;
@@ -81,7 +77,7 @@ export async function deleteProgramAction(id: string): Promise<void> {
   // A 404 here means it's already gone (e.g. deleted from another tab, or a stale local
   // list entry) — the end state the caller wanted is already true, so treat it as a
   // no-op success rather than crashing the page over something that isn't an error.
-  if (!res.ok && res.status !== 404) return parseError(res, `Failed to delete program ${id}`);
+  if (!res.ok && res.status !== 404) return parseApiError(res, `Failed to delete program ${id}`);
   revalidatePath("/program-library");
 }
 
