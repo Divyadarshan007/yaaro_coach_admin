@@ -4,6 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { CurrentSubscription } from "@/features/dashboard/types/dashboard";
 
+// Only nudge the studio owner once their own platform plan is genuinely close to
+// lapsing — a plan with months left shouldn't clutter the dashboard every day.
+const NEAR_EXPIRY_DAYS = 14;
+
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-IN", {
     day: "numeric",
@@ -31,6 +35,10 @@ export function SubscriptionBanner({ subscription }: { subscription: CurrentSubs
         </CardContent>
       </Card>
     );
+  }
+
+  if (subscription.daysRemaining > NEAR_EXPIRY_DAYS) {
+    return null;
   }
 
   return (

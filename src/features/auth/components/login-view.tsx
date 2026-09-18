@@ -12,6 +12,9 @@ import { Input } from "@/components/ui/input";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const CARD_SHADOW =
+  "shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]";
+
 export function LoginView() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -48,82 +51,106 @@ export function LoginView() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="flex items-center gap-2 border-b border-border px-6 py-4">
-        <Image src="/yaaro-icon.png" alt="Yaaro Coach" width={36} height={36} priority className="size-9" />
-        <span className="text-base font-semibold text-foreground">Yaaro Coach</span>
-      </header>
+    <div className="flex min-h-screen flex-col lg:flex-row">
+      <aside className="sticky top-0 hidden h-screen w-1/2 overflow-hidden lg:block">
+        <Image
+          src="/images/signup-hero-runner.jpg"
+          alt="A runner sprinting on a track at golden hour"
+          fill
+          priority
+          sizes="50vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-black/30" />
 
-      <main className="flex flex-1 items-center justify-center px-4">
-        <div className="w-full max-w-sm">
-          <div className="text-center">
-            <h1 className="text-2xl font-semibold text-foreground">Welcome back!</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Log in to your studio</p>
-          </div>
+        <Link href="/" className="absolute top-10 left-10 flex items-center gap-2">
+          <Image src="/yaaro-icon.png" alt="Yaaro Studio" width={36} height={36} priority className="size-9" />
+          <span className="text-base font-semibold text-white">Yaaro Studio</span>
+        </Link>
 
-          <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="email" className="text-sm font-medium text-foreground">
-                Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@studio.com"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="password" className="text-sm font-medium text-foreground">
-                Password
-              </label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Your password"
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  aria-pressed={showPassword}
-                  tabIndex={-1}
-                >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
-            </div>
-
-            {error && <p className="text-sm text-destructive">{error}</p>}
-
-            <Button type="submit" size="lg" className="mt-2 w-full justify-center" disabled={!canSubmit}>
-              {isLoading ? "Logging in…" : "Log in"}
-            </Button>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            Don&apos;t have a studio yet?{" "}
-            <Link href="/signup" className="font-medium text-primary underline-offset-4 hover:underline">
-              Sign up
-            </Link>
+        <div className="absolute right-10 bottom-10 left-10">
+          <h2 className="text-3xl font-semibold leading-tight text-white text-balance">
+            Run your coaching studio like a pro.
+          </h2>
+          <p className="mt-2 text-sm text-white/70">
+            Batches, attendance and billing, all in one place.
           </p>
         </div>
-      </main>
+      </aside>
 
-      <footer className="flex items-center justify-center gap-4 border-t border-border px-6 py-4 text-xs text-muted-foreground">
-        <span>Terms &amp; Conditions</span>
-        <span>Privacy Policy</span>
-        <span>Contact Us</span>
-      </footer>
+      <main className="flex w-full flex-col lg:w-1/2">
+        <header className="flex items-center gap-2 border-b border-border px-6 py-4 lg:hidden">
+          <Image src="/yaaro-icon.png" alt="Yaaro Studio" width={36} height={36} priority className="size-9" />
+          <span className="text-base font-semibold text-foreground">Yaaro Studio</span>
+        </header>
+
+        <div className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
+          <div className="w-full max-w-md">
+            <div className={`rounded-2xl border border-border bg-card p-6 ${CARD_SHADOW} sm:p-8`}>
+              <div className="text-center">
+                <h1 className="text-2xl font-semibold text-foreground">Welcome back!</h1>
+                <p className="mt-1 text-sm text-muted-foreground">Log in to your studio</p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="email" className="text-sm font-medium text-foreground">
+                    Email
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="you@studio.com"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="password" className="text-sm font-medium text-foreground">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      placeholder="Your password"
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      aria-pressed={showPassword}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {error && <p className="text-sm text-destructive">{error}</p>}
+
+                <Button type="submit" size="lg" className="mt-2 w-full justify-center" disabled={!canSubmit}>
+                  {isLoading ? "Logging in…" : "Log in"}
+                </Button>
+              </form>
+            </div>
+
+            <p className="mt-6 text-center text-sm text-muted-foreground">
+              Don&apos;t have a studio yet?{" "}
+              <Link href="/signup" className="font-medium text-primary underline-offset-4 hover:underline">
+                Sign up
+              </Link>
+            </p>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
