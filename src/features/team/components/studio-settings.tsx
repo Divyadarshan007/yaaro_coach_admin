@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Trash2 } from "lucide-react";
+import { MapPin, Pencil, Phone, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -146,10 +146,14 @@ export function StudioSettings({
               {team.name}
             </p>
             {team.address && (
-              <p className="text-sm text-muted-foreground">{team.address}</p>
+              <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <MapPin className="size-3.5 shrink-0" />
+                {team.address}
+              </p>
             )}
             {team.contactNumber && (
-              <p className="text-sm text-muted-foreground">
+              <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <Phone className="size-3.5 shrink-0" />
                 {team.contactNumber}
               </p>
             )}

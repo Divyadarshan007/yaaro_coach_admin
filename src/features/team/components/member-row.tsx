@@ -162,7 +162,7 @@ export function MemberRow({
             >
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Remove {member.name}?</DialogTitle>
+                  <DialogTitle>Are you sure you want to remove {member.name}?</DialogTitle>
                 </DialogHeader>
                 <DialogBody>
                   {replacementRequiredMessage ? (

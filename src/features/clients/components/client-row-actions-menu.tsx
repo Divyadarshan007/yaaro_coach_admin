@@ -157,7 +157,7 @@ export function ClientRowActionsMenu({
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Remove {client.avatar.name}?</DialogTitle>
+            <DialogTitle>Are you sure you want to remove {client.avatar.name}?</DialogTitle>
           </DialogHeader>
           <DialogBody>
             <p className="text-sm text-muted-foreground">
