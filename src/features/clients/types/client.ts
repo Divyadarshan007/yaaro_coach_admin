@@ -35,6 +35,12 @@ export type ClientMembership = {
 
 export type Client = {
   id: string;
+  // This row's own display details — the source of truth regardless of whether the
+  // client is linked to an app account (see ClientSummary/toClientResponse).
+  name: string;
+  phone: string;
+  gender: string;
+  source: ClientSource | null;
   avatar: AvatarInfo;
   programName: string;
   programWeekLabel?: string;
@@ -112,4 +118,13 @@ export type CreateClientInput = {
   // Both optional. Assigning a plan starts the membership from today (server-side).
   batchId?: string | null;
   membershipPlanId?: string | null;
+};
+
+// Payload for PATCH /coach/v1/clients/:id/profile — this row's own name/phone/gender/
+// lead source. batchId/membershipPlanId keep their own dedicated actions.
+export type UpdateClientProfileInput = {
+  name?: string;
+  phone?: string;
+  gender?: string;
+  sourceId?: string | null;
 };

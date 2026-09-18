@@ -1,5 +1,6 @@
 "use client";
 
+import { unstable_rethrow } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -47,10 +48,11 @@ export function ChangeCoachDialog({
     setError(null);
     startTransition(async () => {
       try {
+        // Reassigning hands off the requester's own access, so a success redirects
+        // away (see reassignClientCoachAction) — it never returns to close the dialog.
         await reassignClientCoachAction(clientId, selectedCoachId);
-        onOpenChange(false);
-        reset();
       } catch (err) {
+        unstable_rethrow(err);
         handleMutationError(err, setError);
       }
     });

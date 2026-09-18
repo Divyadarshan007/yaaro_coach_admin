@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreVertical, QrCode, X } from "lucide-react";
+import { MoreVertical, Pencil, QrCode, X } from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { avatarFromName } from "@/features/clients/lib/avatar";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { removeTeamMemberAction } from "@/features/team/actions";
+import { EditMemberDialog } from "@/features/team/components/edit-member-dialog";
 import { LinkCoachQrDialog } from "@/features/team/components/link-coach-qr-dialog";
 import { cn } from "@/lib/utils";
 import { TEAM_MEMBER_ROLE_LABEL, type Team, type TeamMember } from "@/features/team/types/team";
@@ -32,6 +33,7 @@ export function MemberRow({
   myRole: Team["myRole"];
   studioName: string;
 }) {
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isRemoving, startRemoveTransition] = useTransition();
   const [isLinkOpen, setIsLinkOpen] = useState(false);
@@ -39,7 +41,10 @@ export function MemberRow({
   const [selectedReplacementId, setSelectedReplacementId] = useState<string | null>(null);
   const [removeError, setRemoveError] = useState<string | null>(null);
 
-  const canRemove = myRole === "owner" && member.role !== "owner";
+  // Only the studio owner can manage other members — same rule the backend enforces
+  // for both PATCH and DELETE on this row, and the owner's own row can't be edited
+  // or removed here either.
+  const canManageMember = myRole === "owner" && member.role !== "owner";
 
   // Other active, linked members this member's clients could be handed off to — only
   // someone with a userId can be assigned as a client's coachId (see reassignCoach).
@@ -127,19 +132,25 @@ export function MemberRow({
       </TableCell>
 
       <TableCell className="px-4 py-3">
-        {canRemove && (
+        {canManageMember && (
           <>
             <DropdownMenu>
               <DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label="Member actions" />}>
                 <MoreVertical />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setIsEditOpen(true)}>
+                  <Pencil />
+                  Edit member
+                </DropdownMenuItem>
                 <DropdownMenuItem variant="destructive" onClick={() => setIsRemoveOpen(true)}>
                   <X />
                   Remove member
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <EditMemberDialog member={member} open={isEditOpen} onOpenChange={setIsEditOpen} />
 
             <Dialog
               open={isRemoveOpen}

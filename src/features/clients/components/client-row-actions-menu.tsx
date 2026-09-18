@@ -4,10 +4,12 @@ import {
   CalendarClock,
   CreditCard,
   MoreVertical,
+  Pencil,
   RefreshCw,
   UserCog,
   X,
 } from "lucide-react";
+import { unstable_rethrow } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +30,7 @@ import {
 import { AssignBatchDialog } from "@/features/clients/components/assign-batch-dialog";
 import { AssignMembershipPlanDialog } from "@/features/clients/components/assign-membership-plan-dialog";
 import { ChangeCoachDialog } from "@/features/clients/components/detail/change-coach-dialog";
+import { EditClientDialog } from "@/features/clients/components/edit-client-dialog";
 import { ReplaceProgramDialog } from "@/features/clients/components/detail/replace-program-dialog";
 import { removeClientAction } from "@/features/clients/actions";
 import type { Client } from "@/features/clients/types/client";
@@ -44,6 +47,7 @@ export function ClientRowActionsMenu({
   libraryPrograms: Program[];
   teamMembers: TeamMember[];
 }) {
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isChangeCoachOpen, setIsChangeCoachOpen] = useState(false);
   const [isReplaceOpen, setIsReplaceOpen] = useState(false);
   const [isBatchOpen, setIsBatchOpen] = useState(false);
@@ -56,8 +60,11 @@ export function ClientRowActionsMenu({
     setRemoveError(null);
     startRemoveTransition(async () => {
       try {
+        // A success redirects away (see removeClientAction) — the dialog never needs
+        // to close itself.
         await removeClientAction(client.id);
       } catch (err) {
+        unstable_rethrow(err);
         handleMutationError(err, setRemoveError);
       }
     });
@@ -74,6 +81,10 @@ export function ClientRowActionsMenu({
           <MoreVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setIsEditOpen(true)}>
+            <Pencil />
+            Edit client
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsChangeCoachOpen(true)}>
             <UserCog />
             Change Client&apos;s Coach
@@ -101,6 +112,8 @@ export function ClientRowActionsMenu({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <EditClientDialog client={client} open={isEditOpen} onOpenChange={setIsEditOpen} />
 
       <ChangeCoachDialog
         clientId={client.id}

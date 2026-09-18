@@ -11,6 +11,7 @@ import type {
 import type {
   ClientSummary,
   CreateClientInput,
+  UpdateClientProfileInput,
 } from "@/features/clients/types/client";
 import type {
   ClientMeasurement,
@@ -77,6 +78,28 @@ export async function getClient(id: string): Promise<ClientSummary | null> {
   }
   if (res.status === 404 || res.status === 400) return null;
   if (!res.ok) throw new Error(`Failed to fetch client ${id} (${res.status})`);
+  const client: ClientSummary = await res.json();
+  return withResolvedAvatar(client);
+}
+
+// Update this client row's own name/phone/gender/lead source. batchId/membershipPlanId
+// keep their own dedicated endpoints (assignClientBatch/assignClientMembershipPlan).
+export async function updateClientProfile(
+  clientId: string,
+  patch: UpdateClientProfileInput,
+): Promise<ClientSummary> {
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/profile`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getCoachAuthHeaders()),
+      },
+      body: JSON.stringify(patch),
+    },
+  );
+  if (!res.ok) return parseApiError(res, `Failed to update client ${clientId}`);
   const client: ClientSummary = await res.json();
   return withResolvedAvatar(client);
 }

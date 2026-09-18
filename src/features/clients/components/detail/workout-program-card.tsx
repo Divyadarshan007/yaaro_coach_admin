@@ -74,6 +74,7 @@ export function WorkoutProgramCard({
             libraryPrograms={libraryPrograms}
             programName={workoutProgram.name}
             hideReplace
+            hideEdit
           />
         </div>
       </CardHeader>

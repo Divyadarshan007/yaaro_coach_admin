@@ -13,6 +13,7 @@ import {
   reassignClientCoach,
   removeClient,
   updateClientNotes,
+  updateClientProfile,
   uploadClientMeasurementImage,
 } from "@/lib/api/clients";
 import type {
@@ -23,6 +24,7 @@ import type {
 import type {
   ClientSummary,
   CreateClientInput,
+  UpdateClientProfileInput,
 } from "@/features/clients/types/client";
 import type { FeedItem } from "@/features/clients/types/workout-feed";
 import type { MeasurementInput } from "@/features/clients/types/measurement";
@@ -67,6 +69,16 @@ export async function getClientAdvancedStatsAction(
   params: { granularity: AdvancedStatsGranularity; range: AdvancedStatsRange },
 ): Promise<ClientAdvancedStats | null> {
   return getClientAdvancedStats(clientId, params);
+}
+
+export async function updateClientProfileAction(
+  clientId: string,
+  patch: UpdateClientProfileInput,
+): Promise<ClientSummary> {
+  const client = await updateClientProfile(clientId, patch);
+  revalidatePath("/clients");
+  revalidatePath(`/clients/${clientId}`);
+  return client;
 }
 
 export async function updateClientNotesAction(

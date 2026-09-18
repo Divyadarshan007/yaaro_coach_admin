@@ -1,6 +1,7 @@
 "use client";
 
-import { MoreVertical, RefreshCw, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, RefreshCw, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ export function ProgramActionsMenu({
   libraryPrograms,
   programName,
   hideReplace,
+  hideEdit,
 }: {
   client: ClientDetail;
   libraryPrograms: Program[];
@@ -37,6 +39,9 @@ export function ProgramActionsMenu({
   // (see WorkoutProgramCard) — keeps this menu to just Remove instead of offering
   // the same replace action two ways.
   hideReplace?: boolean;
+  // Same idea for a caller that already renders its own "Edit program" link
+  // (see WorkoutProgramCard).
+  hideEdit?: boolean;
 }) {
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isReplaceOpen, setIsReplaceOpen] = useState(false);
@@ -70,6 +75,12 @@ export function ProgramActionsMenu({
           <MoreVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          {!hideEdit && (
+            <DropdownMenuItem render={<Link href={`/clients/${client.id}/program`} />}>
+              <Pencil />
+              Edit Program
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem
             variant="destructive"
             onClick={() => setIsRemoveOpen(true)}

@@ -9,6 +9,7 @@ import type {
   Team,
   TeamMember,
   TeamPatch,
+  UpdateStudioMemberInput,
 } from "@/features/team/types/team";
 
 // Logos and member avatars come back as backend-relative paths (e.g. "/uploads/studio/x.jpg"),
@@ -80,6 +81,18 @@ export async function addStudioMember(input: AddStudioMemberInput): Promise<Team
   });
   if (!res.ok) return parseApiError(res, "Failed to add member");
   return res.json();
+}
+
+// Update a member's name/role/phone. Owner only.
+export async function updateStudioMember(memberId: string, patch: UpdateStudioMemberInput): Promise<TeamMember> {
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio/members/${memberId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...(await getCoachAuthHeaders()) },
+    body: JSON.stringify(patch),
+  });
+  if (!res.ok) return parseApiError(res, "Failed to update member");
+  const member: TeamMember = await res.json();
+  return { ...member, avatar: resolveUploadUrl(member.avatar) };
 }
 
 export type RemoveTeamMemberResult =

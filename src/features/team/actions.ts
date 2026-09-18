@@ -5,14 +5,30 @@ import { revalidatePath } from "next/cache";
 import {
   addStudioMember,
   removeTeamMember,
+  updateStudioMember,
   updateTeam,
   uploadTeamLogoImage,
   type RemoveTeamMemberResult,
 } from "@/lib/api/team";
-import type { AddStudioMemberInput, Team, TeamMember, TeamPatch } from "@/features/team/types/team";
+import type {
+  AddStudioMemberInput,
+  Team,
+  TeamMember,
+  TeamPatch,
+  UpdateStudioMemberInput,
+} from "@/features/team/types/team";
 
 export async function addStudioMemberAction(input: AddStudioMemberInput): Promise<TeamMember> {
   const member = await addStudioMember(input);
+  revalidatePath("/team");
+  return member;
+}
+
+export async function updateStudioMemberAction(
+  memberId: string,
+  patch: UpdateStudioMemberInput,
+): Promise<TeamMember> {
+  const member = await updateStudioMember(memberId, patch);
   revalidatePath("/team");
   return member;
 }

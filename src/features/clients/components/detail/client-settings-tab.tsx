@@ -1,6 +1,7 @@
 "use client";
 
 import { HelpCircle, Mail } from "lucide-react";
+import { unstable_rethrow } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -82,8 +83,11 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
     setRemoveError(null);
     startRemoveTransition(async () => {
       try {
+        // A success redirects away (see removeClientAction) — the dialog never needs
+        // to close itself.
         await removeClientAction(client.id);
       } catch (err) {
+        unstable_rethrow(err);
         handleMutationError(err, setRemoveError);
       }
     });

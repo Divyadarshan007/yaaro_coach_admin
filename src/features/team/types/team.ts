@@ -21,6 +21,7 @@ export type TeamMember = {
   userId: string | null;
   name: string;
   email: string;
+  phone: string;
   avatar: string;
   role: TeamMemberRole;
   status: TeamMemberStatus;
@@ -98,4 +99,13 @@ export type AddStudioMemberInput = {
   phone?: string;
   email?: string;
   password?: string;
+};
+
+// Payload for editing an existing member (PATCH /coach/v1/studio/members/:id) — name/
+// role/phone only. Login email/password aren't editable here, only set once via
+// Add Management.
+export type UpdateStudioMemberInput = {
+  name?: string;
+  role?: TeamMemberRole;
+  phone?: string;
 };

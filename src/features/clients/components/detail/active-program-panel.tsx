@@ -1,7 +1,5 @@
 import { CalendarRange } from "lucide-react";
-import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ProgramActionsMenu } from "@/features/clients/components/detail/program-actions-menu";
@@ -118,15 +116,6 @@ export function ActiveProgramPanel({
             </div>
           ))}
         </CardContent>
-        <div className="flex justify-end px-4">
-          <Button
-            size="sm"
-            nativeButton={false}
-            render={<Link href={`/clients/${client.id}/program`} />}
-          >
-            Edit Program
-          </Button>
-        </div>
       </Card>
     </div>
   );

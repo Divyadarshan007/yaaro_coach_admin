@@ -52,6 +52,10 @@ export function toClientCoach(summary: ClientSummary): AvatarInfo | null {
 export function toClient(summary: ClientSummary): Client {
   return {
     id: summary.id,
+    name: summary.name,
+    phone: summary.phone,
+    gender: summary.gender,
+    source: summary.source,
     avatar: avatarFromName(
       summary.name || summary.email || "Client",
       summary.id,
