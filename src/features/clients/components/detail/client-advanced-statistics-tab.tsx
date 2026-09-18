@@ -56,8 +56,8 @@ export function ClientAdvancedStatisticsTab({
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    setError(null);
     startTransition(async () => {
+      setError(null);
       try {
         const result = await getClientAdvancedStatsAction(clientId, {
           granularity,
