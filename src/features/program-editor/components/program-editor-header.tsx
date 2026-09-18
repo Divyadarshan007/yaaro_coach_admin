@@ -36,14 +36,6 @@ export function ProgramEditorHeader({ programId, clients }: { programId: string;
 
   return (
     <div className="flex flex-col gap-3">
-      <Link
-        href="/program-library"
-        onClick={(event) => requestLeave(event, "/program-library")}
-        className="w-fit text-sm text-muted-foreground hover:text-foreground"
-      >
-        My Programs
-      </Link>
-
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link

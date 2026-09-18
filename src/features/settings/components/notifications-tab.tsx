@@ -160,13 +160,13 @@ function ClientNotificationsSection({ clients }: { clients: ClientSummary[] }) {
       <div className="mt-4 rounded-xl ring-1 ring-foreground/10">
         <div className="flex items-center justify-between gap-4 p-4">
           <p className="text-sm font-medium text-foreground">Clients</p>
-          <div className="flex items-center gap-3 text-sm font-medium text-primary">
-            <button type="button" onClick={() => setAllClientNotifications(true)} className="hover:underline">
+          <div className="flex items-center gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={() => setAllClientNotifications(true)}>
               Turn all on
-            </button>
-            <button type="button" onClick={() => setAllClientNotifications(false)} className="hover:underline">
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => setAllClientNotifications(false)}>
               Turn all off
-            </button>
+            </Button>
           </div>
         </div>
 

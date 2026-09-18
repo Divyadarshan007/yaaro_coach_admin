@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { replaceClientProgramAction } from "@/features/program-editor/actions";
 import type { Program } from "@/features/program-editor/types/program-editor";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function ReplaceProgramDialog({
   clientId,
@@ -37,6 +38,7 @@ export function ReplaceProgramDialog({
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(
     null,
   );
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const filtered = useMemo(() => {
@@ -53,14 +55,20 @@ export function ReplaceProgramDialog({
   function reset() {
     setSearch("");
     setSelectedProgramId(null);
+    setError(null);
   }
 
   function handleReplace() {
     if (!selectedProgramId) return;
+    setError(null);
     startTransition(async () => {
-      await replaceClientProgramAction(clientId, selectedProgramId);
-      reset();
-      onOpenChange(false);
+      try {
+        await replaceClientProgramAction(clientId, selectedProgramId);
+        reset();
+        onOpenChange(false);
+      } catch (err) {
+        handleMutationError(err, setError);
+      }
     });
   }
 
@@ -155,6 +163,10 @@ export function ReplaceProgramDialog({
               )}
             </div>
           </div>
+
+          {error && (
+            <p className="px-4 pb-4 text-sm text-destructive">{error}</p>
+          )}
         </DialogBody>
 
         <DialogFooter className="flex-row justify-between">

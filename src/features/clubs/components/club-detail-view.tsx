@@ -1,8 +1,7 @@
 "use client";
 
 import { Tabs } from "@base-ui/react/tabs";
-import Link from "next/link";
-import { ArrowLeft, Globe, Lock, Users } from "lucide-react";
+import { Globe, Lock, Users } from "lucide-react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -31,14 +30,6 @@ export function ClubDetailView({
 
   return (
     <div className="flex flex-col gap-6">
-      <Link
-        href="/clubs"
-        className="flex w-fit items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="size-4" />
-        Clubs
-      </Link>
-
       <div className="flex items-center gap-4">
         <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted">
           {club.imageUrl ? (

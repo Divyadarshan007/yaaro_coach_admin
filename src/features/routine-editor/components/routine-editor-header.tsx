@@ -22,7 +22,6 @@ export function RoutineEditorHeader({
   routineId: string;
 }) {
   const backHref = programId ? `/program/${programId}` : "/program-library";
-  const breadcrumb = programId ? `My Programs / ${programTitle}` : "Program Library / My Routines";
 
   const [error, setError] = useState<string | null>(null);
   const isDirty = useMyRoutinesStore((state) => !!state.dirty[routineId]);
@@ -49,14 +48,6 @@ export function RoutineEditorHeader({
 
   return (
     <div className="flex flex-col gap-3">
-      <Link
-        href={backHref}
-        onClick={(event) => requestLeave(event, backHref)}
-        className="w-fit text-sm text-muted-foreground hover:text-foreground"
-      >
-        {breadcrumb}
-      </Link>
-
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link
