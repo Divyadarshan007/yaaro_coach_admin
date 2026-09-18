@@ -18,6 +18,7 @@ import {
   TEAM_MEMBER_ROLE_LABEL,
   type TeamMember,
 } from "@/features/team/types/team";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function ChangeCoachDialog({
   clientId,
@@ -33,16 +34,25 @@ export function ChangeCoachDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const [selectedCoachId, setSelectedCoachId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function reset() {
     setSelectedCoachId(null);
+    setError(null);
   }
 
   function handleReassign() {
     if (!selectedCoachId) return;
+    setError(null);
     startTransition(async () => {
-      await reassignClientCoachAction(clientId, selectedCoachId);
+      try {
+        await reassignClientCoachAction(clientId, selectedCoachId);
+        onOpenChange(false);
+        reset();
+      } catch (err) {
+        handleMutationError(err, setError);
+      }
     });
   }
 
@@ -100,6 +110,8 @@ export function ChangeCoachDialog({
               </label>
             ))}
           </div>
+
+          {error && <p className="text-sm text-destructive">{error}</p>}
         </DialogBody>
 
         <DialogFooter className="flex-row justify-end">

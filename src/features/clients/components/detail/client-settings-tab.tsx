@@ -25,6 +25,7 @@ import {
   updateClientNotesAction,
 } from "@/features/clients/actions";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 function SettingsRow({
   label,
@@ -49,9 +50,11 @@ function SettingsRow({
 export function ClientSettingsTab({ client }: { client: ClientDetail }) {
   const [notes, setNotes] = useState(client.notes);
   const [savedNotes, setSavedNotes] = useState(client.notes);
+  const [notesError, setNotesError] = useState<string | null>(null);
   const [isSavingNotes, startSaveNotesTransition] = useTransition();
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isRemoving, startRemoveTransition] = useTransition();
+  const [removeError, setRemoveError] = useState<string | null>(null);
 
   const coachedSinceLabel = new Date(client.coachedSince).toLocaleDateString(
     "en-US",
@@ -64,15 +67,25 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
 
   function handleNotesBlur() {
     if (notes === savedNotes) return;
+    setNotesError(null);
     startSaveNotesTransition(async () => {
-      await updateClientNotesAction(client.id, notes);
-      setSavedNotes(notes);
+      try {
+        await updateClientNotesAction(client.id, notes);
+        setSavedNotes(notes);
+      } catch (err) {
+        handleMutationError(err, setNotesError);
+      }
     });
   }
 
   function handleRemove() {
+    setRemoveError(null);
     startRemoveTransition(async () => {
-      await removeClientAction(client.id);
+      try {
+        await removeClientAction(client.id);
+      } catch (err) {
+        handleMutationError(err, setRemoveError);
+      }
     });
   }
 
@@ -116,6 +129,9 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
             {isSavingNotes && (
               <p className="mt-1 text-xs text-muted-foreground">Saving...</p>
             )}
+            {notesError && (
+              <p className="mt-1 text-xs text-destructive">{notesError}</p>
+            )}
           </SettingsRow>
 
           <SettingsRow label="Status">
@@ -142,7 +158,11 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
 
       <Dialog
         open={isRemoveOpen}
-        onOpenChange={(next) => !isRemoving && setIsRemoveOpen(next)}
+        onOpenChange={(next) => {
+          if (isRemoving) return;
+          setIsRemoveOpen(next);
+          if (!next) setRemoveError(null);
+        }}
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -154,6 +174,7 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
               workout history and account are not affected, and this action
               cannot be undone from here.
             </p>
+            {removeError && <p className="text-sm text-destructive">{removeError}</p>}
           </DialogBody>
           <DialogFooter className="flex-row justify-end">
             <Button

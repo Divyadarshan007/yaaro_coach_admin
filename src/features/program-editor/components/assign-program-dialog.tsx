@@ -11,6 +11,7 @@ import { assignProgramToClientsAction } from "@/features/program-editor/actions"
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
 import { avatarFromName } from "@/features/clients/lib/avatar";
 import type { ClientSummary } from "@/features/clients/types/client";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function AssignProgramDialog({
   programId,
@@ -28,6 +29,7 @@ export function AssignProgramDialog({
   const [scheduleEnabled, setScheduleEnabled] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -40,6 +42,7 @@ export function AssignProgramDialog({
     setSelectedClientIds(new Set());
     setScheduleEnabled(false);
     setStartDate("");
+    setError(null);
   }
 
   function toggleClient(clientId: string) {
@@ -53,6 +56,7 @@ export function AssignProgramDialog({
 
   async function handleCopy() {
     setIsSubmitting(true);
+    setError(null);
     try {
       await assignProgramToClientsAction(
         programId,
@@ -61,6 +65,8 @@ export function AssignProgramDialog({
       );
       reset();
       onOpenChange(false);
+    } catch (err) {
+      handleMutationError(err, setError);
     } finally {
       setIsSubmitting(false);
     }
@@ -134,6 +140,8 @@ export function AssignProgramDialog({
               className="h-9 rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             />
           )}
+
+          {error && <p className="text-sm text-destructive">{error}</p>}
         </DialogBody>
 
         <DialogFooter className="flex-row justify-end">

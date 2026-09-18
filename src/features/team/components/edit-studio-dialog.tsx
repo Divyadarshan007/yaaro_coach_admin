@@ -22,6 +22,7 @@ import {
   uploadTeamLogoAction,
 } from "@/features/team/actions";
 import type { Team } from "@/features/team/types/team";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 type EditStudioDialogProps = {
   team: Team;
@@ -90,9 +91,7 @@ export function EditStudioDialog({ team, onSaved }: EditStudioDialogProps) {
         onSaved(updated);
         setOpen(false);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to update studio",
-        );
+        handleMutationError(err, setError);
       }
     });
   }

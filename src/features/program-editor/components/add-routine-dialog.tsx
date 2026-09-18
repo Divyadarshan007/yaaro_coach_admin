@@ -9,6 +9,7 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import { Input } from "@/components/ui/input";
 import { useMyProgramsStore } from "@/features/program-editor/store/my-programs-store";
 import { useMyRoutinesStore } from "@/features/program-editor/store/my-routines-store";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function AddRoutineDialog({
   programId,
@@ -29,6 +30,7 @@ export function AddRoutineDialog({
   const addRoutineToProgram = useMyProgramsStore((state) => state.addRoutineToProgram);
   const [isCreating, startCreateTransition] = useTransition();
   const [isAdding, startAddTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -47,6 +49,7 @@ export function AddRoutineDialog({
   function reset() {
     setSearch("");
     setSelectedIds(new Set());
+    setError(null);
   }
 
   function toggleRoutine(id: string) {
@@ -59,25 +62,35 @@ export function AddRoutineDialog({
   }
 
   function handleCreateNew() {
+    setError(null);
     startCreateTransition(async () => {
-      const routineId = await createRoutine(programId);
-      addRoutineToProgram(programId, routineId);
-      reset();
-      onOpenChange(false);
-      router.push(`${basePath}/routine/${routineId}`);
+      try {
+        const routineId = await createRoutine(programId);
+        addRoutineToProgram(programId, routineId);
+        reset();
+        onOpenChange(false);
+        router.push(`${basePath}/routine/${routineId}`);
+      } catch (err) {
+        handleMutationError(err, setError);
+      }
     });
   }
 
   function handleAdd() {
+    setError(null);
     startAddTransition(async () => {
-      // Adding an existing routine to a program clones it — the original stays
-      // untouched in "My Routines" instead of moving/disappearing from there.
-      for (const id of selectedIds) {
-        const cloneId = await duplicateRoutine(id);
-        addRoutineToProgram(programId, cloneId);
+      try {
+        // Adding an existing routine to a program clones it — the original stays
+        // untouched in "My Routines" instead of moving/disappearing from there.
+        for (const id of selectedIds) {
+          const cloneId = await duplicateRoutine(id);
+          addRoutineToProgram(programId, cloneId);
+        }
+        reset();
+        onOpenChange(false);
+      } catch (err) {
+        handleMutationError(err, setError);
       }
-      reset();
-      onOpenChange(false);
     });
   }
 
@@ -139,6 +152,8 @@ export function AddRoutineDialog({
               </label>
             ))}
           </div>
+
+          {error && <p className="text-sm text-destructive">{error}</p>}
         </DialogBody>
 
         <DialogFooter className="flex-row justify-end">

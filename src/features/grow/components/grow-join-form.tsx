@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { submitLeadAction } from "@/features/grow/actions";
+import { SUBSCRIPTION_REQUIRED_PREFIX } from "@/lib/subscription-required";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -29,8 +30,15 @@ export function GrowJoinForm({ slug }: { slug: string }) {
       try {
         await submitLeadAction(slug, { name: name.trim(), email: email.trim(), message: message.trim(), acceptedTerms });
         setSubmitted(true);
-      } catch {
-        setError("Something went wrong. Please try again.");
+      } catch (err) {
+        // Public page — the coach-facing subscription popup isn't mounted here, so
+        // surface the underlying message inline instead (stripping the sentinel prefix).
+        const message = err instanceof Error ? err.message : "";
+        setError(
+          message.startsWith(SUBSCRIPTION_REQUIRED_PREFIX)
+            ? message.slice(SUBSCRIPTION_REQUIRED_PREFIX.length)
+            : "Something went wrong. Please try again."
+        );
       }
     });
   }

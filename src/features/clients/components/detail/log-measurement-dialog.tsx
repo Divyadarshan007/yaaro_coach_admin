@@ -27,6 +27,7 @@ import {
   MEASUREMENT_FIELDS,
   MEASUREMENT_UNIT_BY_KEY,
 } from "@/features/clients/lib/measurement-fields";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const EMPTY_VALUES: Record<string, string> = Object.fromEntries(
   MEASUREMENT_FIELDS.map((field) => [field.key, ""]),
@@ -100,8 +101,8 @@ export function LogMeasurementDialog({
 
         await logClientMeasurementAction(clientId, formData);
         handleOpenChange(false);
-      } catch {
-        setError("Failed to save measurement. Please try again.");
+      } catch (err) {
+        handleMutationError(err, setError);
       }
     });
   }

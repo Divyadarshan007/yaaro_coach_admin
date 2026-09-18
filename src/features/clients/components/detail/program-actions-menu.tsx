@@ -22,6 +22,7 @@ import { ReplaceProgramDialog } from "@/features/clients/components/detail/repla
 import type { ClientDetail } from "@/features/clients/types/client-detail";
 import { removeClientProgramAction } from "@/features/program-editor/actions";
 import type { Program } from "@/features/program-editor/types/program-editor";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function ProgramActionsMenu({
   client,
@@ -40,11 +41,17 @@ export function ProgramActionsMenu({
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isReplaceOpen, setIsReplaceOpen] = useState(false);
   const [isRemoving, startRemoveTransition] = useTransition();
+  const [removeError, setRemoveError] = useState<string | null>(null);
 
   function handleRemove() {
+    setRemoveError(null);
     startRemoveTransition(async () => {
-      await removeClientProgramAction(client.id);
-      setIsRemoveOpen(false);
+      try {
+        await removeClientProgramAction(client.id);
+        setIsRemoveOpen(false);
+      } catch (err) {
+        handleMutationError(err, setRemoveError);
+      }
     });
   }
 
@@ -81,7 +88,11 @@ export function ProgramActionsMenu({
 
       <Dialog
         open={isRemoveOpen}
-        onOpenChange={(next) => !isRemoving && setIsRemoveOpen(next)}
+        onOpenChange={(next) => {
+          if (isRemoving) return;
+          setIsRemoveOpen(next);
+          if (!next) setRemoveError(null);
+        }}
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -92,6 +103,7 @@ export function ProgramActionsMenu({
               This will remove &quot;{programName}&quot; from {client.name}.
               This action cannot be undone.
             </p>
+            {removeError && <p className="text-sm text-destructive">{removeError}</p>}
           </DialogBody>
           <DialogFooter className="flex-row justify-end">
             <Button

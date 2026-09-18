@@ -10,11 +10,13 @@ import { Input } from "@/components/ui/input";
 import { AddClientDialog } from "@/features/clients/components/add-client-dialog";
 import { declineLeadAction, inviteLeadAction } from "@/features/grow/actions";
 import type { Lead } from "@/features/grow/types/grow";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function GrowLeadsPanel({ leads, coachSlug }: { leads: Lead[]; coachSlug: string }) {
   const [search, setSearch] = useState("");
   const [isPending, startTransition] = useTransition();
   const [invitingLead, setInvitingLead] = useState<Lead | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const filteredLeads = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -25,15 +27,25 @@ export function GrowLeadsPanel({ leads, coachSlug }: { leads: Lead[]; coachSlug:
   }, [leads, search]);
 
   function handleDecline(id: string) {
+    setError(null);
     startTransition(async () => {
-      await declineLeadAction(id);
+      try {
+        await declineLeadAction(id);
+      } catch (err) {
+        handleMutationError(err, setError);
+      }
     });
   }
 
   function handleInvite(lead: Lead) {
     setInvitingLead(lead);
+    setError(null);
     startTransition(async () => {
-      await inviteLeadAction(lead.id);
+      try {
+        await inviteLeadAction(lead.id);
+      } catch (err) {
+        handleMutationError(err, setError);
+      }
     });
   }
 
@@ -54,6 +66,8 @@ export function GrowLeadsPanel({ leads, coachSlug }: { leads: Lead[]; coachSlug:
           />
         </div>
       </div>
+
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       {filteredLeads.length === 0 ? (
         <EmptyState

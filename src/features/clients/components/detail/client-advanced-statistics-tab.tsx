@@ -19,6 +19,7 @@ import type {
   AdvancedStatsRange,
   ClientAdvancedStats,
 } from "@/features/clients/types/advanced-stats";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const METRIC_TITLES: Record<AdvancedStatsMetric, string> = {
   "muscle-groups": "Set Count Per Muscle Group",
@@ -51,15 +52,21 @@ export function ClientAdvancedStatisticsTab({
     useState<AdvancedStatsGranularity>("week");
   const [range, setRange] = useState<AdvancedStatsRange>("3m");
   const [stats, setStats] = useState<ClientAdvancedStats | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
+    setError(null);
     startTransition(async () => {
-      const result = await getClientAdvancedStatsAction(clientId, {
-        granularity,
-        range,
-      });
-      setStats(result);
+      try {
+        const result = await getClientAdvancedStatsAction(clientId, {
+          granularity,
+          range,
+        });
+        setStats(result);
+      } catch (err) {
+        handleMutationError(err, setError);
+      }
     });
   }, [clientId, granularity, range]);
 
@@ -83,7 +90,9 @@ export function ClientAdvancedStatisticsTab({
           />
         </div>
 
-        {isPending || !stats ? (
+        {error ? (
+          <p className="text-sm text-destructive">{error}</p>
+        ) : isPending || !stats ? (
           <div className="h-80 animate-pulse rounded-xl bg-muted/50" />
         ) : metric === "muscle-groups" ? (
           <ClientMuscleGroupStatsCard

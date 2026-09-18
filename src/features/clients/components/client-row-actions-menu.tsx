@@ -33,6 +33,7 @@ import { removeClientAction } from "@/features/clients/actions";
 import type { Client } from "@/features/clients/types/client";
 import type { Program } from "@/features/program-editor/types/program-editor";
 import type { TeamMember } from "@/features/team/types/team";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 export function ClientRowActionsMenu({
   client,
@@ -49,10 +50,16 @@ export function ClientRowActionsMenu({
   const [isMembershipOpen, setIsMembershipOpen] = useState(false);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isRemoving, startRemoveTransition] = useTransition();
+  const [removeError, setRemoveError] = useState<string | null>(null);
 
   function handleRemove() {
+    setRemoveError(null);
     startRemoveTransition(async () => {
-      await removeClientAction(client.id);
+      try {
+        await removeClientAction(client.id);
+      } catch (err) {
+        handleMutationError(err, setRemoveError);
+      }
     });
   }
 
@@ -129,7 +136,11 @@ export function ClientRowActionsMenu({
 
       <Dialog
         open={isRemoveOpen}
-        onOpenChange={(next) => !isRemoving && setIsRemoveOpen(next)}
+        onOpenChange={(next) => {
+          if (isRemoving) return;
+          setIsRemoveOpen(next);
+          if (!next) setRemoveError(null);
+        }}
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -141,6 +152,7 @@ export function ClientRowActionsMenu({
               workout history and account are not affected, and this action
               cannot be undone from here.
             </p>
+            {removeError && <p className="text-sm text-destructive">{removeError}</p>}
           </DialogBody>
           <DialogFooter className="flex-row justify-end">
             <Button

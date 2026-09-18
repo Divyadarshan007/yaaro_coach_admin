@@ -10,6 +10,7 @@ import { getClientFeedsAction } from "@/features/clients/actions";
 import { WorkoutFeedCard } from "@/features/clients/components/detail/workout-feed-card";
 import type { AvatarInfo } from "@/features/clients/types/client";
 import type { FeedItem } from "@/features/clients/types/workout-feed";
+import { handleMutationError } from "@/lib/handle-mutation-error";
 
 const PAGE_SIZE = 10;
 
@@ -27,15 +28,21 @@ export function WorkoutHistoryColumn({
   const [feeds, setFeeds] = useState(initialFeeds);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialFeeds.length === PAGE_SIZE);
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function loadMore() {
+    setError(null);
     startTransition(async () => {
-      const nextPage = page + 1;
-      const nextFeeds = await getClientFeedsAction(clientId, nextPage);
-      setFeeds((prev) => [...prev, ...nextFeeds]);
-      setPage(nextPage);
-      setHasMore(nextFeeds.length === PAGE_SIZE);
+      try {
+        const nextPage = page + 1;
+        const nextFeeds = await getClientFeedsAction(clientId, nextPage);
+        setFeeds((prev) => [...prev, ...nextFeeds]);
+        setPage(nextPage);
+        setHasMore(nextFeeds.length === PAGE_SIZE);
+      } catch (err) {
+        handleMutationError(err, setError);
+      }
     });
   }
 
@@ -64,6 +71,8 @@ export function WorkoutHistoryColumn({
           />
         ))
       )}
+
+      {error && <p className="self-center text-sm text-destructive">{error}</p>}
 
       {hasMore && (
         <Button
