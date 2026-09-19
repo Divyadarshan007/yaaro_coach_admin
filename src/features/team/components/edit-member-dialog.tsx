@@ -34,6 +34,11 @@ export function EditMemberDialog({
   const [error, setError] = useState<string | null>(null);
   const [isSaving, startSave] = useTransition();
 
+  // A studio always has exactly one owner — their role can't be reassigned here (the
+  // backend rejects a role field on the owner's own row), so the Select below never
+  // renders for them.
+  const isOwner = member.role === "owner";
+
   function reset() {
     setName(member.name);
     setRole(member.role);
@@ -54,7 +59,7 @@ export function EditMemberDialog({
       try {
         await updateStudioMemberAction(member.id, {
           name: name.trim(),
-          role,
+          ...(isOwner ? {} : { role }),
           phone: phone.trim(),
         });
         onOpenChange(false);
@@ -64,7 +69,8 @@ export function EditMemberDialog({
     });
   }
 
-  const isDirty = name.trim() !== member.name || role !== member.role || phone.trim() !== member.phone;
+  const isDirty =
+    name.trim() !== member.name || (!isOwner && role !== member.role) || phone.trim() !== member.phone;
   const canSubmit = name.trim().length > 0 && isDirty && !isSaving;
 
   return (
@@ -91,22 +97,26 @@ export function EditMemberDialog({
 
             <div className="flex flex-col gap-1.5">
               <span className={labelClassName}>Role</span>
-              <Select
-                items={TEAM_MEMBER_ROLE_OPTIONS}
-                value={role}
-                onValueChange={(value) => setRole(value as TeamMemberRole)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {TEAM_MEMBER_ROLE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {isOwner ? (
+                <Input value="Owner" disabled />
+              ) : (
+                <Select
+                  items={TEAM_MEMBER_ROLE_OPTIONS}
+                  value={role}
+                  onValueChange={(value) => setRole(value as TeamMemberRole)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TEAM_MEMBER_ROLE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="flex flex-col gap-1.5">

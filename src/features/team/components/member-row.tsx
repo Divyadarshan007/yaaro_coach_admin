@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreVertical, Pencil, QrCode, X } from "lucide-react";
+import { Link2Off, MoreVertical, Pencil, QrCode, X } from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { TableCell, TableRow } from "@/components/ui/table";
 import { avatarFromName } from "@/features/clients/lib/avatar";
 import { PersonAvatar } from "@/features/clients/components/person-avatar";
-import { removeTeamMemberAction } from "@/features/team/actions";
+import { removeTeamMemberAction, unlinkTeamMemberAction } from "@/features/team/actions";
 import { EditMemberDialog } from "@/features/team/components/edit-member-dialog";
 import { LinkCoachQrDialog } from "@/features/team/components/link-coach-qr-dialog";
 import { cn } from "@/lib/utils";
@@ -40,11 +40,16 @@ export function MemberRow({
   const [replacementRequiredMessage, setReplacementRequiredMessage] = useState<string | null>(null);
   const [selectedReplacementId, setSelectedReplacementId] = useState<string | null>(null);
   const [removeError, setRemoveError] = useState<string | null>(null);
+  const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
+  const [isUnlinking, startUnlinkTransition] = useTransition();
+  const [unlinkError, setUnlinkError] = useState<string | null>(null);
 
-  // Only the studio owner can manage other members — same rule the backend enforces
-  // for both PATCH and DELETE on this row, and the owner's own row can't be edited
-  // or removed here either.
-  const canManageMember = myRole === "owner" && member.role !== "owner";
+  // Only the studio owner can manage rows — including editing/unlinking their own row
+  // (the backend allows both; role just can't be changed away from "owner", which the
+  // edit dialog itself never offers). Removing a row is different: a studio always
+  // needs exactly one owner, so that action stays excluded for the owner's own row.
+  const canManageMember = myRole === "owner";
+  const canRemoveMember = canManageMember && member.role !== "owner";
 
   // Other active, linked members this member's clients could be handed off to — only
   // someone with a userId can be assigned as a client's coachId (see reassignCoach).
@@ -74,6 +79,18 @@ export function MemberRow({
         setReplacementRequiredMessage(result.message);
       } catch (err) {
         handleMutationError(err, setRemoveError);
+      }
+    });
+  }
+
+  function handleUnlink() {
+    setUnlinkError(null);
+    startUnlinkTransition(async () => {
+      try {
+        await unlinkTeamMemberAction(member.id);
+        setIsUnlinkOpen(false);
+      } catch (err) {
+        handleMutationError(err, setUnlinkError);
       }
     });
   }
@@ -143,14 +160,63 @@ export function MemberRow({
                   <Pencil />
                   Edit member
                 </DropdownMenuItem>
-                <DropdownMenuItem variant="destructive" onClick={() => setIsRemoveOpen(true)}>
-                  <X />
-                  Remove member
-                </DropdownMenuItem>
+                {member.userId && (
+                  <DropdownMenuItem onClick={() => setIsUnlinkOpen(true)}>
+                    <Link2Off />
+                    Unlink member
+                  </DropdownMenuItem>
+                )}
+                {canRemoveMember && (
+                  <DropdownMenuItem variant="destructive" onClick={() => setIsRemoveOpen(true)}>
+                    <X />
+                    Remove member
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
 
             <EditMemberDialog member={member} open={isEditOpen} onOpenChange={setIsEditOpen} />
+
+            <Dialog
+              open={isUnlinkOpen}
+              onOpenChange={(next) => {
+                if (isUnlinking) return;
+                setIsUnlinkOpen(next);
+                if (!next) setUnlinkError(null);
+              }}
+            >
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Unlink {member.name}?</DialogTitle>
+                </DialogHeader>
+                <DialogBody>
+                  <p className="text-sm text-muted-foreground">
+                    This detaches {member.name}&apos;s Yaaro app account from this team
+                    row. They&apos;ll stay on your team, but their photo will disappear
+                    until they (or someone else) scan their &quot;Link now&quot; QR again.
+                  </p>
+                  {unlinkError && <p className="text-sm text-destructive">{unlinkError}</p>}
+                </DialogBody>
+                <DialogFooter className="flex-row justify-end">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => setIsUnlinkOpen(false)}
+                    disabled={isUnlinking}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="lg"
+                    onClick={handleUnlink}
+                    disabled={isUnlinking}
+                  >
+                    {isUnlinking ? "Unlinking..." : "Unlink member"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             <Dialog
               open={isRemoveOpen}

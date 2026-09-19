@@ -8,6 +8,7 @@ import type {
   AdvancedStatsRange,
   ClientAdvancedStats,
 } from "@/features/clients/types/advanced-stats";
+import type { ClientActivityCalendar } from "@/features/clients/types/activity-calendar";
 import type {
   ClientSummary,
   CreateClientInput,
@@ -100,6 +101,22 @@ export async function updateClientProfile(
     },
   );
   if (!res.ok) return parseApiError(res, `Failed to update client ${clientId}`);
+  const client: ClientSummary = await res.json();
+  return withResolvedAvatar(client);
+}
+
+// Detaches this client row from its linked Yaaro app account (userId back to null).
+// Name/phone/coachId/batch/program/notes are all untouched — their own "Link now" QR
+// becomes valid again for the same or a different person to (re-)link.
+export async function unlinkClient(clientId: string): Promise<ClientSummary> {
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/unlink`,
+    {
+      method: "PATCH",
+      headers: await getCoachAuthHeaders(),
+    },
+  );
+  if (!res.ok) return parseApiError(res, `Failed to unlink client ${clientId}`);
   const client: ClientSummary = await res.json();
   return withResolvedAvatar(client);
 }
@@ -352,6 +369,32 @@ export async function getClientAdvancedStats(
   if (!res.ok)
     throw new Error(
       `Failed to fetch client ${clientId}'s advanced stats (${res.status})`,
+    );
+  return res.json();
+}
+
+export async function getClientActivityCalendar(
+  clientId: string,
+  params: { year: number; month: number }, // month is 1-12
+): Promise<ClientActivityCalendar | null> {
+  const query = new URLSearchParams({
+    year: String(params.year),
+    month: String(params.month),
+  });
+  const res = await fetch(
+    `${COACH_BACKEND_URL}/coach/v1/clients/${clientId}/activity-calendar?${query}`,
+    {
+      cache: "no-store",
+      headers: await getCoachAuthHeaders(),
+    },
+  );
+  if (res.status === 401) {
+    redirect("/login");
+  }
+  if (res.status === 404 || res.status === 400) return null;
+  if (!res.ok)
+    throw new Error(
+      `Failed to fetch client ${clientId}'s activity calendar (${res.status})`,
     );
   return res.json();
 }

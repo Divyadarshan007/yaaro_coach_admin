@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/tooltip";
 import {
   removeClientAction,
+  unlinkClientAction,
   updateClientNotesAction,
 } from "@/features/clients/actions";
 import type { ClientDetail } from "@/features/clients/types/client-detail";
@@ -56,6 +57,9 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isRemoving, startRemoveTransition] = useTransition();
   const [removeError, setRemoveError] = useState<string | null>(null);
+  const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
+  const [isUnlinking, startUnlinkTransition] = useTransition();
+  const [unlinkError, setUnlinkError] = useState<string | null>(null);
 
   const coachedSinceLabel = new Date(client.coachedSince).toLocaleDateString(
     "en-US",
@@ -89,6 +93,18 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
       } catch (err) {
         unstable_rethrow(err);
         handleMutationError(err, setRemoveError);
+      }
+    });
+  }
+
+  function handleUnlink() {
+    setUnlinkError(null);
+    startUnlinkTransition(async () => {
+      try {
+        await unlinkClientAction(client.id);
+        setIsUnlinkOpen(false);
+      } catch (err) {
+        handleMutationError(err, setUnlinkError);
       }
     });
   }
@@ -150,7 +166,16 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
         </CardContent>
       </Card>
 
-      <div>
+      <div className="flex gap-2">
+        {client.linked && (
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => setIsUnlinkOpen(true)}
+          >
+            Unlink Client
+          </Button>
+        )}
         <Button
           variant="destructive"
           size="lg"
@@ -159,6 +184,48 @@ export function ClientSettingsTab({ client }: { client: ClientDetail }) {
           Remove Client
         </Button>
       </div>
+
+      <Dialog
+        open={isUnlinkOpen}
+        onOpenChange={(next) => {
+          if (isUnlinking) return;
+          setIsUnlinkOpen(next);
+          if (!next) setUnlinkError(null);
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Unlink {client.name}?</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            <p className="text-sm text-muted-foreground">
+              This detaches {client.name}&apos;s Yaaro app account from this
+              client record. They&apos;ll stay in your client list, but
+              their profile photo and username will disappear until they
+              (or someone else) scan their &quot;Link now&quot; QR again.
+            </p>
+            {unlinkError && <p className="text-sm text-destructive">{unlinkError}</p>}
+          </DialogBody>
+          <DialogFooter className="flex-row justify-end">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setIsUnlinkOpen(false)}
+              disabled={isUnlinking}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="lg"
+              onClick={handleUnlink}
+              disabled={isUnlinking}
+            >
+              {isUnlinking ? "Unlinking..." : "Unlink Client"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={isRemoveOpen}

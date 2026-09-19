@@ -95,6 +95,20 @@ export async function updateStudioMember(memberId: string, patch: UpdateStudioMe
   return { ...member, avatar: resolveUploadUrl(member.avatar) };
 }
 
+// Detaches a member row from its linked Yaaro app account (userId back to null).
+// Owner only; the owner's own row can't be unlinked. Role/status/name/phone stay
+// untouched — their own "Link now" QR becomes valid again for the same or a different
+// person to (re-)link.
+export async function unlinkTeamMember(memberId: string): Promise<TeamMember> {
+  const res = await fetch(`${COACH_BACKEND_URL}/coach/v1/studio/members/${memberId}/unlink`, {
+    method: "PATCH",
+    headers: await getCoachAuthHeaders(),
+  });
+  if (!res.ok) return parseApiError(res, `Failed to unlink member ${memberId}`);
+  const member: TeamMember = await res.json();
+  return { ...member, avatar: resolveUploadUrl(member.avatar) };
+}
+
 export type RemoveTeamMemberResult =
   | { ok: true }
   | { ok: false; requiresReplacement: true; message: string };

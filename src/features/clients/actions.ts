@@ -8,10 +8,12 @@ import {
   assignClientMembershipPlan,
   createClient,
   createClientMeasurement,
+  getClientActivityCalendar,
   getClientAdvancedStats,
   getClientFeeds,
   reassignClientCoach,
   removeClient,
+  unlinkClient,
   updateClientNotes,
   updateClientProfile,
   uploadClientMeasurementImage,
@@ -21,6 +23,7 @@ import type {
   AdvancedStatsRange,
   ClientAdvancedStats,
 } from "@/features/clients/types/advanced-stats";
+import type { ClientActivityCalendar } from "@/features/clients/types/activity-calendar";
 import type {
   ClientSummary,
   CreateClientInput,
@@ -71,11 +74,25 @@ export async function getClientAdvancedStatsAction(
   return getClientAdvancedStats(clientId, params);
 }
 
+export async function getClientActivityCalendarAction(
+  clientId: string,
+  params: { year: number; month: number },
+): Promise<ClientActivityCalendar | null> {
+  return getClientActivityCalendar(clientId, params);
+}
+
 export async function updateClientProfileAction(
   clientId: string,
   patch: UpdateClientProfileInput,
 ): Promise<ClientSummary> {
   const client = await updateClientProfile(clientId, patch);
+  revalidatePath("/clients");
+  revalidatePath(`/clients/${clientId}`);
+  return client;
+}
+
+export async function unlinkClientAction(clientId: string): Promise<ClientSummary> {
+  const client = await unlinkClient(clientId);
   revalidatePath("/clients");
   revalidatePath(`/clients/${clientId}`);
   return client;

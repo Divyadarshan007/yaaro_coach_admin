@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import {
   addStudioMember,
   removeTeamMember,
+  unlinkTeamMember,
   updateStudioMember,
   updateTeam,
   uploadTeamLogoImage,
@@ -29,6 +30,12 @@ export async function updateStudioMemberAction(
   patch: UpdateStudioMemberInput,
 ): Promise<TeamMember> {
   const member = await updateStudioMember(memberId, patch);
+  revalidatePath("/team");
+  return member;
+}
+
+export async function unlinkTeamMemberAction(memberId: string): Promise<TeamMember> {
+  const member = await unlinkTeamMember(memberId);
   revalidatePath("/team");
   return member;
 }

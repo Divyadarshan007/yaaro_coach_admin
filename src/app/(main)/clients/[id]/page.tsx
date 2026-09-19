@@ -43,6 +43,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     avatar: avatarFromName(summary.name || summary.email || "Client", summary.id, summary.avatar || undefined),
     name: summary.name,
     email: summary.email,
+    linked: summary.linked,
     coach: toClientCoach(summary),
     coachedSinceLabel: `Coached since ${new Date(summary.createdAt).toLocaleDateString("en-US", {
       month: "short",

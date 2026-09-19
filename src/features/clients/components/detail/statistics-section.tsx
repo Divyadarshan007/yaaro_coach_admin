@@ -14,7 +14,7 @@ export function StatisticsSection({ client }: { client: ClientDetail }) {
         <StatChartCard stat={client.sets} />
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <CalendarCard />
+        <CalendarCard clientId={client.id} />
         <BodyweightChartCard bodyweight={client.bodyweight} />
         <ProgressPicturesCard pictures={client.progressPictures} />
       </div>

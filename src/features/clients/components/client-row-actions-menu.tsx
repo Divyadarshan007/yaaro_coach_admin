@@ -3,6 +3,7 @@
 import {
   CalendarClock,
   CreditCard,
+  Link2Off,
   MoreVertical,
   Pencil,
   RefreshCw,
@@ -32,7 +33,7 @@ import { AssignMembershipPlanDialog } from "@/features/clients/components/assign
 import { ChangeCoachDialog } from "@/features/clients/components/detail/change-coach-dialog";
 import { EditClientDialog } from "@/features/clients/components/edit-client-dialog";
 import { ReplaceProgramDialog } from "@/features/clients/components/detail/replace-program-dialog";
-import { removeClientAction } from "@/features/clients/actions";
+import { removeClientAction, unlinkClientAction } from "@/features/clients/actions";
 import type { Client } from "@/features/clients/types/client";
 import type { Program } from "@/features/program-editor/types/program-editor";
 import type { TeamMember } from "@/features/team/types/team";
@@ -55,6 +56,9 @@ export function ClientRowActionsMenu({
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isRemoving, startRemoveTransition] = useTransition();
   const [removeError, setRemoveError] = useState<string | null>(null);
+  const [isUnlinkOpen, setIsUnlinkOpen] = useState(false);
+  const [isUnlinking, startUnlinkTransition] = useTransition();
+  const [unlinkError, setUnlinkError] = useState<string | null>(null);
 
   function handleRemove() {
     setRemoveError(null);
@@ -66,6 +70,18 @@ export function ClientRowActionsMenu({
       } catch (err) {
         unstable_rethrow(err);
         handleMutationError(err, setRemoveError);
+      }
+    });
+  }
+
+  function handleUnlink() {
+    setUnlinkError(null);
+    startUnlinkTransition(async () => {
+      try {
+        await unlinkClientAction(client.id);
+        setIsUnlinkOpen(false);
+      } catch (err) {
+        handleMutationError(err, setUnlinkError);
       }
     });
   }
@@ -103,6 +119,12 @@ export function ClientRowActionsMenu({
               ? "Change membership plan"
               : "Assign membership plan"}
           </DropdownMenuItem>
+          {client.linked && (
+            <DropdownMenuItem onClick={() => setIsUnlinkOpen(true)}>
+              <Link2Off />
+              Unlink client
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem
             variant="destructive"
             onClick={() => setIsRemoveOpen(true)}
@@ -146,6 +168,48 @@ export function ClientRowActionsMenu({
         open={isMembershipOpen}
         onOpenChange={setIsMembershipOpen}
       />
+
+      <Dialog
+        open={isUnlinkOpen}
+        onOpenChange={(next) => {
+          if (isUnlinking) return;
+          setIsUnlinkOpen(next);
+          if (!next) setUnlinkError(null);
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Unlink {client.avatar.name}?</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            <p className="text-sm text-muted-foreground">
+              This detaches {client.avatar.name}&apos;s Yaaro app account from this
+              client record. They&apos;ll stay in your client list, but their profile
+              photo and username will disappear until they (or someone else) scan
+              their &quot;Link now&quot; QR again.
+            </p>
+            {unlinkError && <p className="text-sm text-destructive">{unlinkError}</p>}
+          </DialogBody>
+          <DialogFooter className="flex-row justify-end">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setIsUnlinkOpen(false)}
+              disabled={isUnlinking}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="lg"
+              onClick={handleUnlink}
+              disabled={isUnlinking}
+            >
+              {isUnlinking ? "Unlinking..." : "Unlink client"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={isRemoveOpen}

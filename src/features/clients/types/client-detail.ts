@@ -59,6 +59,9 @@ export type ClientDetail = {
   avatar: AvatarInfo;
   name: string;
   email: string;
+  // Whether this row has a linked Yaaro app account (see unlinkClientAction) — drives
+  // whether the Settings tab shows an "Unlink Client" action.
+  linked: boolean;
   // Null until explicitly assigned — never defaults to the studio owner.
   coach: AvatarInfo | null;
   coachedSinceLabel: string;
